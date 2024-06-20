@@ -108,7 +108,19 @@ async def approval_cb(client, cb):
         "**Aᴜᴛᴏᴀᴘᴘʀᴏᴠᴀʟ ғᴏʀ ᴛʜɪs ᴄʜᴀᴛ: Eɴᴀʙʟᴇᴅ.**", reply_markup=keyboard
     )
 
-
+@app.on_message(filters.command("approveall") & filters.group)
+@adminsOnly("can_restrict_members")
+async def clear_pending_command(client, message):
+    if message.command[0] == approveall:
+        a = await message.reply_text("ᴡᴀɪᴛ.....")
+        chat_id = message.chat.id
+        await app.approve_all_chat_join_requests(chat_id)
+        await a.edit("ɪғ ᴀɴʏ ᴜsᴇʀ ᴀʀᴇ ᴡᴀɪᴛɪɴɢ ғᴏʀ ᴀᴘᴘʀᴏᴠᴇᴅ sᴏ ɪ ᴀᴍ ᴀᴘᴘʀᴏᴠᴇᴅ ʜɪᴍ")
+        await approvaldb.update_one(
+            {"chat_id": chat_id},
+            {"$set": {"pending_users": []}},
+        )
+    
 @app.on_message(filters.command("clearpending") & filters.group)
 @adminsOnly("can_restrict_members")
 async def clear_pending_command(client, message):
@@ -144,8 +156,8 @@ async def accept(client, message: ChatJoinRequest):
                     upsert=True,
                 )
                 buttons = {
-                    "accept": f"manual_approve_{user.id}",
-                    "Decline": f"manual_decline_{user.id}",
+                    "ᴀᴄᴄᴇᴘᴛ": f"manual_approve_{user.id}",
+                    "ᴅᴇᴄʟɪɴᴇ": f"manual_decline_{user.id}",
                 }
                 keyboard = ikb(buttons, int(2))
                 text = f"**ᴜsᴇʀ: {user.mention} ʜᴀs sᴇɴᴅ ᴀ ʀᴇǫᴜᴇsᴛ ᴛᴏ ᴊᴏɪɴ ᴏᴜʀ  ɢʀᴏᴜᴘ. Aɴʏ ᴀᴅᴍɪɴs ᴄᴀɴ ᴀᴄᴄᴇᴘᴛ ᴏʀ ᴅᴇᴄʟɪɴᴇ ɪᴛ.**"
