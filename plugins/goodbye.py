@@ -53,10 +53,10 @@ async def handle_left_member(member, chat):
 @app.on_message(filters.left_chat_member & filters.group, group=6)
 @capture_err
 async def goodbye(_, m:Message):
-
-    member = await app.get_users(m.from_user.id)
-    chat = m.chat
-    return await handle_left_member(member, chat)
+    if m.from_user:
+        member = await app.get_users(m.from_user.id)
+        chat = m.chat
+        return await handle_left_member(member, chat)
 
 
 async def send_left_message(chat: Chat, user_id: int, delete: bool = False, nothing: bool = False):
@@ -86,10 +86,10 @@ async def send_left_message(chat: Chat, user_id: int, delete: bool = False, noth
     u = await app.get_users(user_id)
     
     replacements = {
-        "{GROUPNAME}": chat.title,
         "{NAME}": u.mention,
         "{ID}": f"`{user_id}`",
         "{FIRSTNAME}": u.first_name,
+        "{GROUPNAME}": chat.title,
         "{SURNAME}": u.last_name or "None",
         "{USERNAME}": u.username or "None",
         "{DATE}": datetime.datetime.now().strftime("%Y-%m-%d"),
@@ -243,6 +243,7 @@ async def get_goodbye_func(_, message):
 
     await send_left_message(chat, message.from_user.id, nothing=True)
     isgrt = await is_greetings_on(chat.id, "goodbye")
+    text = None
     if isgrt is None:
         text = "False"
     if isgrt:
@@ -250,3 +251,36 @@ async def get_goodbye_func(_, message):
     await message.reply_text(
         f'I am currently saying goodbye to users :- {text}\ngoodbye: {goodbye}\n\nFile_id: `{file_id}`\n\n`{raw_text.replace("`", "")}`'
     )
+
+__MODULE__ = "Gᴏᴏᴅʙʏᴇ"
+__HELP__ = """
+ʜᴇʀᴇ ɪs ᴛʜᴇ ʜᴇʟᴘ ғᴏʀ ɢᴏᴏᴅʙʏᴇ:
+
+/setgoodbye - Rᴇᴘʟʏ ᴛʜɪs ᴛᴏ ᴀ ᴍᴇssᴀɢᴇ ᴄᴏɴᴛᴀɪɴɪɴɢ ᴄᴏʀʀᴇᴄᴛ
+ғᴏʀᴍᴀᴛ ғᴏʀ ᴀ ᴡᴇʟᴄᴏᴍᴇ ᴍᴇssᴀɢᴇ, ᴄʜᴇᴄᴋ ᴇɴᴅ ᴏғ ᴛʜɪs ᴍᴇssᴀɢᴇ.
+
+/goodbye - Tᴏ ɢᴇᴛ ʏᴏᴜʀ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇ
+
+/goodbye  [ᴏɴ, ʏ, ᴛʀᴜᴇ, ᴇɴᴀʙʟᴇ, ᴛ] - ᴛᴏ ᴛᴜʀɴ ᴏɴ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇs 
+
+/goodbye [ᴏғғ, ɴ, ғᴀʟsᴇ, ᴅɪsᴀʙʟᴇ, ғ, ɴᴏ] - ᴛᴏ ᴛᴜʀɴ ᴏғғ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇs
+
+**SetoodBye ->
+
+ 
+Tᴏ sᴇᴛ ᴀ ᴘʜᴏᴛᴏ ᴏʀ ɢɪғ ᴀs ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇ. Aᴅᴅ ʏᴏᴜʀ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇ ᴀs ᴄᴀᴘᴛɪᴏɴ ᴛᴏ ᴛʜᴇ ᴘʜᴏᴛᴏ ᴏʀ ɢɪғ. Tʜᴇ ᴄᴀᴘᴛɪᴏɴ ᴍᴜsᴇ ʙᴇ ɪɴ ᴛʜᴇ ғᴏʀᴍᴀᴛ ɢɪᴠᴇɴ ʙᴇʟᴏᴡ.**
+
+Fᴏʀ ᴛᴇxᴛ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇ Jᴜsᴛ sᴇɴᴅ ᴛʜᴇ ᴛᴇxᴛ. Tʜᴇɴ ʀᴇᴘʟʏ ᴡɪᴛʜ ᴛʜᴇ ᴄᴏᴍᴍᴀɴᴅ 
+
+Tʜᴇ ғᴏʀᴍᴀᴛ sʜᴏᴜʟᴅ ʙᴇ sᴏᴍᴇᴛʜɪɴɢ ʟɪᴋᴇ ʙᴇʟᴏᴡ.
+
+Hɪ {NAME} [{ID}] Wᴇʟᴄᴏᴍᴇ ᴛᴏ {GROUPNAME}
+
+~ #Tʜɪs sᴇᴘᴀʀᴀᴛᴇʀ (~) sʜᴏᴜʟᴅ ʙᴇ ᴛʜᴇʀᴇ ʙᴇᴛᴡᴇᴇɴ ᴛᴇxᴛ ᴀɴᴅ ʙᴜᴛᴛᴏɴs, ʀᴇᴍᴏᴠᴇ ᴛʜɪs ᴄᴏᴍᴍᴇɴᴛ ᴀʟsᴏ
+
+Button=[Dᴜᴄᴋ, ʜᴛᴛᴘs://ᴅᴜᴄᴋᴅᴜᴄᴋɢᴏ.ᴄᴏᴍ]
+Button2=[Gɪᴛʜᴜʙ, ʜᴛᴛᴘs://ɢɪᴛʜᴜʙ.ᴄᴏᴍ]
+**NOTES ->**
+
+Cʜᴇᴄᴋᴏᴜᴛ /markdownhelp ᴛᴏ ᴋɴᴏᴡ ᴍᴏʀᴇ ᴀʙᴏᴜᴛ ғᴏʀᴍᴀᴛᴛɪɴɢs ᴀɴᴅ ᴏᴛʜᴇʀ sʏɴᴛᴀx.
+"""
