@@ -1,3 +1,8 @@
+from YukkiMusic import app
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram import filters
+
+
 class Fonts:
     def typewriter(text):
         style = {
@@ -2361,11 +2366,6 @@ class Fonts:
         return text
 
 
-from pyrogram import filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-
-from YukkiMusic import app
-
 @app.on_message(filters.command(["font", "fonts"]))
 async def style_buttons(c, m, cb=False):
     buttons = [
@@ -2545,7 +2545,7 @@ async def style(c, m):
     new_text = cls(m.message.reply_to_message.text.split(None, 1)[1])
     try:
         await m.message.edit_text(f"`{new_text}`")
-    except:
+    except BaseException:
         pass
 
 

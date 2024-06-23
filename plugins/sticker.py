@@ -46,7 +46,8 @@ async def get_sticker_set_by_name(
 
 # Known errors: (I don't see a reason to catch them as we, for sure, won't face them right now):
 # errors.exceptions.bad_request_400.PackShortNameInvalid -> pack name needs to end with _by_botname
-# errors.exceptions.bad_request_400.ShortnameOccupyFailed -> pack's name is already in use
+# errors.exceptions.bad_request_400.ShortnameOccupyFailed -> pack's name
+# is already in use
 
 
 async def create_sticker_set(
@@ -249,7 +250,8 @@ async def kang(client, message: Message):
         return print(e)
 
     # Find an available pack & add the sticker to the pack; create a new pack if needed
-    # Would be a good idea to cache the number instead of searching it every single time...
+    # Would be a good idea to cache the number instead of searching it every
+    # single time...
     packnum = 0
     packname = "f" + str(message.from_user.id) + "_by_" + BOT_USERNAME
     limit = 0

@@ -1,6 +1,6 @@
 import asyncio
 
-from pyrogram import enums, filters
+from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import FloodWait
 from YukkiMusic import app
@@ -12,7 +12,7 @@ stopProcess = False
 
 
 @app.on_message(filters.command(["zombies"]))
-@adminsOnly("can_restrict_members") 
+@adminsOnly("can_restrict_members")
 async def remove(client, message):
 
     global stopProcess
@@ -20,7 +20,7 @@ async def remove(client, message):
         try:
             sender = await app.get_chat_member(message.chat.id, message.from_user.id)
             has_permissions = sender.privileges
-        except:
+        except BaseException:
             has_permissions = message.sender_chat
         if has_permissions:
             bot = await app.get_chat_member(message.chat.id, "self")
@@ -86,6 +86,7 @@ async def remove(client, message):
             )
     except FloodWait as e:
         await asyncio.sleep(e.value)
+
 
 __MODULE__ = "Zᴏᴍʙɪᴇs"
 __HELP__ = """

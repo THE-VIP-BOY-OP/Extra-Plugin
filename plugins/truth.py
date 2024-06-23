@@ -40,6 +40,7 @@ def get_dare(client, message):
             "An error occurred while fetching a dare question. Please try again later."
         )
 
+
 __HELP__ = """
 **ᴛʀᴜᴛʜ ᴏʀ ᴅᴀʀᴇ ʙᴏᴛ ᴄᴏᴍᴍᴀɴᴅs**
 

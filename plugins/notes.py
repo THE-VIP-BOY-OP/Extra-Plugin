@@ -51,44 +51,40 @@ async def eor(msg: Message, **kwargs):
     spec = getfullargspec(func.__wrapped__).args
     return await func(**{k: v for k, v in kwargs.items() if k in spec})
 
+
 @app.on_message(filters.command("privatenotes") & filters.group)
 @adminsOnly("can_change_info")
 async def PrivateNote(client, message):
     chat_id = message.chat.id
     if len(message.command) >= 2:
-        if (
-            message.command[1] in ['on', 'true', 'yes', 'y']
-        ):
+        if message.command[1] in ["on", "true", "yes", "y"]:
             await set_private_note(chat_id, True)
             await message.reply(
                 "Now i will send a message to your chat with a button redirecting to PM, where the user will receive the note.",
-                quote=True
+                quote=True,
             )
 
-        elif (
-            message.command[1] in ['off', 'false', 'no', 'n']
-        ):
+        elif message.command[1] in ["off", "false", "no", "n"]:
             await set_private_note(chat_id, False)
             await message.reply(
-                "I will now send notes straight to the group.",
-                quote=True
-            )  
+                "I will now send notes straight to the group.", quote=True
+            )
         else:
             await message.reply(
                 f"failed to get boolean value from input:\n\n expected one of y/yes/on/true or n/no/off/false; got: {message.command[1]}",
-                quote=True
+                quote=True,
             )
     else:
         if await is_pnote_on(chat_id):
             await message.reply(
                 "Your notes are currently being sent in private. Now i will send a small note with a button which redirects to a private chat.",
-                quote=True
+                quote=True,
             )
         else:
             await message.reply(
-                "Your notes are currently being sent in the group.",
-                quote=True
+                "Your notes are currently being sent in the group.", quote=True
             )
+
 
 @app.on_message(filters.command("save") & filters.group & ~BANNED_USERS)
 @adminsOnly("can_change_info")
@@ -183,17 +179,18 @@ async def get_notes(_, message):
 async def get_one_note(_, message):
     if len(message.text.split()) < 2:
         return await eor(message, text="Invalid arguments")
-    #from_user = message.from_user if message.from_user else message.sender_chat
+    # from_user = message.from_user if message.from_user else message.sender_chat
     chat_id = message.chat.id
     name = message.text.split(None, 1)[1]
     if not name:
         return
     if await is_pnote_on(chat_id):
         url = f"http://t.me/{app.username}?start=note_{chat_id}_{name}"
-        button = InlineKeyboardMarkup([[InlineKeyboardButton(text='Click me!', url=url)]])
+        button = InlineKeyboardMarkup(
+            [[InlineKeyboardButton(text="Click me!", url=url)]]
+        )
         return await message.reply(
-            text=f"Tap here to view '{name}' in your private chat.",
-            reply_markup=button
+            text=f"Tap here to view '{name}' in your private chat.", reply_markup=button
         )
     await send_notes(message, chat_id, name)
 

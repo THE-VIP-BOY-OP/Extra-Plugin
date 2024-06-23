@@ -130,7 +130,7 @@ async def radio(client, message: Message):
 
         try:
             await userbot.resolve_peer(invitelink)
-        except:
+        except BaseException:
             pass
     await msg.delete()
     station_name = " ".join(message.command[1:])
@@ -154,7 +154,7 @@ async def radio(client, message: Message):
                 return await message.reply_text(_["setting_12"])
             try:
                 chat = await app.get_chat(chat_id)
-            except:
+            except BaseException:
                 return await message.reply_text(_["cplay_4"])
             channel = chat.title
         else:

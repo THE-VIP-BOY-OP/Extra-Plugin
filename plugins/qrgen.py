@@ -14,6 +14,7 @@ async def write_text(client, message):
         chat_id=message.chat.id, photo=photo_url, caption="Here is your qrcode"
     )
 
+
 __MODULE__ = "Qʀɢᴇɴ"
 
 __HELP__ = """

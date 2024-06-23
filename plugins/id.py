@@ -11,7 +11,9 @@ async def get_id(client, message):
             )
         elif not message.reply_to_message.sticker or message.reply_to_message is None:
             if message.reply_to_message.forward_from_chat:
-                await message.reply(f"Tʜᴇ ғᴏʀᴡᴀʀᴅᴇᴅ {str(message.reply_to_message.forward_from_chat.type)[9:].lower()}, {message.reply_to_message.forward_from_chat.title} ʜᴀs ᴀɴ ID ᴏғ <code>{message.reply_to_message.forward_from_chat.id}</code>")
+                await message.reply(
+                    f"Tʜᴇ ғᴏʀᴡᴀʀᴅᴇᴅ {str(message.reply_to_message.forward_from_chat.type)[9:].lower()}, {message.reply_to_message.forward_from_chat.title} ʜᴀs ᴀɴ ID ᴏғ <code>{message.reply_to_message.forward_from_chat.id}</code>"
+                )
 
             elif message.reply_to_message.forward_from:
                 await message.reply(
@@ -52,6 +54,7 @@ async def get_id(client, message):
             )
     except Exception as r:
         await message.reply(f"Aɴ ᴇʀʀᴏʀ ᴏᴄᴄᴜʀʀᴇᴅ ᴡʜɪʟᴇ ɢᴇᴛᴛɪɴɢ ᴛʜᴇ ID. {r}")
+
 
 __MODULE__ = "Usᴇʀɪᴅ"
 __HELP__ = """

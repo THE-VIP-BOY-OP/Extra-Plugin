@@ -22,6 +22,7 @@ async def write(client, message):
     except Exception as e:
         await nan.edit(e)
 
+
 __MODULE__ = "Wʀɪᴛᴇ"
 __HELP__ = """
 **COMMANDS**:

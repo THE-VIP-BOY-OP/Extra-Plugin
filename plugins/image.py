@@ -1,19 +1,15 @@
-import os
-import requests
 from pyrogram.types import InputMediaPhoto
 from bing_image_urls import bing_image_urls
 from config import BANNED_USERS
 from YukkiMusic import app
 from pyrogram import filters
-from pyrogram.errors.exceptions.flood_420 import FloodWait
- 
-@app.on_message(
-    filters.command(["image"], prefixes=["/", "!", "."]) & ~BANNED_USERS
-)
+
+
+@app.on_message(filters.command(["image"], prefixes=["/", "!", "."]) & ~BANNED_USERS)
 async def image_from_bing(_, message):
     if len(message.command) < 2 and not message.reply_to_message:
         return await message.reply_text("**ɢɪᴠᴇ ɪᴍᴀɢᴇ ɴᴀᴍᴇ ғᴏʀ sᴇᴀʀᴄʜ 🔍**")
-    
+
     if message.reply_to_message and message.reply_to_message.text:
         query = message.reply_to_message.text
     else:

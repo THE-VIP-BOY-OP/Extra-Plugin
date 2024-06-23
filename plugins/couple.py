@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import pytz
 import os
 import random
-from pyrogram import Client, filters
+from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.enums import ChatType
 from telegraph import upload_file
@@ -15,37 +15,45 @@ from YukkiMusic import app
 
 # get current date in GMT+5:30 timezone
 def get_today_date():
-    timezone = pytz.timezone('Asia/Kolkata')
+    timezone = pytz.timezone("Asia/Kolkata")
     now = datetime.now(timezone)
     return now.strftime("%d/%m/%Y")
 
+
 # get tomorrow's date in GMT+5:30 timezone
+
+
 def get_todmorrow_date():
-    timezone = pytz.timezone('Asia/Kolkata')
+    timezone = pytz.timezone("Asia/Kolkata")
     tomorrow = datetime.now(timezone) + timedelta(days=1)
     return tomorrow.strftime("%d/%m/%Y")
 
+
 # Download image from URL
+
+
 def download_image(url, path):
     response = requests.get(url)
     if response.status_code == 200:
-        with open(path, 'wb') as f:
+        with open(path, "wb") as f:
             f.write(response.content)
     return path
+
 
 # Dates
 tomorrow = get_todmorrow_date()
 today = get_today_date()
+
 
 @app.on_message(filters.command(["couple", "couples"]))
 async def ctest(_, message):
     cid = message.chat.id
     if message.chat.type == ChatType.PRIVATE:
         return await message.reply_text("Tʜɪs ᴄᴏᴍᴍᴀɴᴅ ᴏɴʟʏ ᴡᴏʀᴋs ɪɴ ɢʀᴏᴜᴘs.")
-    
+
     p1_path = "downloads/pfp.png"
     p2_path = "downloads/pfp1.png"
-    test_image_path = f'downloads/test_{cid}.png'
+    test_image_path = f"downloads/test_{cid}.png"
     cppic_path = "downloads/cppic.png"
 
     try:
@@ -66,33 +74,39 @@ async def ctest(_, message):
             photo1 = (await app.get_chat(c1_id)).photo
             photo2 = (await app.get_chat(c2_id)).photo
 
-            N1 = (await app.get_users(c1_id)).mention 
+            N1 = (await app.get_users(c1_id)).mention
             N2 = (await app.get_users(c2_id)).mention
 
             try:
                 p1 = await app.download_media(photo1.big_file_id, file_name=p1_path)
             except Exception:
-                p1 = download_image("https://telegra.ph/file/05aa686cf52fc666184bf.jpg", p1_path)
+                p1 = download_image(
+                    "https://telegra.ph/file/05aa686cf52fc666184bf.jpg", p1_path
+                )
             try:
                 p2 = await app.download_media(photo2.big_file_id, file_name=p2_path)
             except Exception:
-                p2 = download_image("https://telegra.ph/file/05aa686cf52fc666184bf.jpg", p2_path)
+                p2 = download_image(
+                    "https://telegra.ph/file/05aa686cf52fc666184bf.jpg", p2_path
+                )
 
             img1 = Image.open(p1)
             img2 = Image.open(p2)
 
-            background_image_path = download_image("https://telegra.ph/file/96f36504f149e5680741a.jpg", cppic_path)
+            background_image_path = download_image(
+                "https://telegra.ph/file/96f36504f149e5680741a.jpg", cppic_path
+            )
             img = Image.open(background_image_path)
 
             img1 = img1.resize((437, 437))
             img2 = img2.resize((437, 437))
 
-            mask = Image.new('L', img1.size, 0)
-            draw = ImageDraw.Draw(mask) 
+            mask = Image.new("L", img1.size, 0)
+            draw = ImageDraw.Draw(mask)
             draw.ellipse((0, 0) + img1.size, fill=255)
 
-            mask1 = Image.new('L', img2.size, 0)
-            draw = ImageDraw.Draw(mask1) 
+            mask1 = Image.new("L", img2.size, 0)
+            draw = ImageDraw.Draw(mask1)
             draw.ellipse((0, 0) + img2.size, fill=255)
 
             img1.putalpha(mask)
@@ -113,7 +127,20 @@ async def ctest(_, message):
 Nᴇxᴛ ᴄᴏᴜᴘʟᴇs ᴡɪʟʟ ʙᴇ sᴇʟᴇᴄᴛᴇᴅ ᴏɴ {tomorrow}!!**
             """
 
-            await message.reply_photo(test_image_path, caption=TXT, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="Aᴅᴅ ᴍᴇ 🌋", url=f"https://t.me/{app.username}?startgroup=true")]]))
+            await message.reply_photo(
+                test_image_path,
+                caption=TXT,
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                text="Aᴅᴅ ᴍᴇ 🌋",
+                                url=f"https://t.me/{app.username}?startgroup=true",
+                            )
+                        ]
+                    ]
+                ),
+            )
 
             await msg.delete()
             a = upload_file(test_image_path)
@@ -137,7 +164,20 @@ Nᴇxᴛ ᴄᴏᴜᴘʟᴇs ᴡɪʟʟ ʙᴇ sᴇʟᴇᴄᴛᴇᴅ ᴏɴ {tomorro
 
 Nᴇxᴛ ᴄᴏᴜᴘʟᴇs ᴡɪʟʟ ʙᴇ sᴇʟᴇᴄᴛᴇᴅ ᴏɴ {tomorrow}!!**
             """
-            await message.reply_photo(b, caption=TXT, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="Aᴅᴅ ᴍᴇ🌋", url=f"https://t.me/{app.username}?startgroup=true")]]))
+            await message.reply_photo(
+                b,
+                caption=TXT,
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [
+                            InlineKeyboardButton(
+                                text="Aᴅᴅ ᴍᴇ🌋",
+                                url=f"https://t.me/{app.username}?startgroup=true",
+                            )
+                        ]
+                    ]
+                ),
+            )
             await msg.delete()
 
     except Exception as e:

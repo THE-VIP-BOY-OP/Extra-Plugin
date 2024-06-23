@@ -29,6 +29,7 @@ async def mongo_command(client, message: Message):
     else:
         await message.reply("ᴜᴘs! ʏᴏᴜʀ ᴍᴏɴɢᴏᴅʙ ғᴏʀᴍᴀᴛ ɪs ɪɴᴠᴀʟɪᴅ")
 
+
 __MODULE__ = "Mᴏɴɢᴏᴅʙ"
 __HELP__ = """
 **ᴍᴏɴɢᴏᴅʙ ᴄʜᴇᴄᴋᴇʀ:**

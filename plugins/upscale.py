@@ -1,8 +1,8 @@
-'''from os import remove
+"""from os import remove
 from pyrogram import filters
 from lexica import Client as LexicaClient
 from pyrogram.errors.exceptions.bad_request_400 import PhotoInvalidDimensions
-from YukkiMusic import app 
+from YukkiMusic import app
 from utils.error import capture_err
 
 lexica_client = LexicaClient()
@@ -18,7 +18,7 @@ async def upscale_reply_image(client, message):
     if message.reply_to_message.photo:
         a = await message.reply_text("ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ ᴀ ᴍᴏᴍᴇɴᴛ......")
         photo = await client.download_media(message.reply_to_message.photo.file_id)
-        
+
         with open(photo, 'rb') as f:
             image_bytes = f.read()
         try:
@@ -36,4 +36,4 @@ async def upscale_reply_image(client, message):
                     await a.delete()
         except Exception as e:
             remove('upscaled.png')
-            await a.edit(e)'''
+            await a.edit(e)"""

@@ -2,14 +2,11 @@ import re
 import datetime
 from pyrogram import filters
 from pyrogram.types import (
-    CallbackQuery,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
 )
 
-from typing import Dict, List, Union
 from YukkiMusic import app
-from YukkiMusic.core.mongo import mongodb
 from utils.error import capture_err
 from YukkiMusic.utils.permissions import adminsOnly, member_permissions
 from YukkiMusic.utils.keyboard import ikb
@@ -20,7 +17,6 @@ from YukkiMusic.utils.functions import (
     get_data_and_name,
 )
 from YukkiMusic.utils.database import (
-    delete_filter,
     deleteall_filters,
     get_filter,
     get_filters_names,
@@ -46,6 +42,8 @@ You can use markdown or html to save text too.
 
 Checkout /markdownhelp to know more about formattings and other syntax.
 """
+
+
 @app.on_message(filters.command("filter") & ~filters.private & ~BANNED_USERS)
 @adminsOnly("can_change_info")
 async def save_filters(_, message):
@@ -59,7 +57,9 @@ async def save_filters(_, message):
             replied_message = message
         data, name = await get_data_and_name(replied_message, message)
         if len(name) < 2:
-            return await message.reply_text(f"ᴛᴏ ғɪʟᴛᴇʀ ᴛʜᴇ {name} ᴍᴜsᴛ ʙᴇ ɢʀᴇᴀᴛᴇʀ ᴛʜᴇɴ 𝟸 ᴡᴏʀᴅs")
+            return await message.reply_text(
+                f"ᴛᴏ ғɪʟᴛᴇʀ ᴛʜᴇ {name} ᴍᴜsᴛ ʙᴇ ɢʀᴇᴀᴛᴇʀ ᴛʜᴇɴ 𝟸 ᴡᴏʀᴅs"
+            )
         if data == "error":
             return await message.reply_text(
                 "**ᴜsᴀsɢᴇ:**\n__/filter [FILTER_NAME] [CONTENT]__\n`-----------OR-----------`\nʀᴇᴘʟʏ ᴛᴏ ᴀ ᴍᴇssᴀɢᴇ ᴡɪᴛʜ. \n/filter [FILTER_NAME]."
@@ -110,7 +110,7 @@ async def save_filters(_, message):
             "data": data,
             "file_id": file_id,
         }
-        
+
         chat_id = message.chat.id
         await save_filter(chat_id, name, _filter)
         return await message.reply_text(f"__**sᴀᴠᴇᴅ ғɪʟᴛᴇʀ {name}.**__")
@@ -132,8 +132,16 @@ async def get_filterss(_, message):
         msg += f"**-** `{_filter}`\n"
     await message.reply_text(msg)
 
+
 @app.on_message(
-    filters.text & ~filters.private & ~filters.channel & ~filters.via_bot & ~filters.forwarded & ~BANNED_USERS, group=1)
+    filters.text
+    & ~filters.private
+    & ~filters.channel
+    & ~filters.via_bot
+    & ~filters.forwarded
+    & ~BANNED_USERS,
+    group=1,
+)
 @capture_err
 async def filters_re(_, message):
     from_user = message.from_user if message.from_user else message.sender_chat
@@ -170,7 +178,7 @@ async def filters_re(_, message):
                     susername = message.from_user.username or "None"
                     data = data.replace("{USERNAME}", susername)
                 if "{DATE}" in data:
-                    DATE = datetime.datetime.now().strftime("%Y-%m-%d")        
+                    DATE = datetime.datetime.now().strftime("%Y-%m-%d")
                     data = data.replace("{DATE}", DATE)
                 if "{WEEKDAY}" in data:
                     WEEKDAY = datetime.datetime.now().strftime("%A")
@@ -185,7 +193,11 @@ async def filters_re(_, message):
                         data, keyb = keyboard
             replied_message = message.reply_to_message
             if replied_message:
-                replied_user = replied_message.from_user if replied_message.from_user else replied_message.sender_chat
+                replied_user = (
+                    replied_message.from_user
+                    if replied_message.from_user
+                    else replied_message.sender_chat
+                )
                 if text.startswith("~"):
                     await message.delete()
                 if replied_user.id != from_user.id:
@@ -257,9 +269,7 @@ async def stop_all(_, message):
         keyboard = InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton(
-                        "ʏᴇs, ᴅᴏ ɪᴛ", callback_data="stop_yes"
-                    ),
+                    InlineKeyboardButton("ʏᴇs, ᴅᴏ ɪᴛ", callback_data="stop_yes"),
                     InlineKeyboardButton("ɴᴏ, ᴅᴏɴ'ᴛ ᴅᴏ ɪᴛ", callback_data="stop_no"),
                 ]
             ]

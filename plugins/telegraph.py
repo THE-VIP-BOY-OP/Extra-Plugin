@@ -20,8 +20,7 @@ async def get_link_group(client, message):
             await text.edit_text(f"📥 ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ... {current * 100 / total:.1f}%")
 
         try:
-            local_path = await message.reply_to_message.download( progress=progress
-            )
+            local_path = await message.reply_to_message.download(progress=progress)
             await text.edit_text("📤 ᴜᴘʟᴏᴀᴅɪɴɢ ᴛᴏ ᴛᴇʟᴇɢʀᴀᴘʜ...")
             upload_path = upload_file(local_path)
             await text.edit_text(
@@ -40,16 +39,17 @@ async def get_link_group(client, message):
             try:
                 os.remove(local_path)
             except Exception:
-               pass
+                pass
         except Exception as e:
             await text.edit_text(f"❌ |ғɪʟᴇ ᴜᴘʟᴏᴀᴅ ғᴀɪʟᴇᴅ \n\n<i>ʀᴇᴀsᴏɴ: {e}</i>")
             try:
                 os.remove(local_path)
             except Exception:
-               pass
+                pass
             return
     except Exception:
         pass
+
 
 __HELP__ = """
 **ᴛᴇʟᴇɢʀᴀᴘʜ ᴜᴘʟᴏᴀᴅ ʙᴏᴛ ᴄᴏᴍᴍᴀɴᴅs**

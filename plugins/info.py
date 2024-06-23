@@ -23,7 +23,7 @@ async def userstatus(user_id):
             return "Offline."
         elif x == enums.UserStatus.ONLINE:
             return "Online."
-    except:
+    except BaseException:
         return "**sᴏᴍᴇᴛʜɪɴɢ ᴡʀᴏɴɢ ʜᴀᴘᴘᴇɴᴇᴅ !**"
 
 
@@ -49,7 +49,7 @@ async def get_user_info(user, already=False):
         "ᴅᴄ ɪᴅ": dc_id,
         "ᴍᴇɴᴛɪᴏɴ": [mention],
         "ᴘʀᴇɪᴍɪᴜᴍ": is_premium,
-        "ʟᴀsᴛ sᴇᴇɴ" : online,
+        "ʟᴀsᴛ sᴇᴇɴ": online,
     }
     caption = section("ᴜsᴇʀ ɪɴғᴏ", body)
     return [caption, photo_id]
@@ -94,10 +94,12 @@ async def info_func(_, message: Message):
         user_input = message.text.split(None, 1)[1]
         if user_input.isdigit():
             user = int(user_input)
-        elif user_input.startswith('@'):
+        elif user_input.startswith("@"):
             user = user_input
         else:
-            return await message.reply_text("ᴘʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴀ ᴜsᴇʀ's ᴜsᴇʀ ɪᴅ ᴏʀ ᴜsᴇʀɴᴀᴍᴇ ᴏʀ ʀᴇᴘʟʏ ᴛᴏ ᴀ ᴜsᴇʀ ᴛᴏ ɢᴇᴛ ɪɴғᴏ")
+            return await message.reply_text(
+                "ᴘʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴀ ᴜsᴇʀ's ᴜsᴇʀ ɪᴅ ᴏʀ ᴜsᴇʀɴᴀᴍᴇ ᴏʀ ʀᴇᴘʟʏ ᴛᴏ ᴀ ᴜsᴇʀ ᴛᴏ ɢᴇᴛ ɪɴғᴏ"
+            )
 
     m = await message.reply_text("ᴘʀᴏᴄᴇssɪɴɢ...")
 

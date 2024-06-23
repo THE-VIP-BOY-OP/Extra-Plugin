@@ -1,4 +1,3 @@
-
 #
 # Copyright (C) 2024 by TheTeamVivek@Github, < https://github.com/TheTeamVivek >.
 #
@@ -24,10 +23,11 @@ approvaldb = mongodb.autoapprove
 
 def smallcap(text):
     trans_table = str.maketrans(
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 
-        "ᴀʙᴄᴅᴇғɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢABCDEFGHIJKLMNOPQRSTUVWXYZ0𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿"
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+        "ᴀʙᴄᴅᴇғɢʜɪᴊᴋʟᴍɴᴏᴘǫʀsᴛᴜᴠᴡxʏᴢABCDEFGHIJKLMNOPQRSTUVWXYZ0𝟷𝟸𝟹𝟺𝟻𝟼𝟽𝟾𝟿",
     )
     return text.translate(trans_table)
+
 
 @app.on_message(filters.command("autoapprove") & filters.group)
 @adminsOnly("can_change_info")
@@ -110,6 +110,7 @@ async def approval_cb(client, cb):
         "**Aᴜᴛᴏᴀᴘᴘʀᴏᴠᴀʟ ғᴏʀ ᴛʜɪs ᴄʜᴀᴛ: Eɴᴀʙʟᴇᴅ.**", reply_markup=keyboard
     )
 
+
 @app.on_message(filters.command("approveall") & filters.group)
 @adminsOnly("can_restrict_members")
 async def clear_pending_command(client, message):
@@ -122,7 +123,8 @@ async def clear_pending_command(client, message):
             {"chat_id": chat_id},
             {"$set": {"pending_users": []}},
         )
-    
+
+
 @app.on_message(filters.command("clearpending") & filters.group)
 @adminsOnly("can_restrict_members")
 async def clear_pending_command(client, message):

@@ -4,7 +4,6 @@ from pyrogram.enums import ChatMembersFilter
 from pyrogram.errors import FloodWait
 
 from YukkiMusic import app
-from YukkiMusic.utils.database import get_assistant
 from YukkiMusic.utils.filter import admin_filter
 
 SPAM_CHATS = []
@@ -178,8 +177,9 @@ async def tag_all_admins(_, message):
         except Exception:
             pass
 
+
 @app.on_message(
-    filters.command(["admin", "admins","report"], prefixes=["/", "@"]) & filters.group
+    filters.command(["admin", "admins", "report"], prefixes=["/", "@"]) & filters.group
 )
 async def admintag_with_reporting(client, message):
     if not message.from_user:
@@ -194,7 +194,9 @@ async def admintag_with_reporting(client, message):
     ]
     if message.command[0] == "report":
         if from_user_id in admins:
-            return await message.reply_text("ᴏᴘᴘs! ʏᴏᴜ ᴀʀᴇ ʟᴏᴏᴋs ʟɪᴋᴇ ᴀɴ ᴀᴅᴍɪɴ!\nʏᴏᴜ ᴄᴀɴ'ᴛ ʀᴇᴘᴏʀᴛ ᴀɴʏ ᴜsᴇʀs ᴛᴏ ᴀᴅᴍɪɴ")
+            return await message.reply_text(
+                "ᴏᴘᴘs! ʏᴏᴜ ᴀʀᴇ ʟᴏᴏᴋs ʟɪᴋᴇ ᴀɴ ᴀᴅᴍɪɴ!\nʏᴏᴜ ᴄᴀɴ'ᴛ ʀᴇᴘᴏʀᴛ ᴀɴʏ ᴜsᴇʀs ᴛᴏ ᴀᴅᴍɪɴ"
+            )
 
     if from_user_id in admins:
         return await tag_all_admins(client, message)
@@ -253,6 +255,8 @@ async def cancelcmd(_, message):
     else:
         await message.reply_text("**ɴᴏ ᴘʀᴏᴄᴇss ᴏɴɢᴏɪɴɢ!**")
         return
+
+
 __MODULE__ = "Tᴀɢᴀʟʟ"
 __HELP__ = """
 
