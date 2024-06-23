@@ -17,19 +17,18 @@ jobs:
         run: pip install autopep8 autoflake isort black
       - name: Check for showstoppers
         run: |
-          autopep8 --verbose --in-place --recursive --aggressive *.py
+          find . -name "*.py" | xargs autopep8 --verbose --in-place --aggressive
       - name: Remove unused imports
         run: |
-          autoflake --in-place --recursive --remove-all-unused-imports --ignore-init-module-imports .
-
-      - name: lint with black
+          find . -name "*.py" | xargs autoflake --in-place --remove-all-unused-imports --ignore-init-module-imports
+      - name: Lint with black
         run: |
           black .
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-            commit_message: "Pylint: Auto Fixes"
-            commit_options: "--no-verify"
-            repository: .
-            commit_user_name: VivekKumar-IN
-            commit_user_email: 167422483+Vivekkumar-IN@users.noreply.github.com
-            commit_author: VivekKumar-IN <167422483+Vivekkumar-IN@users.noreply.github.com>
+          commit_message: "Pylint: Auto Fixes"
+          commit_options: "--no-verify"
+          repository: .
+          commit_user_name: VivekKumar-IN
+          commit_user_email: 167422483+Vivekkumar-IN@users.noreply.github.com
+          commit_author: VivekKumar-IN <167422483+Vivekkumar-IN@users.noreply.github.com>
