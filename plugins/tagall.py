@@ -38,8 +38,7 @@ async def tag_all_users(_, message):
                 usertxt += f"[{m.user.first_name}](tg://user?id={m.user.id})  "
                 if usernum == 7:
                     await replied.reply_text(
-                        message.chat.id,
-                        f"{replied.text}\n\n{usertxt}",
+                        usertxt,
                         disable_web_page_preview=True,
                     )
                     await asyncio.sleep(1)
@@ -48,7 +47,7 @@ async def tag_all_users(_, message):
 
             if usernum != 0:
                 await replied.reply_text(
-                    f"{replied.text}\n\n{usertxt}",
+                    usertxt,
                     disable_web_page_preview=True,
                 )
         except FloodWait as e:
@@ -120,7 +119,7 @@ async def tag_all_admins(_, message):
                 usertxt += f"[{m.user.first_name}](tg://user?id={m.user.id})  "
                 if usernum == 7:
                     await replied.reply_text(
-                        f"{replied.text}\n\n {usertxt}",
+                        usertxt,
                         disable_web_page_preview=True,
                     )
                     await asyncio.sleep(1)
@@ -128,8 +127,7 @@ async def tag_all_admins(_, message):
                     usertxt = ""
             if usernum != 0:
                 await replied.reply_text(
-                    message.chat.id,
-                    f"{replied.text}\n\n{usertxt}",
+                    usertxt,
                     disable_web_page_preview=True,
                 )
         except FloodWait as e:
