@@ -36,8 +36,8 @@ async def tag_all_users(_, message):
                     continue
                 usernum += 1
                 usertxt += f"[{m.user.first_name}](tg://user?id={m.user.id})  "
-                if usernum == 14:
-                    await app.send_message(
+                if usernum == 7:
+                    await replied.reply_text(
                         message.chat.id,
                         f"{replied.text}\n\n{usertxt}",
                         disable_web_page_preview=True,
@@ -47,8 +47,7 @@ async def tag_all_users(_, message):
                     usertxt = ""
 
             if usernum != 0:
-                await app.send_message(
-                    message.chat.id,
+                await replied.reply_text(
                     f"{replied.text}\n\n{usertxt}",
                     disable_web_page_preview=True,
                 )
@@ -71,7 +70,7 @@ async def tag_all_users(_, message):
                     continue
                 usernum += 1
                 usertxt += f"[{m.user.first_name}](tg://user?id={m.user.id})  "
-                if usernum == 14:
+                if usernum == 7:
                     await app.send_message(
                         message.chat.id,
                         f"{text}\n{usertxt}",
@@ -119,9 +118,8 @@ async def tag_all_admins(_, message):
                     continue
                 usernum += 1
                 usertxt += f"[{m.user.first_name}](tg://user?id={m.user.id})  "
-                if usernum == 14:
-                    await app.send_message(
-                        message.chat.id,
+                if usernum == 7:
+                    await replied.reply_text(
                         f"{replied.text}\n\n {usertxt}",
                         disable_web_page_preview=True,
                     )
@@ -129,7 +127,7 @@ async def tag_all_admins(_, message):
                     usernum = 0
                     usertxt = ""
             if usernum != 0:
-                await app.send_message(
+                await replied.reply_text(
                     message.chat.id,
                     f"{replied.text}\n\n{usertxt}",
                     disable_web_page_preview=True,
@@ -155,7 +153,7 @@ async def tag_all_admins(_, message):
                     continue
                 usernum += 1
                 usertxt += f"[{m.user.first_name}](tg://user?id={m.user.id})  "
-                if usernum == 14:
+                if usernum == 7:
                     await app.send_message(
                         message.chat.id,
                         f"{text}\n{usertxt}",
