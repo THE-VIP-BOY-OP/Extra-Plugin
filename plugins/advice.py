@@ -9,7 +9,7 @@ from YukkiMusic import api, app
 async def advice(_, message):
     A = await message.reply_text("...")
     res = aapi.get_advice()
-    await A.edit(res["results"])
+    await A.edit(res)
 
 
 @app.on_message(filters.command("astronomical"))
