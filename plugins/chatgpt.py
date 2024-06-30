@@ -1,10 +1,10 @@
-import requests
 from pyrogram import filters
 from pyrogram.enums import ChatAction
 from TheApi import api
 
 from YukkiMusic import app
 from config import BANNED_USERS
+
 
 @app.on_message(filters.command(["chatgpt", "ai", "ask"]) & ~BANNED_USERS)
 async def chatgpt_chat(bot, message):
