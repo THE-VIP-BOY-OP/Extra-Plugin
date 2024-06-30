@@ -27,7 +27,7 @@ async def chatgpt_chat(bot, message):
         await bot.send_chat_action(message.chat.id, ChatAction.TYPING)
         results = api.chatgpt(user_input)
         if results["success"]:
-            await message.reply_text(results["results"])
+            await message.reply_text(results)
     except requests.exceptions.RequestException as e:
         pass
 
