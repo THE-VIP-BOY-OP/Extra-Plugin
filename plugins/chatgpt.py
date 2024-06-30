@@ -4,13 +4,9 @@ from pyrogram.enums import ChatAction
 from TheApi import api
 
 from YukkiMusic import app
+from config import BANNED_USERS
 
-
-@app.on_message(
-    filters.command(
-        ["chatgpt", "ai", "ask"], prefixes=["+", ".", "/", "-", "?", "$", "#", "&"]
-    )
-)
+@app.on_message(filters.command(["chatgpt", "ai", "ask"]) & ~BANNED_USERS)
 async def chatgpt_chat(bot, message):
     if len(message.command) < 2 and not message.reply_to_message:
         await message.reply_text(
@@ -23,13 +19,9 @@ async def chatgpt_chat(bot, message):
     else:
         user_input = " ".join(message.command[1:])
 
-    try:
-        await bot.send_chat_action(message.chat.id, ChatAction.TYPING)
-        results = api.chatgpt(user_input)
-        if results["success"]:
-            await message.reply_text(results)
-    except requests.exceptions.RequestException as e:
-        pass
+    await bot.send_chat_action(message.chat.id, ChatAction.TYPING)
+    results = api.chatgpt(user_input)
+    await message.reply_text(results)
 
 
 __MODULE__ = "CʜᴀᴛGᴘᴛ"
