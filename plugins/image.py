@@ -1,8 +1,8 @@
 from pyrogram.types import InputMediaPhoto
-from bing_image_urls import bing_image_urls
 from config import BANNED_USERS
 from YukkiMusic import app
 from pyrogram import filters
+from TheApi import api 
 
 
 @app.on_message(filters.command(["image"], prefixes=["/", "!", "."]) & ~BANNED_USERS)
@@ -18,7 +18,7 @@ async def image_from_bing(_, message):
     messagesend = await message.reply_text("**🔍 sᴇᴀʀᴄʜɪɴɢ ғᴏʀ ɪᴍᴀɢᴇs...**")
 
     media_group = []
-    for url in bing_image_urls(query, limit=6):
+    for url in api.bing_image(query,6):
         media_group.append(InputMediaPhoto(media=url))
     await messagesend.edit(f"**ᴜᴘʟᴏᴀᴅɪɴɢ...**")
     try:
