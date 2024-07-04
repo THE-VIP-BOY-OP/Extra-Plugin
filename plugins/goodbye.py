@@ -64,11 +64,7 @@ async def send_left_message(
     ison = await is_greetings_on(chat.id, "goodbye")
 
     if ison is None and not nothing:
-        await set_greetings_on(chat.id, "goodbye")
-        goodbye = None
-        raw_text = "Nice knowing you!"
-        file_id = None
-        return await set_goodbye(chat.id, goodbye, raw_text, file_id)
+        return 
 
     if not ison and not nothing:
         return
