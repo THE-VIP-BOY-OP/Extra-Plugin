@@ -2,7 +2,7 @@ import datetime
 from re import findall
 
 from pyrogram import filters
-from pyrogram.errors.exceptions.bad_request_400 import ChatAdminRequired
+from pyrogram.errors import ChatAdminRequired
 from pyrogram.types import (
     Chat,
     InlineKeyboardButton,
@@ -65,9 +65,9 @@ async def send_left_message(
 
     if ison is None and not nothing:
         await set_greetings_on(chat.id, "goodbye")
-        goodbye = "Animation"
-        raw_text = "ʜɪɪ {NAME}  ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ ᴛʜᴇ {GROUPNAME}\nɪғ ʏᴏᴜ ʜᴀᴠᴇ ᴀɴʏ ᴘʀᴏʙʟᴇᴍ ᴏʀ ǫᴜᴇsᴛɪᴏɴs ʏᴏᴜ ᴄᴀɴ ᴀsᴋ ʜᴇʀᴇ"
-        file_id = "CgACAgIAAyEFAASFqsojAAIPgGZwFG2XMOMlaC9jgKZSvUtqYchzAALbEgACGtVYSAGHbztDEjlEHgQ"
+        goodbye = None
+        raw_text = "Nice knowing you!"
+        file_id = None
         return await set_goodbye(chat.id, goodbye, raw_text, file_id)
 
     if not ison and not nothing:
