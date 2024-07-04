@@ -122,6 +122,11 @@ async def set_greetings_off(chat_id: int, type: str) -> bool:
     elif type == "goodbye":
         type = "goodbye_on"
 
+    existing = await greetingsdb.find_one({"chat_id": chat_id})
+
+    if not existing and existing.get(type) is False:
+        return True
+
     result = await greetingsdb.update_one(
         {"chat_id": chat_id}, {"$set": {type: False}}, upsert=True
     )
