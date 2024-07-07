@@ -8,7 +8,7 @@ from pyrogram.types import (
 
 from YukkiMusic import app
 from utils.error import capture_err
-from YukkiMusic.utils.permissions import adminsOnly, member_permissions
+from utils.permissions import adminsOnly, member_permissions
 from YukkiMusic.utils.keyboard import ikb
 from .notes import extract_urls
 from YukkiMusic.utils.functions import (
