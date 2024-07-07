@@ -1,19 +1,29 @@
 import asyncio
 from pyrogram import filters
 from pyrogram.enums import ChatMembersFilter
+
 from pyrogram.errors import FloodWait
 
 from YukkiMusic import app
-from YukkiMusic.utils.filter import admin_filter
+
 
 SPAM_CHATS = []
+
+async def is_admin(chat_id, user_id):
+    admin_ids = [admin.user.id async for admin in app.get_chat_members(chat_id, filter=ChatMembersFilter.ADMINISTRATORS)]
+    if user_id in admin_ids:
+        return True
+    return False
 
 
 @app.on_message(
     filters.command(["all", "allmention", "mentionall", "tagall"], prefixes=["/", "@"])
-    & admin_filter
 )
 async def tag_all_users(_, message):
+    admin = await is_admin(message.chat.id, message.from_user.id)
+    if not admin:
+        return
+
     if message.chat.id in SPAM_CHATS:
         return await message.reply_text(
             "ᴛᴀɢɢɪɴɢ ᴘʀᴏᴄᴇss ɪs ᴀʟʀᴇᴀᴅʏ ʀᴜɴɴɪɴɢ ɪғ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ sᴛᴏᴘ sᴏ ᴜsᴇ /cancel"
@@ -237,10 +247,12 @@ async def admintag_with_reporting(client, message):
         ],
         prefixes=["/", "@"],
     )
-    & admin_filter
 )
 async def cancelcmd(_, message):
     chat_id = message.chat.id
+    admin = await is_admin(chat_id, message.from_user.id)
+    if not admin:
+        return
     if chat_id in SPAM_CHATS:
         try:
             SPAM_CHATS.remove(chat_id)
