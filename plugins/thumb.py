@@ -19,7 +19,7 @@ def is_url(url):
     regex = r"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})"
     match = re.match(regex, url)
     if match:
-        True
+        return True
     return False
 
 
