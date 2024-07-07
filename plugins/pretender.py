@@ -103,13 +103,15 @@ async def chk_usr(_, message: Message):
 
 
 @app.on_message(
-    filters.group
-    & filters.command("pretender")
-    & ~filters.bot
-    & ~filters.via_bot
+    filters.group & filters.command("pretender") & ~filters.bot & ~filters.via_bot
 )
 async def set_mataa(_, message: Message):
-    admin_ids = [admin.user.id async for admin in app.get_chat_members(message.chat.id, filter=ChatMembersFilter.ADMINISTRATORS)]
+    admin_ids = [
+        admin.user.id
+        async for admin in app.get_chat_members(
+            message.chat.id, filter=ChatMembersFilter.ADMINISTRATORS
+        )
+    ]
     if message.from_user.id not in admin_ids:
         return
     if len(message.command) == 1:
