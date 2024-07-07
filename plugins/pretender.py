@@ -3,10 +3,10 @@ from typing import Dict, Union
 from motor.motor_asyncio import AsyncIOMotorClient as MongoCli
 from pyrogram import filters
 from pyrogram.types import Message
+from pyrogram.enums import ChatMembersFilter
 
 from config import MONGO_DB_URI
 from YukkiMusic import app
-from YukkiMusic.utils.filter import admin_filter
 
 mongo = MongoCli(MONGO_DB_URI).Rankings
 
@@ -107,9 +107,11 @@ async def chk_usr(_, message: Message):
     & filters.command("pretender")
     & ~filters.bot
     & ~filters.via_bot
-    & admin_filter
 )
 async def set_mataa(_, message: Message):
+    admin_ids = [admin.user.id async for admin in app.get_chat_members(message.chat.id, filter=ChatMembersFilter.ADMINISTRATORS)]
+    if message.from_user.id not in admin_ids:
+        return
     if len(message.command) == 1:
         return await message.reply("**ᴅᴇᴛᴇᴄᴛᴇᴅ ᴘʀᴇᴛᴇɴᴅᴇʀ ᴜsᴀɢᴇ:\n/pretender on|off**")
     chat_id = message.chat.id
