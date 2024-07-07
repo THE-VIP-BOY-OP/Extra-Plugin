@@ -27,6 +27,7 @@ async def deletechatphoto(_, message):
             "**ᴛʜᴇ ᴜsᴇʀ ᴍᴏsᴛ ɴᴇᴇᴅ ᴄʜᴀɴɢᴇ ɪɴғᴏ ᴀᴅᴍɪɴ ʀɪɢʜᴛs ᴛᴏ ʀᴇᴍᴏᴠᴇ ɢʀᴏᴜᴘ ᴘʜᴏᴛᴏ !**"
         )
 
+
 @app.on_message(filters.command("setphoto"))
 @adminsOnly("can_change_info")
 async def setchatphoto(_, message):
@@ -56,6 +57,7 @@ async def setchatphoto(_, message):
             await msg.edit(
                 "**ᴛʜᴇ ᴜsᴇʀ ᴍᴏsᴛ ɴᴇᴇᴅ ᴄʜᴀɴɢᴇ ɪɴғᴏ ᴀᴅᴍɪɴ ʀɪɢʜᴛs ᴛᴏ ᴄʜᴀɴɢᴇ ɢʀᴏᴜᴘ ᴘʜᴏᴛᴏ !**"
             )
+
 
 @app.on_message(filters.command("settitle"))
 @adminsOnly("can_change_info")
@@ -101,6 +103,7 @@ async def setgrouptitle(_, message):
         await msg.edit(
             "**ʏᴏᴜ ɴᴇᴇᴅ ʀᴇᴘʟʏ ᴛᴏ ᴛᴇxᴛ ᴏʀ ɢɪᴠᴇ sᴏᴍᴇ ᴛᴇxᴛ ᴛᴏ ᴄʜᴀɴɢᴇ ɢʀᴏᴜᴘ ᴛɪᴛʟᴇ **"
         )
+
 
 @app.on_message(filters.command(["setdiscription", "setdesc"]))
 @adminsOnly("can_change_info")
