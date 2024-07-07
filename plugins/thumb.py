@@ -5,21 +5,23 @@ from bs4 import BeautifulSoup
 from pyrogram import filters
 
 from YukkiMusic import app
+from youtubesearchpython.__future__ import VideosSearch
 
 
 def get_video_title(video_id):
     url = f"https://www.youtube.com/watch?v={video_id}"
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, "html.parser")
-    return soup.title.string
+    results = VideosSearch(url, limit=1)
+    for result in (await results.next())["result"]:
+        title = result["title"]
+        thumbnail = result["thumbnails"][0]["url"].split("?")[0]
+        return title, thumbnail
 
-
-def extract_video_id(url):
+def is_url(url):
     regex = r"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})"
     match = re.match(regex, url)
     if match:
-        return match.group(1)
-    return None
+        True
+    return False
 
 
 @app.on_message(
@@ -33,16 +35,15 @@ async def get_thumbnail_command(client, message):
     try:
         a = await message.reply_text("ᴘʀᴏᴄᴇssɪɴɢ...")
         url = message.text.split(" ")[1]
-        video_id = extract_video_id(url)
-        if not video_id:
-            await message.reply("ᴘʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴀ ᴠᴀʟɪᴅ ʏᴏᴜᴛᴜʙᴇ ʟɪɴᴋ.")
-            return
-        video_title = get_video_title(video_id)
-        query = f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg"
+        i = is_url(url)
+        if not i:
+            return await a.edit("ᴘʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴀ ᴠᴀʟɪᴅ ʏᴏᴜᴛᴜʙᴇ ʟɪɴᴋ.")
+
+        title, thumb = gen_infos(video_id)
         caption = (
-            f"<b>[{video_title}](https://t.me/{app.username}?start=info_{video_id})</b>"
+            f"<b>[{title}](https://t.me/{app.username}?start=info_{video_id})</b>"
         )
-        await message.reply_photo(query, caption=caption)
+        await message.reply_photo(thumb, caption=caption)
         await a.delete()
     except Exception as e:
         await a.edit(f"ᴀɴ ᴇʀʀᴏʀʀ ᴏᴄᴜʀʀᴇᴅ: {e}")
