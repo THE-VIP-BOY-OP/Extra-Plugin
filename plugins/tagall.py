@@ -9,8 +9,14 @@ from YukkiMusic import app
 
 SPAM_CHATS = []
 
+
 async def is_admin(chat_id, user_id):
-    admin_ids = [admin.user.id async for admin in app.get_chat_members(chat_id, filter=ChatMembersFilter.ADMINISTRATORS)]
+    admin_ids = [
+        admin.user.id
+        async for admin in app.get_chat_members(
+            chat_id, filter=ChatMembersFilter.ADMINISTRATORS
+        )
+    ]
     if user_id in admin_ids:
         return True
     return False
