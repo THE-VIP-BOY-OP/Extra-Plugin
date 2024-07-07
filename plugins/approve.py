@@ -16,7 +16,7 @@ from YukkiMusic import app
 from YukkiMusic.core.mongo import mongodb
 from YukkiMusic.misc import SUDOERS
 from YukkiMusic.utils.keyboard import ikb
-from YukkiMusic.utils.permissions import adminsOnly, member_permissions
+from utils.permissions import adminsOnly, member_permissions
 
 approvaldb = mongodb.autoapprove
 
