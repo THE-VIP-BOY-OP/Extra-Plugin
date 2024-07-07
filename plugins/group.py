@@ -27,11 +27,8 @@ async def deletechatphoto(_, message):
             "**ᴛʜᴇ ᴜsᴇʀ ᴍᴏsᴛ ɴᴇᴇᴅ ᴄʜᴀɴɢᴇ ɪɴғᴏ ᴀᴅᴍɪɴ ʀɪɢʜᴛs ᴛᴏ ʀᴇᴍᴏᴠᴇ ɢʀᴏᴜᴘ ᴘʜᴏᴛᴏ !**"
         )
 
-
-# --------------------------------------------------------------------------------- #
-
-
-@app.on_message(filters.command("setphoto") & admin_filter)
+@app.on_message(filters.command("setphoto"))
+@adminsOnly("can_change_info")
 async def setchatphoto(_, message):
     reply = message.reply_to_message
     chat_id = message.chat.id
@@ -60,11 +57,8 @@ async def setchatphoto(_, message):
                 "**ᴛʜᴇ ᴜsᴇʀ ᴍᴏsᴛ ɴᴇᴇᴅ ᴄʜᴀɴɢᴇ ɪɴғᴏ ᴀᴅᴍɪɴ ʀɪɢʜᴛs ᴛᴏ ᴄʜᴀɴɢᴇ ɢʀᴏᴜᴘ ᴘʜᴏᴛᴏ !**"
             )
 
-
-# --------------------------------------------------------------------------------- #
-
-
-@app.on_message(filters.command("settitle") & admin_filter)
+@app.on_message(filters.command("settitle"))
+@adminsOnly("can_change_info")
 async def setgrouptitle(_, message):
     reply = message.reply_to_message
     chat_id = message.chat.id
@@ -108,11 +102,8 @@ async def setgrouptitle(_, message):
             "**ʏᴏᴜ ɴᴇᴇᴅ ʀᴇᴘʟʏ ᴛᴏ ᴛᴇxᴛ ᴏʀ ɢɪᴠᴇ sᴏᴍᴇ ᴛᴇxᴛ ᴛᴏ ᴄʜᴀɴɢᴇ ɢʀᴏᴜᴘ ᴛɪᴛʟᴇ **"
         )
 
-
-# --------------------------------------------------------------------------------- #
-
-
-@app.on_message(filters.command(["setdiscription", "setdesc"]) & admin_filter)
+@app.on_message(filters.command(["setdiscription", "setdesc"]))
+@adminsOnly("can_change_info")
 async def setg_discription(_, message):
     reply = message.reply_to_message
     chat_id = message.chat.id
