@@ -6,8 +6,7 @@ from YukkiMusic import app
 from youtubesearchpython.__future__ import VideosSearch
 
 
-def get_video_title(video_id):
-    url = f"https://www.youtube.com/watch?v={video_id}"
+async def gen_infos(url):
     results = VideosSearch(url, limit=1)
     for result in (await results.next())["result"]:
         title = result["title"]
@@ -38,7 +37,7 @@ async def get_thumbnail_command(client, message):
         if not i:
             return await a.edit("ᴘʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴀ ᴠᴀʟɪᴅ ʏᴏᴜᴛᴜʙᴇ ʟɪɴᴋ.")
 
-        title, thumb = gen_infos(video_id)
+        title, thumb = await gen_infos(url)
         caption = f"<b>[{title}](https://t.me/{app.username}?start=info_{video_id})</b>"
         await message.reply_photo(thumb, caption=caption)
         await a.delete()
