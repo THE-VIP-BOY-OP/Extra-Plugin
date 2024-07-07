@@ -4,7 +4,7 @@ from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import FloodWait
 from YukkiMusic import app
-from YukkiMusic.utils.permissions import adminsOnly
+from utils.permissions import adminsOnly
 
 chatQueue = []
 
