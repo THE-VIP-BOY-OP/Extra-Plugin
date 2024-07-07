@@ -1,7 +1,5 @@
 import re
 
-import requests
-from bs4 import BeautifulSoup
 from pyrogram import filters
 
 from YukkiMusic import app
@@ -15,6 +13,7 @@ def get_video_title(video_id):
         title = result["title"]
         thumbnail = result["thumbnails"][0]["url"].split("?")[0]
         return title, thumbnail
+
 
 def is_url(url):
     regex = r"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})"
@@ -40,9 +39,7 @@ async def get_thumbnail_command(client, message):
             return await a.edit("ᴘʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴀ ᴠᴀʟɪᴅ ʏᴏᴜᴛᴜʙᴇ ʟɪɴᴋ.")
 
         title, thumb = gen_infos(video_id)
-        caption = (
-            f"<b>[{title}](https://t.me/{app.username}?start=info_{video_id})</b>"
-        )
+        caption = f"<b>[{title}](https://t.me/{app.username}?start=info_{video_id})</b>"
         await message.reply_photo(thumb, caption=caption)
         await a.delete()
     except Exception as e:
