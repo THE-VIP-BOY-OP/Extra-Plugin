@@ -1,6 +1,7 @@
 from inspect import getfullargspec
 from re import findall
 import datetime
+
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
@@ -12,8 +13,6 @@ from YukkiMusic.utils.database import (
     get_note,
     get_note_names,
     save_note,
-    is_pnote_on,
-    set_private_note,
 )
 from utils.error import capture_err
 from YukkiMusic.utils.functions import (
@@ -21,7 +20,6 @@ from YukkiMusic.utils.functions import (
     extract_text_and_keyb,
     get_data_and_name,
 )
-from YukkiMusic.utils.note_funcs import send_notes
 from YukkiMusic.utils.keyboard import ikb
 from YukkiMusic.utils.permissions import adminsOnly, member_permissions
 
@@ -50,40 +48,6 @@ async def eor(msg: Message, **kwargs):
     )
     spec = getfullargspec(func.__wrapped__).args
     return await func(**{k: v for k, v in kwargs.items() if k in spec})
-
-
-@app.on_message(filters.command("privatenotes") & filters.group)
-@adminsOnly("can_change_info")
-async def PrivateNote(client, message):
-    chat_id = message.chat.id
-    if len(message.command) >= 2:
-        if message.command[1] in ["on", "true", "yes", "y"]:
-            await set_private_note(chat_id, True)
-            await message.reply(
-                "Now i will send a message to your chat with a button redirecting to PM, where the user will receive the note.",
-                quote=True,
-            )
-
-        elif message.command[1] in ["off", "false", "no", "n"]:
-            await set_private_note(chat_id, False)
-            await message.reply(
-                "I will now send notes straight to the group.", quote=True
-            )
-        else:
-            await message.reply(
-                f"failed to get boolean value from input:\n\n expected one of y/yes/on/true or n/no/off/false; got: {message.command[1]}",
-                quote=True,
-            )
-    else:
-        if await is_pnote_on(chat_id):
-            await message.reply(
-                "Your notes are currently being sent in private. Now i will send a small note with a button which redirects to a private chat.",
-                quote=True,
-            )
-        else:
-            await message.reply(
-                "Your notes are currently being sent in the group.", quote=True
-            )
 
 
 @app.on_message(filters.command("save") & filters.group & ~BANNED_USERS)
@@ -179,20 +143,60 @@ async def get_notes(_, message):
 async def get_one_note(_, message):
     if len(message.text.split()) < 2:
         return await eor(message, text="Invalid arguments")
-    # from_user = message.from_user if message.from_user else message.sender_chat
+    from_user = message.from_user if message.from_user else message.sender_chat
     chat_id = message.chat.id
     name = message.text.split(None, 1)[1]
     if not name:
         return
-    if await is_pnote_on(chat_id):
-        url = f"http://t.me/{app.username}?start=note_{chat_id}_{name}"
-        button = InlineKeyboardMarkup(
-            [[InlineKeyboardButton(text="Click me!", url=url)]]
+    _note = await get_note(chat_id, name)
+    if not _note:
+        return
+    type = _note["type"]
+    data = _note["data"]
+    file_id = _note.get("file_id")
+    keyb = None
+    if data:
+        if "{app.mention}" in data:
+            data = data.replace("{app.mention}", app.mention)
+        if "{GROUPNAME}" in data:
+            data = data.replace("{GROUPNAME}", message.chat.title)
+        if "{NAME}" in data:
+            data = data.replace("{NAME}", message.from_user.mention)
+        if "{ID}" in data:
+            data = data.replace("{ID}", f"`message.from_user.id`")
+        if "{FIRSTNAME}" in data:
+            data = data.replace("{FIRSTNAME}", message.from_user.first_name)
+        if "{SURNAME}" in data:
+            sname = message.from_user.last_name if message.from_user.last_name.last_name else "None"
+            data = data.replace("{SURNAME}", sname)
+        if "{USERNAME}" in data:
+            susername = message.from_user.username if message.from_user.username else "None"
+            data = data.replace("{USERNAME}", susername)
+        if "{DATE}" in data:
+            DATE = datetime.datetime.now().strftime("%Y-%m-%d")
+            data = data.replace("{DATE}", DATE)
+        if "{WEEKDAY}" in data:
+            WEEKDAY = datetime.datetime.now().strftime("%A")
+            data = data.replace("{WEEKDAY}", WEEKDAY)
+        if "{TIME}" in data:
+            TIME = datetime.datetime.now().strftime("%H:%M:%S")
+            data = data.replace("{TIME}", f"{TIME} UTC")
+
+
+        if findall(r"\[.+\,.+\]", data):
+            keyboard = extract_text_and_keyb(ikb, data)
+            if keyboard:
+                data, keyb = keyboard
+    replied_message = message.reply_to_message
+    if replied_message:
+        replied_user = (
+            replied_message.from_user
+            if replied_message.from_user
+            else replied_message.sender_chat
         )
-        return await message.reply(
-            text=f"Tap here to view '{name}' in your private chat.", reply_markup=button
-        )
-    await send_notes(message, chat_id, name)
+        if replied_user.id != from_user.id:
+            message = replied_message
+    await get_reply(message, type, file_id, data, keyb)
 
 
 @app.on_message(filters.regex(r"^#.+") & filters.text & filters.group & ~BANNED_USERS)
@@ -222,10 +226,10 @@ async def get_one_note(_, message):
         if "{FIRSTNAME}" in data:
             data = data.replace("{FIRSTNAME}", message.from_user.first_name)
         if "{SURNAME}" in data:
-            sname = message.from_user.last_name or "None"
+            sname = message.from_user.last_name if message.from_user.last_name.last_name else "None"
             data = data.replace("{SURNAME}", sname)
         if "{USERNAME}" in data:
-            susername = message.from_user.username or "None"
+            susername = message.from_user.username if message.from_user.username else "None"
             data = data.replace("{USERNAME}", susername)
         if "{DATE}" in data:
             DATE = datetime.datetime.now().strftime("%Y-%m-%d")
