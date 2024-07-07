@@ -21,7 +21,7 @@ from YukkiMusic.utils.functions import (
     get_data_and_name,
 )
 from YukkiMusic.utils.keyboard import ikb
-from YukkiMusic.utils.permissions import adminsOnly, member_permissions
+from utils.permissions import adminsOnly, member_permissions
 
 
 def extract_urls(reply_markup):
