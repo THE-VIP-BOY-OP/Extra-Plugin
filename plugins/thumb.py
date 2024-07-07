@@ -18,8 +18,8 @@ def is_url(url):
     regex = r"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})"
     match = re.match(regex, url)
     if match:
-        return True
-    return False
+        return True, match.group(1)
+    return False, None
 
 
 @app.on_message(
@@ -33,7 +33,7 @@ async def get_thumbnail_command(client, message):
     try:
         a = await message.reply_text("ᴘʀᴏᴄᴇssɪɴɢ...")
         url = message.text.split(" ")[1]
-        i = is_url(url)
+        i, video_id = is_url(url)
         if not i:
             return await a.edit("ᴘʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴀ ᴠᴀʟɪᴅ ʏᴏᴜᴛᴜʙᴇ ʟɪɴᴋ.")
 
