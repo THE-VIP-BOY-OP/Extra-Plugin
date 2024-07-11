@@ -1,5 +1,7 @@
 from YukkiMusic.core.mongo import mongodb
+
 greetingsdb = mongodb.greetings
+
 
 async def set_welcome(chat_id: int, message: str, raw_text: str, file_id: str):
     update_data = {
@@ -13,6 +15,7 @@ async def set_welcome(chat_id: int, message: str, raw_text: str, file_id: str):
         {"chat_id": chat_id, "type": "welcome"}, {"$set": update_data}, upsert=True
     )
 
+
 async def set_goodbye(chat_id: int, message: str, raw_text: str, file_id: str):
     update_data = {
         "message": message,
@@ -25,6 +28,7 @@ async def set_goodbye(chat_id: int, message: str, raw_text: str, file_id: str):
         {"chat_id": chat_id, "type": "goodbye"}, {"$set": update_data}, upsert=True
     )
 
+
 async def get_welcome(chat_id: int) -> (str, str, str):
     data = await greetingsdb.find_one({"chat_id": chat_id, "type": "welcome"})
     if not data:
@@ -36,8 +40,10 @@ async def get_welcome(chat_id: int) -> (str, str, str):
 
     return message, raw_text, file_id
 
+
 async def del_welcome(chat_id: int):
     return await greetingsdb.delete_one({"chat_id": chat_id, "type": "welcome"})
+
 
 async def get_goodbye(chat_id: int) -> (str, str, str):
     data = await greetingsdb.find_one({"chat_id": chat_id, "type": "goodbye"})
@@ -50,8 +56,10 @@ async def get_goodbye(chat_id: int) -> (str, str, str):
 
     return message, raw_text, file_id
 
+
 async def del_goodbye(chat_id: int):
     return await greetingsdb.delete_one({"chat_id": chat_id, "type": "goodbye"})
+
 
 async def set_greetings_on(chat_id: int, type: str) -> bool:
     if type == "welcome":
@@ -70,16 +78,18 @@ async def set_greetings_on(chat_id: int, type: str) -> bool:
 
     return result.modified_count > 0 or result.upserted_id is not None
 
+
 async def is_greetings_on(chat_id: int, type: str) -> bool:
     if type == "welcome":
         type = "welcome_on"
     elif type == "goodbye":
         type = "goodbye_on"
-    
+
     data = await greetingsdb.find_one({"chat_id": chat_id})
     if not data:
         return False
     return data.get(type, False)
+
 
 async def set_greetings_off(chat_id: int, type: str) -> bool:
     if type == "welcome":
