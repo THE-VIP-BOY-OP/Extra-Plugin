@@ -36,9 +36,9 @@ async def handle_left_member(member, chat):
             await chat.ban_member(member.id)
             await app.send_message(
                 chat.id,
-                f"{member.mention} was globally banned, and got removed,"
-                + " if you think this is a false gban, you can appeal"
-                + " for this ban in support chat.",
+                f"{member.mention} ᴡᴀs ɢʟᴏʙᴀʟʟʏ ʙᴀɴɴᴇᴅ, ᴀɴᴅ ɢᴏᴛ ʀᴇᴍᴏᴠᴇᴅ,"
+                + " ɪғ ʏᴏᴜ ᴛʜɪɴᴋ ᴛʜɪs ɪs ᴀ ғᴀʟsᴇ ɢʙᴀɴ, ʏᴏᴜ ᴄᴀɴ ᴀᴘᴘᴇᴀʟ"
+                + " ғᴏʀ ᴛʜɪs ʙᴀɴ ɪɴ sᴜᴘᴘᴏʀᴛ ᴄʜᴀᴛ",
             )
             return
         if member.is_bot:
@@ -59,14 +59,11 @@ async def goodbye(_, m: Message):
 
 
 async def send_left_message(
-    chat: Chat, user_id: int, delete: bool = False, nothing: bool = False
+    chat: Chat, user_id: int, delete: bool = False
 ):
-    ison = await is_greetings_on(chat.id, "goodbye")
+    is_on = await is_greetings_on(chat.id, "goodbye")
 
-    if ison is None and not nothing:
-        return
-
-    if not ison and not nothing:
+    if not is_on:
         return
 
     goodbye, raw_text, file_id = await get_goodbye(chat.id)
@@ -124,7 +121,7 @@ async def send_left_message(
 @app.on_message(filters.command("setgoodbye") & ~filters.private)
 @adminsOnly("can_change_info")
 async def set_goodbye_func(_, message):
-    usage = "You need to reply to a text, gif or photo to set it as goodbye message.\n\nNotes: caption required for gif and photo."
+    usage = "Yᴏᴜ ɴᴇᴇᴅ ᴛᴏ ʀᴇᴘʟʏ ᴛᴏ ᴀ ᴛᴇxᴛ, ɢɪғ ᴏʀ ᴘʜᴏᴛᴏ ᴛᴏ sᴇᴛ ɪᴛ ᴀs ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇ.\n\Nᴏᴛᴇs: ᴄᴀᴘᴛɪᴏɴ ʀᴇǫᴜɪʀᴇᴅ ғᴏʀ ɢɪғ ᴀɴᴅ ᴘʜᴏᴛᴏ."
     key = InlineKeyboardMarkup(
         [
             [
@@ -171,16 +168,16 @@ async def set_goodbye_func(_, message):
         if raw_text:
             await set_goodbye(chat_id, goodbye, raw_text, file_id)
             return await message.reply_text(
-                "goodbye message has been successfully set."
+                "ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇ ʜᴀs ʙᴇᴇɴ sᴜᴄᴄᴇssғᴜʟʟʏ sᴇᴛ."
             )
         else:
             return await message.reply_text(
-                "Wrong formatting, check the help section.\n\n**Usage:**\nText: `Text`\nText + Buttons: `Text ~ Buttons`",
+                "Wʀᴏɴɢ ғᴏʀᴍᴀᴛᴛɪɴɢ, ᴄʜᴇᴄᴋ ᴛʜᴇ ʜᴇʟᴘ sᴇᴄᴛɪᴏɴ.\n\n**Usᴀsɢᴇ:**\nTᴛᴇxᴛ: `Text`\nᴛᴇxᴛ + ʙᴜᴛᴛᴏɴs: `Text ~ Buttons`",
                 reply_markup=key,
             )
     except UnboundLocalError:
         return await message.reply_text(
-            "**Only Text, Gif and Photo welcome message are supported.**"
+            "**Oɴʟʏ Tᴇxᴛ, Gɪғ ᴀɴᴅ Pʜᴏᴛᴏ ᴡᴇʟᴄᴏᴍᴇ ᴍᴇssᴀɢᴇ ᴀʀᴇ sᴜᴘᴘᴏʀᴛᴇᴅ.**"
         )
 
 
@@ -189,7 +186,7 @@ async def set_goodbye_func(_, message):
 async def del_goodbye_func(_, message):
     chat_id = message.chat.id
     await del_goodbye(chat_id)
-    await message.reply_text("goodbye message has been deleted.")
+    await message.reply_text("Gᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇ ʜᴀs ʙᴇᴇɴ Dᴇʟᴇᴛᴇᴅ Sᴜᴄᴄᴇssғᴜʟʟʏ")
 
 
 @app.on_message(filters.command("goodbye") & ~filters.private)
@@ -206,31 +203,33 @@ async def goodbye(client, message: Message):
             success = await set_greetings_on(message.chat.id, "goodbye")
             if success:
                 await message.reply_text(
-                    "I'll be saying goodbye to any leavers from now on!"
+                    "I'ʟʟ ʙᴇ sᴀʏɪɴɢ ɢᴏᴏᴅʙʏᴇ ᴛᴏ ᴀɴʏ ʟᴇᴀᴠᴇʀs ғʀᴏᴍ ɴᴏᴡ ᴏɴ!"
                 )
             else:
-                await message.reply_text("Failed to enable goodbye messages.")
+                await message.reply_text("Fᴀɪʟᴇᴅ ᴛᴏ ᴇɴᴀʙʟᴇ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇs.")
 
         elif action in ["off", "disable", "n", "no", "false", "f"]:
             success = await set_greetings_off(message.chat.id, "goodbye")
             if success:
-                await message.reply_text("I'll stay quiet when people leave.")
+                await message.reply_text("I'ʟʟ sᴛᴀʏ ǫᴜɪᴇᴛ ᴡʜᴇɴ ᴘᴇᴏᴘʟᴇ ʟᴇᴀᴠᴇ.")
             else:
-                await message.reply_text("Failed to disable goodbye messages.")
+                await message.reply_text("Fᴀɪʟᴇᴅ ᴛᴏ ᴅɪsᴀʙʟᴇ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇs.")
 
         else:
             await message.reply_text(
-                "Invalid command. Please use:\n"
-                "/goodbye - To get your goodbye message\n"
-                "/goodbye [on, y, true, enable, t] - to turn on goodbye messages\n"
-                "/goodbye [off, n, false, disable, f, no] - to turn off goodbye messages"
+                "Iɴᴠᴀʟɪᴅ ᴄᴏᴍᴍᴀɴᴅ. Pʟᴇᴀsᴇ ᴜsᴇ:\n"
+                "/goodbye - Tᴏ ɢᴇᴛ ʏᴏᴜʀ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇ\n"
+                "/goodbye [on, y, true, enable, t] - ᴛᴏ ᴛᴜʀɴ ᴏɴ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇs\n"
+                "/goodbye [off, n, false, disable, f, no] - ᴛᴏ ᴛᴜʀɴ ᴏғғ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇs\n"
+                "/delgoodbye ᴏʀ /deletegoodbye ᴛᴏ ᴅᴇʟᴛᴇ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇ ᴀɴᴅ ᴛᴜʀɴ ᴏғғ ɢᴏᴏᴅʙʏᴇ"
             )
     else:
         await message.reply_text(
-            "Invalid command. Please use:\n"
-            "/goodbye - To get your goodbye message\n"
-            "/goodbye [on, y, true, enable, t] - to turn on goodbye messages\n"
-            "/goodbye [off, n, false, disable, f, no] - to turn off goodbye messages"
+            "Iɴᴠᴀʟɪᴅ ᴄᴏᴍᴍᴀɴᴅ. Pʟᴇᴀsᴇ ᴜsᴇ:\n"
+            "/goodbye - Tᴏ ɢᴇᴛ ʏᴏᴜʀ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇ\n"
+            "/goodbye [on, y, true, enable, t] - ᴛᴏ ᴛᴜʀɴ ᴏɴ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇs\n"
+            "/goodbye [off, n, false, disable, f, no] - ᴛᴏ ᴛᴜʀɴ ᴏғғ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇs\n"
+            "/delgoodbye ᴏʀ /deletegoodbye ᴛᴏ ᴅᴇʟᴛᴇ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇ ᴀɴᴅ ᴛᴜʀɴ ᴏғғ ɢᴏᴏᴅʙʏᴇ"
         )
 
 
@@ -238,19 +237,19 @@ async def get_goodbye_func(_, message):
     chat = message.chat
     goodbye, raw_text, file_id = await get_goodbye(chat.id)
     if not raw_text:
-        return await message.reply_text("No Goodbye message set.")
+        return await message.reply_text("Dɪᴅ Yᴏᴜ ʀᴇᴍᴇᴍʙᴇʀ ᴛʜᴀᴛ ʏᴏᴜ ʜᴀᴠᴇ sᴇᴛ's ᴀɴᴛ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇ")
     if not message.from_user:
-        return await message.reply_text("You're anon, can't send goodbye message.")
+        return await message.reply_text("Yᴏᴜ'ʀᴇ ᴀɴᴏɴ, ᴄᴀɴ'ᴛ sᴇɴᴅ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇ.")
 
-    await send_left_message(chat, message.from_user.id, nothing=True)
-    isgrt = await is_greetings_on(chat.id, "goodbye")
+    await send_left_message(chat, message.from_user.id)
+    is_grt = await is_greetings_on(chat.id, "goodbye")
     text = None
-    if isgrt is None:
-        text = "False"
-    if isgrt:
-        text = "True"
+    if is_grt:
+        text = "Tʀᴜᴇ"
+    else:
+        text = "Fᴀʟsᴇ"
     await message.reply_text(
-        f'I am currently saying goodbye to users :- {text}\ngoodbye: {goodbye}\n\nFile_id: `{file_id}`\n\n`{raw_text.replace("`", "")}`'
+        f'I ᴀᴍ ᴄᴜʀʀᴇɴᴛʟʏ sᴀʏɪɴɢ ɢᴏᴏᴅʙʏᴇ ᴛᴏ ᴜsᴇʀs :- {text}\nGᴏᴏᴅʙʏᴇ: {goodbye}\n\nғɪʟᴇ_ɪᴅ: `{file_id}`\n\n`{raw_text.replace("`", "")}`'
     )
 
 
@@ -267,6 +266,7 @@ __HELP__ = """
 
 /goodbye [ᴏғғ, ɴ, ғᴀʟsᴇ, ᴅɪsᴀʙʟᴇ, ғ, ɴᴏ] - ᴛᴏ ᴛᴜʀɴ ᴏғғ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇs
 
+/delgoodbye ᴏʀ /deletegoodbye ᴛᴏ ᴅᴇʟᴛᴇ ɢᴏᴏᴅʙʏᴇ ᴍᴇssᴀɢᴇ ᴀɴᴅ ᴛᴜʀɴ ᴏғғ ɢᴏᴏᴅʙʏᴇ
 **SetoodBye ->
 
 
