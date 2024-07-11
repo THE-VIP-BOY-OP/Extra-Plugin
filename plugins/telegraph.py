@@ -4,6 +4,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from telegraph import upload_file
 from YukkiMusic import app
 
+
 @app.on_message(filters.command(["tgm", "tgt", "telegraph", "tl"]))
 async def get_link_group(client, message):
     if not message.reply_to_message:
@@ -21,11 +22,10 @@ async def get_link_group(client, message):
         file_size = media.document.file_size
 
     if file_size > 5 * 1024 * 1024:
-        return await message.reply_text(
-            "Pʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴀ ᴍᴇᴅɪᴀ ғɪʟᴇ ᴜɴᴅᴇʀ 𝟻MB."
-        )
+        return await message.reply_text("Pʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴀ ᴍᴇᴅɪᴀ ғɪʟᴇ ᴜɴᴅᴇʀ 𝟻MB.")
     try:
         text = await message.reply("Pʀᴏᴄᴇssɪɴɢ...")
+
         async def progress(current, total):
             await text.edit_text(f"📥 Dᴏᴡɴʟᴏᴀᴅɪɴɢ... {current * 100 / total:.1f}%")
 
@@ -59,7 +59,6 @@ async def get_link_group(client, message):
             return
     except Exception:
         pass
-
 
 
 __HELP__ = """
