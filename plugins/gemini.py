@@ -2,15 +2,10 @@ import requests
 from MukeshAPI import api
 from pyrogram import filters
 from pyrogram.enums import ChatAction
-
 from YukkiMusic import app
 
-x = None
-
-
-@app.on_message(filters.command("gemini"))
+@app.on_message(filters.command(["gemini"]))
 async def gemini_handler(client, message):
-    global x
     await app.send_chat_action(message.chat.id, ChatAction.TYPING)
     if (
         message.text.startswith(f"/gemini@{app.username}")
@@ -30,6 +25,9 @@ async def gemini_handler(client, message):
         response = api.gemini(user_input)
         await app.send_chat_action(message.chat.id, ChatAction.TYPING)
         x = response["results"]
-        await message.reply_text(f"{x} ", quote=True)
+        if x:
+            await message.reply_text(x, quote=True)
+        else:
+            await message.reply_text("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ")
     except requests.exceptions.RequestException as e:
         pass
