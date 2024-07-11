@@ -4,6 +4,7 @@ from pyrogram import filters
 from pyrogram.enums import ChatAction
 from YukkiMusic import app
 
+
 @app.on_message(filters.command(["gemini"]))
 async def gemini_handler(client, message):
     await app.send_chat_action(message.chat.id, ChatAction.TYPING)
