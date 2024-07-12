@@ -5,6 +5,7 @@ from config import LOG_GROUP_ID
 from YukkiMusic import app
 from SafoneAPI import SafoneAPI
 
+
 @app.on_message(filters.command("advice"))
 async def advice(_, message):
     A = await message.reply_text("...")
