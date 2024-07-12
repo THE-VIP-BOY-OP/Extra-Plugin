@@ -4,6 +4,7 @@ from pyrogram import filters
 from YukkiMusic import app
 from SafoneAPI import SafoneAPI
 
+
 @app.on_message(filters.command(["bard"]))
 async def bard(bot, message):
     if len(message.command) < 2 and not message.reply_to_message:
