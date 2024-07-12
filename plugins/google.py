@@ -3,8 +3,8 @@ import logging
 from googlesearch import search
 from pyrogram import filters
 
-from YukkiMusic import api, app
-
+from YukkiMusic import app
+from SafoneAPI import SafoneAPI
 
 @app.on_message(filters.command(["google", "gle"]))
 async def google(bot, message):
@@ -42,7 +42,7 @@ async def app(bot, message):
     else:
         user_input = " ".join(message.command[1:])
     cbb = await message.reply_text("**Sᴇᴀʀᴄʜɪɴɢ ᴏɴ Pʟᴀʏ Sᴛᴏʀᴇ....**")
-    a = await api.apps(user_input, 1)
+    a = await SafoneAPI().apps(user_input, 1)
     b = a["results"][0]
     icon = b["icon"]
     id = b["id"]
@@ -56,6 +56,7 @@ async def app(bot, message):
         await cbb.delete()
     except Exception as e:
         await message.reply_text(e)
+        
 
 
 __MODULE__ = "Gᴏᴏɢʟᴇ"
