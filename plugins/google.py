@@ -6,6 +6,7 @@ from pyrogram import filters
 from YukkiMusic import app
 from SafoneAPI import SafoneAPI
 
+
 @app.on_message(filters.command(["google", "gle"]))
 async def google(bot, message):
     if len(message.command) < 2 and not message.reply_to_message:
@@ -56,7 +57,6 @@ async def app(bot, message):
         await cbb.delete()
     except Exception as e:
         await message.reply_text(e)
-        
 
 
 __MODULE__ = "Gᴏᴏɢʟᴇ"
