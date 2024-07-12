@@ -1,20 +1,20 @@
 from pyrogram import filters
-from TheApi import api as aapi
+from TheApi import api
 
 from config import LOG_GROUP_ID
-from YukkiMusic import api, app
-
+from YukkiMusic import app
+from SafoneAPI import SafoneAPI
 
 @app.on_message(filters.command("advice"))
 async def advice(_, message):
     A = await message.reply_text("...")
-    res = aapi.get_advice()
+    res = api.get_advice()
     await A.edit(res)
 
 
 @app.on_message(filters.command("astronomical"))
 async def advice(_, message):
-    a = await api.astronomy()
+    a = await SafoneAPI().astronomy()
     if a["success"]:
         c = a["date"]
         url = a["imageUrl"]
