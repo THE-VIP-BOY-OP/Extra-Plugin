@@ -2,6 +2,7 @@ from pyrogram import filters
 from YukkiMusic import app
 from TheApi import api
 
+
 @app.on_message(filters.command("hastag"))
 async def hastag(bot, message):
 
@@ -11,9 +12,8 @@ async def hastag(bot, message):
     except IndexError:
         return await message.reply_text("Example:\n\n/hastag python")
 
-    await message.reply_text(
-        f"ʜᴇʀᴇ ɪs ʏᴏᴜʀ  ʜᴀsᴛᴀɢ :\n<pre>{res}</pre>", quote=True
-    )
+    await message.reply_text(f"ʜᴇʀᴇ ɪs ʏᴏᴜʀ  ʜᴀsᴛᴀɢ :\n<pre>{res}</pre>", quote=True)
+
 
 __MODULE__ = "Hᴀsʜᴛᴀɢ"
 __HELP__ = """
