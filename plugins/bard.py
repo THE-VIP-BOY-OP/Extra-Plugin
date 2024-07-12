@@ -1,8 +1,8 @@
 import requests
 from pyrogram import filters
 
-from YukkiMusic import api, app
-
+from YukkiMusic import app
+from SafoneAPI import SafoneAPI
 
 @app.on_message(filters.command(["bard"]))
 async def bard(bot, message):
@@ -18,7 +18,7 @@ async def bard(bot, message):
         user_input = " ".join(message.command[1:])
 
     try:
-        Z = await api.bard(user_input)
+        Z = await SafoneAPI().bard(user_input)
         result = Z["candidates"][0]["content"]["parts"][0]["text"]
         await message.reply_text(result)
     except requests.exceptions.RequestException as e:
