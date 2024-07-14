@@ -51,7 +51,6 @@ async def impo_on(chat_id: int) -> None:
 async def impo_off(chat_id: int) -> None:
     await impdb.delete_one({"chat_id_toggle": chat_id})
 
-
 @app.on_message(filters.group & ~filters.bot & ~filters.via_bot, group=69)
 async def chk_usr(_, message: Message):
     chat_id = message.chat.id
@@ -73,33 +72,22 @@ async def chk_usr(_, message: Message):
     first_name = user_data.get("first_name", "")
     lastname_before = user_data.get("last_name", "")
 
-    msg = f"[{message.from_user.id}](tg://user?id={message.from_user.id}) "
+    msg = f"[{message.from_user.id}](tg://user?id={message.from_user.id})\n"
 
     changes = []
 
-    if (
-        first_name != message.from_user.first_name
-        and lastname_before != message.from_user.last_name
-    ):
-        changes.append(
-            f"ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ɴᴀᴍᴇ ғʀᴏᴍ {first_name} {lastname_before} ᴛᴏ {message.from_user.first_name} {message.from_user.last_name}"
-        )
+    if first_name != message.from_user.first_name and lastname_before != message.from_user.last_name:
+        changes.append(f"ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ɴᴀᴍᴇ ғʀᴏᴍ {first_name} {lastname_before} ᴛᴏ {message.from_user.first_name} {message.from_user.last_name}\n")
     elif first_name != message.from_user.first_name:
-        changes.append(
-            f"ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ғɪʀsᴛ ɴᴀᴍᴇ ғʀᴏᴍ {first_name} ᴛᴏ {message.from_user.first_name}"
-        )
+        changes.append(f"ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ғɪʀsᴛ ɴᴀᴍᴇ ғʀᴏᴍ {first_name} ᴛᴏ {message.from_user.first_name}\n")
     elif lastname_before != message.from_user.last_name:
-        changes.append(
-            f"ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ʟᴀsᴛ ɴᴀᴍᴇ ғʀᴏᴍ {lastname_before} ᴛᴏ {message.from_user.last_name}"
-        )
+        changes.append(f"ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ʟᴀsᴛ ɴᴀᴍᴇ ғʀᴏᴍ {lastname_before} ᴛᴏ {message.from_user.last_name}\n")
 
     if usernamebefore != message.from_user.username:
-        changes.append(
-            f"ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ᴜsᴇʀɴᴀᴍᴇ ғʀᴏᴍ @{usernamebefore} ᴛᴏ @{message.from_user.username}"
-        )
+        changes.append(f"ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ᴜsᴇʀɴᴀᴍᴇ ғʀᴏᴍ @{usernamebefore} ᴛᴏ @{message.from_user.username}\n")
 
     if changes:
-        msg += " ".join(changes)
+        msg += "".join(changes)
         await message.reply_text(msg)
 
     await add_userdata(
