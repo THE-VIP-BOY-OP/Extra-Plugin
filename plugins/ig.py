@@ -17,7 +17,9 @@ async def download_instagram_video(client, message):
     if not re.match(
         re.compile(r"^(https?://)?(www\.)?(instagram\.com|instagr\.am)/.*$"), url
     ):
-        return await message.reply_text("Tʜᴇ ᴘʀᴏᴠɪᴅᴇᴅ URL ɪs ɴᴏᴛ ᴀ ᴠᴀʟɪᴅ Iɴsᴛᴀɢʀᴀᴍ URL😅😅")
+        return await message.reply_text(
+            "Tʜᴇ ᴘʀᴏᴠɪᴅᴇᴅ URL ɪs ɴᴏᴛ ᴀ ᴠᴀʟɪᴅ Iɴsᴛᴀɢʀᴀᴍ URL😅😅"
+        )
     a = await message.reply_text("ᴘʀᴏᴄᴇssɪɴɢ...")
     api_url = f"https://insta-dl.hazex.workers.dev/?url={url}"
 
