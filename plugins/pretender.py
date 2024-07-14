@@ -71,7 +71,7 @@ async def chk_usr(_, message: Message):
     usernamebefore = user_data.get("username", "")
     first_name = user_data.get("first_name", "")
     lastname_before = user_data.get("last_name", "")
-    msg = f"[{message.from_user.id}](tg://user?id={message.from_user.id})"
+    msg = f"[{message.from_user.id}](tg://user?id={message.from_user.id})  "
     if (
         usernamebefore != message.from_user.username
         or first_name != message.from_user.first_name
