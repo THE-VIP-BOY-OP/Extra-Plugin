@@ -27,7 +27,11 @@ async def download_instagram_video(client, message):
         data = result["result"]
     except Exception as e:
         f = f"Eʀʀᴏʀ :\n{e}"
-        await a.edit(f)
+        try:
+            await a.edit(f)
+        except Exception:
+            await message.reply_text(f)
+            return await app.send_message(LOG_GROUP_ID, f)
         return await app.send_message(LOG_GROUP_ID, f)
     if not result["error"]:
         video_url = data["url"]
@@ -39,7 +43,10 @@ async def download_instagram_video(client, message):
         await a.delete()
         await message.reply_video(video_url, caption=caption)
     else:
-        return await a.edit("Fᴀɪʟᴇᴅ ᴛᴏ ᴅᴏᴡɴʟᴏᴀᴅ ʀᴇᴇʟ")
+        try:
+            return await a.edit("Fᴀɪʟᴇᴅ ᴛᴏ ᴅᴏᴡɴʟᴏᴀᴅ ʀᴇᴇʟ")
+        except Exception:
+            return await message.reply_text("Fᴀɪʟᴇᴅ ᴛᴏ ᴅᴏᴡɴʟᴏᴀᴅ ʀᴇᴇʟ")
 
 
 __MODULE__ = "Rᴇᴇʟ"
