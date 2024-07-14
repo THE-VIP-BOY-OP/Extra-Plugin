@@ -71,7 +71,7 @@ async def chk_usr(_, message: Message):
     usernamebefore = user_data.get("username", "")
     first_name = user_data.get("first_name", "")
     lastname_before = user_data.get("last_name", "")
-    msg = ""
+    msg = f"[{message.from_user.id}](tg://user?id={message.from_user.id})"
     if (
         usernamebefore != message.from_user.username
         or first_name != message.from_user.first_name
@@ -81,15 +81,15 @@ async def chk_usr(_, message: Message):
             first_name != message.from_user.first_name
             and lastname_before != message.from_user.last_name
         ):
-            msg += f"""ᴜsᴇʀ **{message.from_user.mention}** ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ɴᴀᴍᴇ ғʀᴏᴍ {first_name} {lastname_before} ᴛᴏ {message.from_user.first_name} {message.from_user.last_name}\n"""
+            msg += f"""ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ɴᴀᴍᴇ ғʀᴏᴍ {first_name} {lastname_before} ᴛᴏ {message.from_user.first_name} {message.from_user.last_name}  """
         elif first_name != message.from_user.first_name:
-            msg += f"""ᴜsᴇʀ **{message.from_user.mention}** ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ғɪʀsᴛ ɴᴀᴍᴇ ғʀᴏᴍ {first_name} ᴛᴏ {message.from_user.first_name}\n"""
+            msg += f"""ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ғɪʀsᴛ ɴᴀᴍᴇ ғʀᴏᴍ {first_name} ᴛᴏ {message.from_user.first_name}  """
         elif lastname_before != message.from_user.last_name:
-            msg += f"""ᴜsᴇʀ **{message.from_user.mention}** ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ʟᴀsᴛ ɴᴀᴍᴇ ғʀᴏᴍ {lastname_before} ᴛᴏ {message.from_user.last_name}\n"""
+            msg += f"""ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ʟᴀsᴛ ɴᴀᴍᴇ ғʀᴏᴍ {lastname_before} ᴛᴏ {message.from_user.last_name} """
 
         if usernamebefore != message.from_user.username:
-            msg += f"""ᴜsᴇʀ **{message.from_user.mention}** ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ᴜsᴇʀɴᴀᴍᴇ ғʀᴏᴍ @{usernamebefore} to @{message.from_user.username}\n"""
-
+            msg += f"""ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ᴜsᴇʀɴᴀᴍᴇ ғʀᴏᴍ @{usernamebefore} to @{message.from_user.username}  """
+            
         await add_userdata(
             chat_id,
             user_id,
@@ -98,7 +98,7 @@ async def chk_usr(_, message: Message):
             message.from_user.last_name,
         )
 
-    if msg != "":
+    if msg != f"[{message.from_user.id}](tg://user?id={message.from_user.id})":
         await message.reply_text(msg)
 
 
