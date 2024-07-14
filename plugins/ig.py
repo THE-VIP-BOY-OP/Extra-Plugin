@@ -13,12 +13,12 @@ async def download_instagram_video(client, message):
             "Pʟᴇᴀsᴇ ᴘʀᴏᴠɪᴅᴇ ᴛʜᴇ Iɴsᴛᴀɢʀᴀᴍ ʀᴇᴇʟ URL ᴀғᴛᴇʀ ᴛʜᴇ ᴄᴏᴍᴍᴀɴᴅ"
         )
         return
-    a = await message.reply_text("ᴘʀᴏᴄᴇssɪɴɢ...")
     url = message.text.split()[1]
     if not re.match(
         re.compile(r"^(https?://)?(www\.)?(instagram\.com|instagr\.am)/.*$"), url
     ):
-        return await a.edit("Tʜᴇ ᴘʀᴏᴠɪᴅᴇᴅ URL ɪs ɴᴏᴛ ᴀ ᴠᴀʟɪᴅ Iɴsᴛᴀɢʀᴀᴍ URL😅😅")
+        return await message.reply_text("Tʜᴇ ᴘʀᴏᴠɪᴅᴇᴅ URL ɪs ɴᴏᴛ ᴀ ᴠᴀʟɪᴅ Iɴsᴛᴀɢʀᴀᴍ URL😅😅")
+    a = await message.reply_text("ᴘʀᴏᴄᴇssɪɴɢ...")
     api_url = f"https://insta-dl.hazex.workers.dev/?url={url}"
 
     response = requests.get(api_url)
