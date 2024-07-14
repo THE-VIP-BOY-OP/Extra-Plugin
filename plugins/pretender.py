@@ -68,38 +68,36 @@ async def chk_usr(_, message: Message):
             message.from_user.last_name,
         )
         return
+
     usernamebefore = user_data.get("username", "")
     first_name = user_data.get("first_name", "")
     lastname_before = user_data.get("last_name", "")
-    msg = f"[{message.from_user.id}](tg://user?id={message.from_user.id})  "
-    if (
-        usernamebefore != message.from_user.username
-        or first_name != message.from_user.first_name
-        or lastname_before != message.from_user.last_name
-    ):
-        if (
-            first_name != message.from_user.first_name
-            and lastname_before != message.from_user.last_name
-        ):
-            msg += f"""ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ɴᴀᴍᴇ ғʀᴏᴍ {first_name} {lastname_before} ᴛᴏ {message.from_user.first_name} {message.from_user.last_name}  """
-        elif first_name != message.from_user.first_name:
-            msg += f"""ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ғɪʀsᴛ ɴᴀᴍᴇ ғʀᴏᴍ {first_name} ᴛᴏ {message.from_user.first_name}  """
-        elif lastname_before != message.from_user.last_name:
-            msg += f"""ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ʟᴀsᴛ ɴᴀᴍᴇ ғʀᴏᴍ {lastname_before} ᴛᴏ {message.from_user.last_name} """
 
-        if usernamebefore != message.from_user.username:
-            msg += f"""ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ᴜsᴇʀɴᴀᴍᴇ ғʀᴏᴍ @{usernamebefore} to @{message.from_user.username}  """
+    msg = f"[{message.from_user.id}](tg://user?id={message.from_user.id}) "
 
-        await add_userdata(
-            chat_id,
-            user_id,
-            message.from_user.username,
-            message.from_user.first_name,
-            message.from_user.last_name,
-        )
+    changes = []
 
-    if msg != f"[{message.from_user.id}](tg://user?id={message.from_user.id})":
+    if first_name != message.from_user.first_name and lastname_before != message.from_user.last_name:
+        changes.append(f"ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ɴᴀᴍᴇ ғʀᴏᴍ {first_name} {lastname_before} ᴛᴏ {message.from_user.first_name} {message.from_user.last_name}")
+    elif first_name != message.from_user.first_name:
+        changes.append(f"ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ғɪʀsᴛ ɴᴀᴍᴇ ғʀᴏᴍ {first_name} ᴛᴏ {message.from_user.first_name}")
+    elif lastname_before != message.from_user.last_name:
+        changes.append(f"ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ʟᴀsᴛ ɴᴀᴍᴇ ғʀᴏᴍ {lastname_before} ᴛᴏ {message.from_user.last_name}")
+
+    if usernamebefore != message.from_user.username:
+        changes.append(f"ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ᴜsᴇʀɴᴀᴍᴇ ғʀᴏᴍ @{usernamebefore} ᴛᴏ @{message.from_user.username}")
+
+    if changes:
+        msg += " ".join(changes)
         await message.reply_text(msg)
+
+    await add_userdata(
+        chat_id,
+        user_id,
+        message.from_user.username,
+        message.from_user.first_name,
+        message.from_user.last_name,
+    )
 
 
 @app.on_message(
