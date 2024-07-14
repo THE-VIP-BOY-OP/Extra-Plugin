@@ -89,7 +89,7 @@ async def chk_usr(_, message: Message):
 
         if usernamebefore != message.from_user.username:
             msg += f"""ᴄʜᴀɴɢᴇᴅ ʜᴇʀ ᴜsᴇʀɴᴀᴍᴇ ғʀᴏᴍ @{usernamebefore} to @{message.from_user.username}  """
-            
+
         await add_userdata(
             chat_id,
             user_id,
