@@ -65,10 +65,11 @@ async def remove(client, message):
                                     await app.ban_chat_member(
                                         message.chat.id, deletedAccount.id
                                     )
+                                except FloodWait as e:
+                                    await asyncio.sleep(e.value)
                                 except Exception:
                                     pass
                                 k += 1
-                                await asyncio.sleep(10)
                             if k == lenDeletedList:
                                 await message.reply(
                                     f"✅ | sᴜᴄᴄᴇssғᴜʟʟʏ ʀᴇᴍᴏᴠᴇᴅ ᴀʟʟ ᴅᴇʟᴇᴛᴇᴅ ᴀᴄᴄɪᴜɴᴛs ғʀᴏᴍ ᴛʜɪs ᴄʜᴀᴛ."
