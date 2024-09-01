@@ -1,9 +1,9 @@
 #
-# Copyright (C) 2024 by TheTeamVivek@Github, < https://github.com/TheTeamVivek >.
+# Copyright (C) 2024 by THE-VIP-BOY-OP@Github, < https://github.com/THE-VIP-BOY-OP >.
 #
-# This file is part of < https://github.com/TheTeamVivek/YukkiMusic > project,
+# This file is part of < https://github.com/THE-VIP-BOY-OP/VIPMUSIC > project,
 # and is released under the "GNU v3.0 License Agreement".
-# Please see < https://github.com/TheTeamVivek/YukkiMusic/blob/master/LICENSE >
+# Please see < https://github.com/THE-VIP-BOY-OP/VIPMUSIC/blob/master/LICENSE >
 #
 # All rights reserved.
 #
@@ -12,10 +12,10 @@ from pyrogram import filters
 from pyrogram.enums import ChatMembersFilter
 from pyrogram.types import ChatJoinRequest
 from pyrogram.errors.exceptions.bad_request_400 import UserAlreadyParticipant
-from YukkiMusic import app
-from YukkiMusic.core.mongo import mongodb
-from YukkiMusic.misc import SUDOERS
-from YukkiMusic.utils.keyboard import ikb
+from VIPMUSIC import app
+from VIPMUSIC.core.mongo import mongodb
+from VIPMUSIC.misc import SUDOERS
+from VIPMUSIC.utils.keyboard import ikb
 from utils.permissions import adminsOnly, member_permissions
 
 approvaldb = mongodb.autoapprove

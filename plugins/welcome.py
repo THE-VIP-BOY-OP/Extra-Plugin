@@ -11,10 +11,10 @@ from pyrogram.types import (
     InlineKeyboardMarkup,
 )
 
-from YukkiMusic import app
-from YukkiMusic.misc import SUDOERS
+from VIPMUSIC import app
+from VIPMUSIC.misc import SUDOERS
 from .notes import extract_urls
-from YukkiMusic.utils.database import is_gbanned_user
+from VIPMUSIC.utils.database import is_gbanned_user
 
 from utils import (
     del_welcome,
@@ -23,8 +23,8 @@ from utils import (
 )
 
 from utils.error import capture_err
-from YukkiMusic.utils.functions import check_format, extract_text_and_keyb
-from YukkiMusic.utils.keyboard import ikb
+from VIPMUSIC.utils.functions import check_format, extract_text_and_keyb
+from VIPMUSIC.utils.keyboard import ikb
 from utils.permissions import adminsOnly
 
 

@@ -2,7 +2,7 @@ import requests
 from pyrogram import filters
 from pyrogram.types import Message
 
-from YukkiMusic import app
+from VIPMUSIC import app
 
 
 @app.on_message(

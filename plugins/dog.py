@@ -9,7 +9,7 @@ from pyrogram.types import (
 )
 
 from config import BANNED_USERS
-from YukkiMusic import app
+from VIPMUSIC import app
 
 close_keyboard = InlineKeyboardMarkup(
     [

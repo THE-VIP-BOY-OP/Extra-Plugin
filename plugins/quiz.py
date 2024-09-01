@@ -4,7 +4,7 @@ import time
 
 from pyrogram import filters
 from pyrogram.enums import PollType, ChatAction
-from YukkiMusic import app
+from VIPMUSIC import app
 
 
 last_command_time = {}

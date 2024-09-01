@@ -3,8 +3,8 @@ from datetime import datetime
 
 from pyrogram import filters
 
-from YukkiMusic import app
-from YukkiMusic.utils.database import get_assistant
+from VIPMUSIC import app
+from VIPMUSIC.utils.database import get_assistant
 
 # Assuming Userbot is defined elsewhere
 

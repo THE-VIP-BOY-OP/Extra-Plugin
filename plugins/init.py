@@ -1,8 +1,8 @@
 import asyncio
 
 import config
-from YukkiMusic import app
-from YukkiMusic.utils.database import get_assistant
+from VIPMUSIC import app
+from VIPMUSIC.utils.database import get_assistant
 
 AUTO = True
 

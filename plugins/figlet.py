@@ -6,7 +6,7 @@ import pyfiglet
 from pyrogram import filters
 from pyrogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 
-from YukkiMusic import app
+from VIPMUSIC import app
 
 
 def figle(text):
@@ -30,7 +30,7 @@ async def echo(bot, message):
     try:
         text = message.text.split(" ", 1)[1]
     except IndexError:
-        return await message.reply_text("Example:\n\n`/figlet Yukki `")
+        return await message.reply_text("Example:\n\n`/figlet VIP `")
     kul_text, keyboard = figle(text)
     await message.reply_text(
         f"ʜᴇʀᴇ ɪs ʏᴏᴜʀ ғɪɢʟᴇᴛ :\n<pre>{kul_text}</pre>",

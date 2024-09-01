@@ -1,9 +1,9 @@
 #
-# Copyright (C) 2024 by TheTeamVivek@Github, < https://github.com/TheTeamVivek >.
+# Copyright (C) 2024 by THE-VIP-BOY-OP@Github, < https://github.com/THE-VIP-BOY-OP >.
 #
-# This file is part of < https://github.com/TheTeamVivek/YukkiMusic > project,
+# This file is part of < https://github.com/THE-VIP-BOY-OP/VIPMUSIC > project,
 # and is released under the MIT License.
-# Please see < https://github.com/TheTeamVivek/YukkiMusic/blob/master/LICENSE >
+# Please see < https://github.com/THE-VIP-BOY-OP/VIPMUSIC/blob/master/LICENSE >
 #
 # All rights reserved.
 #
@@ -14,7 +14,7 @@ from functools import wraps
 from pyrogram.errors.exceptions.forbidden_403 import ChatWriteForbidden
 
 from config import LOG_GROUP_ID
-from YukkiMusic import app
+from VIPMUSIC import app
 
 
 def split_limits(text):

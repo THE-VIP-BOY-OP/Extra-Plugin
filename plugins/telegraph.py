@@ -2,7 +2,7 @@ import os
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from telegraph import upload_file
-from YukkiMusic import app
+from VIPMUSIC import app
 
 
 @app.on_message(filters.command(["tgm", "tgt", "telegraph", "tl"]))

@@ -4,8 +4,8 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from config import LOG_GROUP_ID
-from YukkiMusic import app
-from YukkiMusic.utils.database import add_served_chat, get_assistant
+from VIPMUSIC import app
+from VIPMUSIC.utils.database import add_served_chat, get_assistant
 
 photo = [
     "https://telegra.ph/file/1949480f01355b4e87d26.jpg",

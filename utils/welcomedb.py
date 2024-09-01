@@ -1,4 +1,4 @@
-from YukkiMusic.core.mongo import mongodb
+from VIPMUSIC.core.mongo import mongodb
 
 greetingsdb = mongodb.greetings
 

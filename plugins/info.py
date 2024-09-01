@@ -3,9 +3,9 @@ import os
 from pyrogram import enums, filters
 from pyrogram.types import Message
 
-from YukkiMusic import app
-from YukkiMusic.misc import SUDOERS
-from YukkiMusic.utils.database import is_gbanned_user
+from VIPMUSIC import app
+from VIPMUSIC.misc import SUDOERS
+from VIPMUSIC.utils.database import is_gbanned_user
 
 n = "\n"
 w = " "
