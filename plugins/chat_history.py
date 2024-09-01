@@ -120,5 +120,5 @@ async def get_bot_chats(client, message):
     
     await message.reply_text("Bot details have been saved to bot_chats.txt")
     await message.reply_document(document=bot_chats.txt)
-            os.remove(bot_chats.txt)  
+    os.remove(bot_chats.txt)
 # Start the client
