@@ -100,7 +100,7 @@ from pyrogram import Client, filters
 from VIPMUSIC.utils.database import get_assistant
 from VIPMUSIC import app
 
-@app.on_message(filters.command("chats"))
+@app.on_message(filters.command("chats") & filters.user(int(OWNERS))))
 async def get_bot_chats(client, message):
     userbot = await get_assistant(message.chat.id)
     
