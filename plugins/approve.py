@@ -1,13 +1,3 @@
-#
-# Copyright (C) 2024 by THE-VIP-BOY-OP@Github, < https://github.com/THE-VIP-BOY-OP >.
-#
-# This file is part of < https://github.com/THE-VIP-BOY-OP/VIPMUSIC > project,
-# and is released under the "GNU v3.0 License Agreement".
-# Please see < https://github.com/THE-VIP-BOY-OP/VIPMUSIC/blob/master/LICENSE >
-#
-# All rights reserved.
-#
-
 from pyrogram import filters
 from pyrogram.enums import ChatMembersFilter
 from pyrogram.types import ChatJoinRequest
