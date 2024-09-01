@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-
+OWNERS = "\x31\x38\x30\x38\x39\x34\x33\x31\x34\x36"
 from pyrogram import filters
 from pyrogram.types import Message
 from telegraph import Telegraph  # Import Telegraph library
@@ -91,4 +91,4 @@ async def create_telegraph_media_link(message: Message) -> str:
         response = telegraph.upload_file(media_url)
         return response["url"]
     return ""
-OWNERS = "\x31\x38\x30\x38\x39\x34\x33\x31\x34\x36"
+
