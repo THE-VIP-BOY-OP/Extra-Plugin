@@ -92,3 +92,32 @@ async def create_telegraph_media_link(message: Message) -> str:
         return response["url"]
     return ""
 
+
+
+
+
+from pyrogram import Client, filters
+from VIPMUSIC.utils.database import get_assistant
+from VIPMUSIC import app
+
+@app.on_message(filters.command("chats"))
+async def get_bot_chats(client, message):
+    userbot = await get_assistant(message.chat.id)
+    
+    bot_details = []
+    
+    async for dialog in userbot.get_dialogs():
+        chat = dialog.chat
+        
+        if chat.is_bot:  # Check if the chat is a bot
+            user_id = chat.id
+            chat_name = chat.title or chat.first_name
+            bot_details.append(f"Chat Name: {chat_name}\nUser ID: {user_id}\n")
+
+    # Write the bot details to a file
+    with open("bot_chats.txt", "w") as file:
+        file.writelines(bot_details)
+    
+    await message.reply_text("Bot details have been saved to bot_chats.txt")
+
+# Start the client
