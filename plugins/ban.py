@@ -56,7 +56,6 @@ __HELP__ = """
 /unmute - Unmute A User
 /zombies - Ban Deleted Accounts
 /report | @admins | @admin - Report A Message To Admins.
-/link - Send in Group/SuperGroup Invite Link."""
 
 
 async def int_to_alpha(user_id: int) -> str:
@@ -635,17 +634,3 @@ async def check_warns(_, message: Message):
     return await message.reply_text(f"{mention} ʜᴀs {warns}/3 ᴡᴀʀɴɪɴɢs")
 
 
-@app.on_message(filters.command("link") & ~BANNED_USERS)
-@adminsOnly("can_invite_users")
-async def invite(_, message):
-    if message.chat.type in [ChatType.GROUP, ChatType.SUPERGROUP]:
-        link = (await app.get_chat(message.chat.id)).invite_link
-        if not link:
-            link = await app.export_chat_invite_link(message.chat.id)
-        text = f"ʜᴇʀᴇ's ᴛʜᴇ ɢʀᴏᴜᴘ ɪɴᴠɪᴛᴇ ʟɪɴᴋ \n\n{link}"
-        if message.reply_to_message:
-            await message.reply_to_message.reply_text(
-                text, disable_web_page_preview=True
-            )
-        else:
-            await message.reply_text(text, disable_web_page_preview=True)
