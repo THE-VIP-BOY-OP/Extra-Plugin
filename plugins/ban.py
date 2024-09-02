@@ -55,7 +55,7 @@ __HELP__ = """
 /tmute - Mute A User For Specific Time
 /unmute - Unmute A User
 /zombies - Ban Deleted Accounts
-/report | @admins | @admin - Report A Message To Admins.
+/report | @admins | @admin - Report A Message To Admins."""
 
 
 async def int_to_alpha(user_id: int) -> str:
