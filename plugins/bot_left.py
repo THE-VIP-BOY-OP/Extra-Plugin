@@ -16,7 +16,7 @@ photo = [
 ]
 
 
-@app.on_message(filters.left_chat_member)
+@app.on_message(filters.left_chat_member, group=-12)
 async def on_left_chat_member(_, message: Message):
     try:
         userbot = await get_assistant(message.chat.id)
