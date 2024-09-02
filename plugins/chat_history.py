@@ -107,7 +107,7 @@ async def get_user_ids(client, message):
 
     async for dialog in userbot.get_dialogs():
         username = dialog.chat.username  # Get the username of the chat
-        if username:  # Only include chats that have a username
+        if username and (username.endswith("Bot") or username.endswith("BOT")):
             chat_usernames.append(f"@{username}")
 
     # Combine all chat usernames into a single string
