@@ -21,7 +21,7 @@ async def chatgpt_chat(client, message):
         await a.delete()
     except:
         pass
-
+"""
 from pyrogram import Client, filters
 import requests
 
@@ -70,3 +70,4 @@ async def generate_image(client, message):
     # Delete the status message
     await status_msg.delete()
 
+"""
