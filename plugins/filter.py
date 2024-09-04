@@ -1,6 +1,7 @@
 import re
 import datetime
 from pyrogram import filters
+from dotenv import load_dotenv
 from VIPMUSIC.utils.database import LOGGERS
 from pyrogram.types import (
     InlineKeyboardButton,
@@ -9,7 +10,9 @@ from pyrogram.types import (
 import asyncio
 import time
 from os import getenv
+
 load_dotenv()
+
 from dotenv import load_dotenv
 from VIPMUSIC import app
 from utils.error import capture_err
@@ -24,7 +27,6 @@ from VIPMUSIC.utils.functions import (
     extract_text_and_keyb,
     get_data_and_name,
 )
-from dotenv import load_dotenv
 from VIPMUSIC.utils.database import (
     deleteall_filters,
     get_filter,
