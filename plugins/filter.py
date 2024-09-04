@@ -1,6 +1,6 @@
 import re
 import datetime
-from pyrogram import filters
+from pyrogram import Client, filters
 from dotenv import load_dotenv
 from VIPMUSIC.utils.database import LOGGERS
 from pyrogram.types import (
