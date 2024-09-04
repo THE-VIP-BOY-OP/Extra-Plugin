@@ -1,10 +1,14 @@
 import requests
 import random
 import re
+import openai  # Make sure to install OpenAI package
 from MukeshAPI import api
 from pyrogram import filters
 from pyrogram.enums import ChatAction, ParseMode
 from VIPMUSIC import app
+
+# Set your OpenAI API key
+openai.api_key = "your-openai-api-key-here"  # Use your actual OpenAI API key here
 
 # List of supported emojis for reactions
 EMOJI_LIST = [
@@ -65,6 +69,23 @@ def truncate_text(text, max_words=50):
         return ' '.join(words[:max_words]) + "..."
     return text
 
+# Function to get the response from OpenAI GPT-4 model
+def get_openai_response(prompt):
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=150,  # Adjust the response length here
+            temperature=0.7  # Adjust the creativity of responses
+        )
+        return response['choices'][0]['message']['content']
+    except Exception as e:
+        print(f"Error while calling OpenAI API: {str(e)}")
+        return None
+
 # Handler for direct messages (DMs)
 @app.on_message(filters.private & ~filters.service)
 async def gemini_dm_handler(client, message):
@@ -74,16 +95,12 @@ async def gemini_dm_handler(client, message):
     user_input = message.text
 
     try:
-        response = api.gemini(user_input)
-        x = response.get("results")
-        image_url = response.get("image_url")
-
+        # Using GPT-4 model for the response
+        response = get_openai_response(user_input)
+        x = response
         if x:
             formatted_response = format_response(truncate_text(x))
-            if image_url:
-                await message.reply_photo(image_url, caption=formatted_response, quote=True)
-            else:
-                await message.reply_text(formatted_response, quote=True)
+            await message.reply_text(formatted_response, quote=True)
         else:
             await message.reply_text(to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"), quote=True)
     except requests.exceptions.RequestException as e:
@@ -104,16 +121,12 @@ async def gemini_group_handler(client, message):
 
             user_input = message.text.strip()
             try:
-                response = api.gemini(user_input)
-                x = response.get("results")
-                image_url = response.get("image_url")
+                response = get_openai_response(user_input)
+                x = response
 
                 if x:
                     formatted_response = format_response(truncate_text(x))
-                    if image_url:
-                        await message.reply_photo(image_url, caption=formatted_response, quote=True)
-                    else:
-                        await message.reply_text(formatted_response, quote=True)
+                    await message.reply_text(formatted_response, quote=True)
                 else:
                     await message.reply_text(to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"), quote=True)
             except requests.exceptions.RequestException as e:
@@ -126,19 +139,15 @@ async def gemini_group_handler(client, message):
             await app.send_chat_action(message.chat.id, ChatAction.TYPING)
 
             # Remove the bot's username from the message text before processing
-            user_input = message.text.replace(f"@{bot_username}", "").strip()
+            user_input = message.text.replace(f"@{bot_username}", "").trim()
 
             try:
-                response = api.gemini(user_input)
-                x = response.get("results")
-                image_url = response.get("image_url")
+                response = get_openai_response(user_input)
+                x = response
 
                 if x:
                     formatted_response = format_response(truncate_text(x))
-                    if image_url:
-                        await message.reply_photo(image_url, caption=formatted_response, quote=True)
-                    else:
-                        await message.reply_text(formatted_response, quote=True)
+                    await message.reply_text(formatted_response, quote=True)
                 else:
                     await message.reply_text(to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"), quote=True)
             except requests.exceptions.RequestException as e:
