@@ -2,6 +2,7 @@ import re
 import datetime
 from pyrogram import Client, filters
 from dotenv import load_dotenv
+from pyrogram.types import CallbackQuery, Message
 from VIPMUSIC.utils.database import LOGGERS
 from pyrogram.types import (
     InlineKeyboardButton,
