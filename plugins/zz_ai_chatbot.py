@@ -67,7 +67,7 @@ def truncate_text(text, max_words=50):
     return text
 
 # Function to simulate typing effect
-async def send_typing_effect(message, text, delay=0.2):
+async def send_typing_effect(message, text, delay=0.1):
     words = text.split()
     final_message = ""
     
