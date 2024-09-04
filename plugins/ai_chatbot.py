@@ -33,7 +33,19 @@ def to_small_caps(text):
         'q': 'ǫ', 'r': 'ʀ', 's': 's', 't': 'ᴛ', 'u': 'ᴜ', 'v': 'ᴠ', 'w': 'ᴡ', 'x': 'x',
         'y': 'ʏ', 'z': 'ᴢ'
     }
-    return ''.join(small_caps.get(char, char) for char in text.lower())
+
+    words = text.split()
+    transformed_words = []
+    
+    for word in words:
+        if word.startswith('@'):
+            # Leave the username as it is
+            transformed_words.append(word)
+        else:
+            # Convert the word to small caps
+            transformed_words.append(''.join(small_caps.get(char, char) for char in word.lower()))
+
+    return ' '.join(transformed_words)
 
 # Function to determine if the response contains a link
 def contains_link(text):
@@ -45,6 +57,13 @@ def format_response(text):
         return text
     else:
         return to_small_caps(text)
+
+# Function to truncate text to a maximum of 50 words
+def truncate_text(text, max_words=50):
+    words = text.split()
+    if len(words) > max_words:
+        return ' '.join(words[:max_words]) + "..."
+    return text
 
 # Handler for direct messages (DMs)
 @app.on_message(filters.private & ~filters.service)
@@ -58,7 +77,7 @@ async def gemini_dm_handler(client, message):
         response = api.gemini(user_input)
         x = response["results"]
         if x:
-            formatted_response = format_response(x)
+            formatted_response = format_response(truncate_text(x))
             await message.reply_text(formatted_response, quote=True)
         else:
             await message.reply_text(to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"), quote=True)
@@ -81,7 +100,7 @@ async def gemini_group_handler(client, message):
             response = api.gemini(user_input)
             x = response["results"]
             if x:
-                formatted_response = format_response(x)
+                formatted_response = format_response(truncate_text(x))
                 await message.reply_text(formatted_response, quote=True)
             else:
                 await message.reply_text(to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"), quote=True)
