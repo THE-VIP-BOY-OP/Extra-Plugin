@@ -18,8 +18,12 @@ EMOJI_LIST = [
 
 # Function to send a random emoji reaction
 async def react_with_random_emoji(client, message):
-    emoji = random.choice(EMOJI_LIST)
-    await app.send_reaction(message.chat.id, message.id, emoji)
+    try:
+        emoji = random.choice(EMOJI_LIST)
+        await app.send_reaction(message.chat.id, message.id, emoji)
+    except Exception as e:
+        # If sending the reaction fails, just log the error silently and continue
+        print(f"Failed to send reaction: {str(e)}")
 
 # Function to convert text to small caps
 def to_small_caps(text):
@@ -45,7 +49,7 @@ def format_response(text):
 # Handler for direct messages (DMs)
 @app.on_message(filters.private & ~filters.service)
 async def gemini_dm_handler(client, message):
-    await react_with_random_emoji(client, message)
+    await react_with_random_emoji(client, message)  # Attempt to send a reaction
     await app.send_chat_action(message.chat.id, ChatAction.TYPING)
     
     user_input = message.text
@@ -68,7 +72,7 @@ async def gemini_group_handler(client, message):
 
     # Check if the message is a reply to the bot's message or mentions the bot's username
     if (message.reply_to_message and message.reply_to_message.from_user.id == (await app.get_me()).id) or f"@{bot_username}" in message.text:
-        await react_with_random_emoji(client, message)
+        await react_with_random_emoji(client, message)  # Attempt to send a reaction
         await app.send_chat_action(message.chat.id, ChatAction.TYPING)
 
         user_input = message.text
