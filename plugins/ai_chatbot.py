@@ -6,8 +6,15 @@ from pyrogram import filters
 from pyrogram.enums import ChatAction
 from VIPMUSIC import app
 
-# List of random emojis for reactions
-EMOJI_LIST = ["😃", "😂", "👍", "🔥", "😎", "🤔", "😍", "😅", "🤖", "🎉", "💯", "🕊️"]
+# List of supported emojis for reactions based on the screenshot
+EMOJI_LIST = [
+    "👍", "👎", "❤️", "🔥", "🥳", "👏", "😁", "😂", "😲", "😱", 
+    "😢", "😭", "🎉", "😇", "😍", "😅", "💩", "🙏", "🤝", "🍓", 
+    "🎃", "👀", "💯", "😎", "🤖", "🐵", "👻", "🎄", "🥂", "🎅", 
+    "❄️", "✍️", "🎁", "🤔", "💔", "🥰", "😢", "🥺", "🙈", "🤡", 
+    "😋", "🎊", "🍾", "🌟", "👶", "🦄", "💤", "😷", "👨‍💻", "🍌", 
+    "🍓", "💀", "👨‍🏫", "🤝", "☠️", "🎯", "🍕", "🦾", "🔥", "💃"
+]
 
 # Function to send a random emoji reaction
 async def react_with_random_emoji(client, message):
