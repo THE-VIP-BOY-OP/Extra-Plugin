@@ -95,25 +95,53 @@ async def gemini_group_handler(client, message):
     bot_username = (await app.get_me()).username
 
     # Ensure that the message contains text
-    if message.text and f"@{bot_username}" in message.text:
-        await react_with_random_emoji(client, message)  # Attempt to send a reaction
-        await app.send_chat_action(message.chat.id, ChatAction.TYPING)
+    if message.text:
+        # Check if the message is a reply to the bot's message
+        if message.reply_to_message and message.reply_to_message.from_user.username == bot_username:
+            # Process the reply
+            await react_with_random_emoji(client, message)
+            await app.send_chat_action(message.chat.id, ChatAction.TYPING)
 
-        # Remove the bot's username from the message text before processing
-        user_input = message.text.replace(f"@{bot_username}", "").strip()
+            user_input = message.text.strip()
+            try:
+                response = api.gemini(user_input)
+                x = response.get("results")
+                image_url = response.get("image_url")
 
-        try:
-            response = api.gemini(user_input)
-            x = response.get("results")
-            image_url = response.get("image_url")
-
-            if x:
-                formatted_response = format_response(truncate_text(x))
-                if image_url:
-                    await message.reply_photo(image_url, caption=formatted_response, quote=True)
+                if x:
+                    formatted_response = format_response(truncate_text(x))
+                    if image_url:
+                        await message.reply_photo(image_url, caption=formatted_response, quote=True)
+                    else:
+                        await message.reply_text(formatted_response, quote=True)
                 else:
-                    await message.reply_text(formatted_response, quote=True)
-            else:
-                await message.reply_text(to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"), quote=True)
-        except requests.exceptions.RequestException as e:
-            pass
+                    await message.reply_text(to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"), quote=True)
+            except requests.exceptions.RequestException as e:
+                pass
+        
+        # Check if the bot's username is mentioned anywhere in the text
+        elif f"@{bot_username}" in message.text:
+            # Process the message
+            await react_with_random_emoji(client, message)
+            await app.send_chat_action(message.chat.id, ChatAction.TYPING)
+
+            # Remove the bot's username from the message text before processing
+            user_input = message.text.replace(f"@{bot_username}", "").strip()
+
+            try:
+                response = api.gemini(user_input)
+                x = response.get("results")
+                image_url = response.get("image_url")
+
+                if x:
+                    formatted_response = format_response(truncate_text(x))
+                    if image_url:
+                        await message.reply_photo(image_url, caption=formatted_response, quote=True)
+                    else:
+                        await message.reply_text(formatted_response, quote=True)
+                else:
+                    await message.reply_text(to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"), quote=True)
+            except requests.exceptions.RequestException as e:
+                pass
+
+        # Ignore messages that are neither replies to the bot nor mention the bot
