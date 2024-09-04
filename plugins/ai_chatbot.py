@@ -3,10 +3,10 @@ import random
 import re
 from MukeshAPI import api
 from pyrogram import filters
-from pyrogram.enums import ChatAction
+from pyrogram.enums import ChatAction, ParseMode
 from VIPMUSIC import app
 
-# List of supported emojis for reactions based on the screenshot
+# List of supported emojis for reactions
 EMOJI_LIST = [
     "👍", "👎", "❤️", "🔥", "🥳", "👏", "😁", "😂", "😲", "😱", 
     "😢", "😭", "🎉", "😇", "😍", "😅", "💩", "🙏", "🤝", "🍓", 
@@ -75,10 +75,15 @@ async def gemini_dm_handler(client, message):
 
     try:
         response = api.gemini(user_input)
-        x = response["results"]
+        x = response.get("results")
+        image_url = response.get("image_url")
+
         if x:
             formatted_response = format_response(truncate_text(x))
-            await message.reply_text(formatted_response, quote=True)
+            if image_url:
+                await message.reply_photo(image_url, caption=formatted_response, quote=True)
+            else:
+                await message.reply_text(formatted_response, quote=True)
         else:
             await message.reply_text(to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"), quote=True)
     except requests.exceptions.RequestException as e:
@@ -89,19 +94,25 @@ async def gemini_dm_handler(client, message):
 async def gemini_group_handler(client, message):
     bot_username = (await app.get_me()).username
 
-    # Check if the message is a reply to the bot's message or mentions the bot's username
-    if (message.reply_to_message and message.reply_to_message.from_user.id == (await app.get_me()).id) or f"@{bot_username}" in message.text:
+    # Check if the message contains the bot's username anywhere in the text
+    if f"@{bot_username}" in message.text:
         await react_with_random_emoji(client, message)  # Attempt to send a reaction
         await app.send_chat_action(message.chat.id, ChatAction.TYPING)
 
-        user_input = message.text
+        # Remove the bot's username from the message text before processing
+        user_input = message.text.replace(f"@{bot_username}", "").strip()
 
         try:
             response = api.gemini(user_input)
-            x = response["results"]
+            x = response.get("results")
+            image_url = response.get("image_url")
+
             if x:
                 formatted_response = format_response(truncate_text(x))
-                await message.reply_text(formatted_response, quote=True)
+                if image_url:
+                    await message.reply_photo(image_url, caption=formatted_response, quote=True)
+                else:
+                    await message.reply_text(formatted_response, quote=True)
             else:
                 await message.reply_text(to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"), quote=True)
         except requests.exceptions.RequestException as e:
