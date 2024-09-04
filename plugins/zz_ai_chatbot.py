@@ -23,7 +23,6 @@ async def react_with_random_emoji(client, message):
         emoji = random.choice(EMOJI_LIST)
         await app.send_reaction(message.chat.id, message.id, emoji)
     except Exception as e:
-        # If sending the reaction fails, just log the error silently and continue
         print(f"Failed to send reaction: {str(e)}")
 
 # Function to convert text to small caps
@@ -40,10 +39,8 @@ def to_small_caps(text):
     
     for word in words:
         if word.startswith('@'):
-            # Leave the username as it is
             transformed_words.append(word)
         else:
-            # Convert the word to small caps
             transformed_words.append(''.join(small_caps.get(char, char) for char in word.lower()))
 
     return ' '.join(transformed_words)
@@ -66,21 +63,21 @@ def truncate_text(text, max_words=50):
         return ' '.join(words[:max_words]) + "..."
     return text
 
-# Function to simulate typing effect
-async def send_typing_effect(message, text, delay=0.1):
+# Function to gradually reveal the message in 4 steps
+async def gradual_message_edit(message, text, delay=0.1):
     words = text.split()
-    final_message = ""
+    chunk_size = max(1, len(words) // 4)  # Divide the total number of words by 4
     
-    for word in words:
-        final_message += word + " "
-        await message.edit(final_message.strip())  # Edit the message with the new word
-        await asyncio.sleep(delay)  # Small delay between each word
+    for i in range(1, 5):
+        chunk = ' '.join(words[:i * chunk_size])
+        await message.edit(chunk)
+        await asyncio.sleep(delay)
 
 # Handler for direct messages (DMs)
 @app.on_message(filters.private & ~filters.service)
 async def gemini_dm_handler(client, message):
-    await react_with_random_emoji(client, message)  # Attempt to send a reaction
-    sent_message = await message.reply_text("...")  # Start with an empty message
+    await react_with_random_emoji(client, message)
+    sent_message = await message.reply_text("...")
     await app.send_chat_action(message.chat.id, ChatAction.TYPING)
     
     user_input = message.text
@@ -95,10 +92,9 @@ async def gemini_dm_handler(client, message):
             if image_url:
                 await message.reply_photo(image_url, caption=formatted_response, quote=True)
             else:
-                # Simulate typing effect by sending words gradually
-                await send_typing_effect(sent_message, formatted_response)
+                await gradual_message_edit(sent_message, formatted_response)
         else:
-            await send_typing_effect(sent_message, to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"))
+            await gradual_message_edit(sent_message, to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"))
     except requests.exceptions.RequestException as e:
         pass
 
@@ -107,13 +103,10 @@ async def gemini_dm_handler(client, message):
 async def gemini_group_handler(client, message):
     bot_username = (await app.get_me()).username
 
-    # Ensure that the message contains text
     if message.text:
-        # Check if the message is a reply to the bot's message
         if message.reply_to_message and message.reply_to_message.from_user.username == bot_username:
-            # Process the reply
             await react_with_random_emoji(client, message)
-            sent_message = await message.reply_text("...")  # Start with an empty message
+            sent_message = await message.reply_text("...")
             await app.send_chat_action(message.chat.id, ChatAction.TYPING)
 
             user_input = message.text.strip()
@@ -127,20 +120,17 @@ async def gemini_group_handler(client, message):
                     if image_url:
                         await message.reply_photo(image_url, caption=formatted_response, quote=True)
                     else:
-                        await send_typing_effect(sent_message, formatted_response)
+                        await gradual_message_edit(sent_message, formatted_response)
                 else:
-                    await send_typing_effect(sent_message, to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"))
+                    await gradual_message_edit(sent_message, to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"))
             except requests.exceptions.RequestException as e:
                 pass
         
-        # Check if the bot's username is mentioned anywhere in the text
         elif f"@{bot_username}" in message.text:
-            # Process the message
             await react_with_random_emoji(client, message)
-            sent_message = await message.reply_text("...")  # Start with an empty message
+            sent_message = await message.reply_text("...")
             await app.send_chat_action(message.chat.id, ChatAction.TYPING)
 
-            # Remove the bot's username from the message text before processing
             user_input = message.text.replace(f"@{bot_username}", "").strip()
 
             try:
@@ -153,10 +143,8 @@ async def gemini_group_handler(client, message):
                     if image_url:
                         await message.reply_photo(image_url, caption=formatted_response, quote=True)
                     else:
-                        await send_typing_effect(sent_message, formatted_response)
+                        await gradual_message_edit(sent_message, formatted_response)
                 else:
-                    await send_typing_effect(sent_message, to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"))
+                    await gradual_message_edit(sent_message, to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"))
             except requests.exceptions.RequestException as e:
                 pass
-
-        # Ignore messages that are neither replies to the bot nor mention the bot
