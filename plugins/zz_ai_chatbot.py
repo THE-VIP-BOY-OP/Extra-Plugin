@@ -1,6 +1,7 @@
 import requests
 import random
 import re
+import asyncio
 from MukeshAPI import api
 from pyrogram import filters
 from pyrogram.enums import ChatAction, ParseMode
@@ -65,10 +66,21 @@ def truncate_text(text, max_words=50):
         return ' '.join(words[:max_words]) + "..."
     return text
 
+# Function to simulate typing effect
+async def send_typing_effect(message, text, delay=0.2):
+    words = text.split()
+    final_message = ""
+    
+    for word in words:
+        final_message += word + " "
+        await message.edit(final_message.strip())  # Edit the message with the new word
+        await asyncio.sleep(delay)  # Small delay between each word
+
 # Handler for direct messages (DMs)
 @app.on_message(filters.private & ~filters.service)
 async def gemini_dm_handler(client, message):
     await react_with_random_emoji(client, message)  # Attempt to send a reaction
+    sent_message = await message.reply_text("...")  # Start with an empty message
     await app.send_chat_action(message.chat.id, ChatAction.TYPING)
     
     user_input = message.text
@@ -83,9 +95,10 @@ async def gemini_dm_handler(client, message):
             if image_url:
                 await message.reply_photo(image_url, caption=formatted_response, quote=True)
             else:
-                await message.reply_text(formatted_response, quote=True)
+                # Simulate typing effect by sending words gradually
+                await send_typing_effect(sent_message, formatted_response)
         else:
-            await message.reply_text(to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"), quote=True)
+            await send_typing_effect(sent_message, to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"))
     except requests.exceptions.RequestException as e:
         pass
 
@@ -100,6 +113,7 @@ async def gemini_group_handler(client, message):
         if message.reply_to_message and message.reply_to_message.from_user.username == bot_username:
             # Process the reply
             await react_with_random_emoji(client, message)
+            sent_message = await message.reply_text("...")  # Start with an empty message
             await app.send_chat_action(message.chat.id, ChatAction.TYPING)
 
             user_input = message.text.strip()
@@ -113,9 +127,9 @@ async def gemini_group_handler(client, message):
                     if image_url:
                         await message.reply_photo(image_url, caption=formatted_response, quote=True)
                     else:
-                        await message.reply_text(formatted_response, quote=True)
+                        await send_typing_effect(sent_message, formatted_response)
                 else:
-                    await message.reply_text(to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"), quote=True)
+                    await send_typing_effect(sent_message, to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"))
             except requests.exceptions.RequestException as e:
                 pass
         
@@ -123,6 +137,7 @@ async def gemini_group_handler(client, message):
         elif f"@{bot_username}" in message.text:
             # Process the message
             await react_with_random_emoji(client, message)
+            sent_message = await message.reply_text("...")  # Start with an empty message
             await app.send_chat_action(message.chat.id, ChatAction.TYPING)
 
             # Remove the bot's username from the message text before processing
@@ -138,9 +153,9 @@ async def gemini_group_handler(client, message):
                     if image_url:
                         await message.reply_photo(image_url, caption=formatted_response, quote=True)
                     else:
-                        await message.reply_text(formatted_response, quote=True)
+                        await send_typing_effect(sent_message, formatted_response)
                 else:
-                    await message.reply_text(to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"), quote=True)
+                    await send_typing_effect(sent_message, to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"))
             except requests.exceptions.RequestException as e:
                 pass
 
