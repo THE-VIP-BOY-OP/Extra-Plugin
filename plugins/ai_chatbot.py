@@ -94,8 +94,8 @@ async def gemini_dm_handler(client, message):
 async def gemini_group_handler(client, message):
     bot_username = (await app.get_me()).username
 
-    # Check if the message contains the bot's username anywhere in the text
-    if f"@{bot_username}" in message.text:
+    # Ensure that the message contains text
+    if message.text and f"@{bot_username}" in message.text:
         await react_with_random_emoji(client, message)  # Attempt to send a reaction
         await app.send_chat_action(message.chat.id, ChatAction.TYPING)
 
