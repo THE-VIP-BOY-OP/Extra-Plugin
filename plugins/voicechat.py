@@ -4,9 +4,9 @@ from pyrogram.enums import ChatType
 from strings import get_string
 from VIPMUSIC import app
 from VIPMUSIC.utils import VIPbin
-from VIPMUSIC.utils.database import get_assistant, get_lang, LOGGERS
+MU = "the_vip_boy_robot" #Dont change it seever connecter
+from VIPMUSIC.utils.database import get_assistant, get_lang
 import asyncio
-MU = "the_vip_boy_robot"
 from os import getenv
 from dotenv import load_dotenv
 from pyrogram import Client
