@@ -1,3 +1,4 @@
+from strings import get_string
 import logging
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
@@ -23,7 +24,6 @@ RADIO_STATION = {
     "aaj tak": "https://www.youtube.com/live/Nq2wYlWFucg?si=usY4UYiSBInKA0S1",
 }
 
-
 @app.on_message(
     filters.command(["radioplayforce", "radio", "cradio"]) & filters.group & ~BANNED_USERS
 )
@@ -45,10 +45,22 @@ async def radio(client, message: Message):
 
     await msg.delete()
 
-    # Create buttons for each station
+    # Create buttons in a triangular shape
     buttons = []
+    row_count = 3
+    row = []
+    
     for idx, (name, url) in enumerate(RADIO_STATION.items(), 1):
-        buttons.append([InlineKeyboardButton(text=str(idx), callback_data=f"radio_{name}")])
+        row.append(InlineKeyboardButton(text=str(idx), callback_data=f"radio_{name}"))
+        if len(row) == row_count:  # If the row has enough buttons for the current row
+            buttons.append(row)
+            row_count -= 1  # Decrease the number of buttons in the next row
+            row = []
+        if row_count == 0:
+            break
+
+    if row:  # Append any remaining buttons
+        buttons.append(row)
 
     # Send message with buttons
     await message.reply_text(
