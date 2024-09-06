@@ -35,19 +35,15 @@ RADIO_STATION = {
 def create_triangular_buttons():
     buttons = []
     stations = list(RADIO_STATION.keys())
-    button_row = []
-    row_count = 3  # Start with 3 buttons in the first row
+    row_count = 3  # Number of buttons per row
     
-    i = 0
+    # Iterate through the stations and create buttons
     while stations:
         button_row = []
         for _ in range(min(row_count, len(stations))):
-            button_row.append(InlineKeyboardButton(str(i + 1), callback_data=f"radio_station_{stations[i]}"))
-            i += 1
+            station_name = stations.pop(0)
+            button_row.append(InlineKeyboardButton(station_name, callback_data=f"radio_station_{station_name}"))
         buttons.append(button_row)
-        row_count -= 1
-        if row_count == 0:
-            row_count = 3  # Reset back to 3 buttons for the next set
     
     return buttons
 
@@ -56,11 +52,11 @@ def create_triangular_buttons():
 )
 async def radio(client, message: Message):
     msg = await message.reply_text("please wait a moment...")
-    
+
     try:
         userbot = await get_assistant(message.chat.id)
         get = await app.get_chat_member(message.chat.id, userbot.id)
-        
+
         if get.status == ChatMemberStatus.BANNED:
             return await msg.edit_text(
                 text=f"» {userbot.mention} assistant is banned in {message.chat.title}.\nPlease unban and try again."
@@ -71,9 +67,14 @@ async def radio(client, message: Message):
     # Create triangular buttons for available radio stations
     buttons = create_triangular_buttons()
 
-    # Send message with buttons and small text alert
+    # Create a textual list of all channels
+    channels_list = "\n".join([f"{i + 1}. {name}" for i, name in enumerate(RADIO_STATION.keys())])
+
+    # Send message with buttons and list of channels
     await message.reply_text(
-        "pls click below button to play radio channel",
+        f"Please click below button to play a radio channel:\n\n"
+        f"Channel List:\n{channels_list}\n\n"
+        f"Select a button to play the respective radio station.",
         reply_markup=InlineKeyboardMarkup(buttons),
     )
 
