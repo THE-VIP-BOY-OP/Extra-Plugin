@@ -20,16 +20,17 @@ from VIPMUSIC.misc import SUDOERS
 
 # Radio Station List
 RADIO_STATION = {
-    "air bilaspur": "http://air.pc.cdn.bitgravity.com/air/live/pbaudio110/playlist.m3u8",
-    "air raipur": "http://air.pc.cdn.bitgravity.com/air/live/pbaudio118/playlist.m3u8",
-    "capital fm": "http://media-ice.musicradio.com/CapitalMP3?.mp3&listening-from-radio-garden=1616312105154",
-    "english": "https://hls-01-regions.emgsound.ru/11_msk/playlist.m3u8",
-    "mirchi": "http://peridot.streamguys.com:7150/Mirchi",
-    "radio today": "http://stream.zenolive.com/8wv4d8g4344tv",
-    "youtube": "https://www.youtube.com/live/eu191hR_LEc?si=T-9QYD548jd0Mogp",
-    "zee news": "https://www.youtube.com/live/TPcmrPrygDc?si=hiHBkIidgurQAd1P",
-    "aaj tak": "https://www.youtube.com/live/Nq2wYlWFucg?si=usY4UYiSBInKA0S1",
+    "ᴀɪʀ ʙɪʟᴀsᴘᴜʀ": "http://air.pc.cdn.bitgravity.com/air/live/pbaudio110/playlist.m3u8",
+    "ᴀɪʀ ʀᴀɪᴘᴜʀ": "http://air.pc.cdn.bitgravity.com/air/live/pbaudio118/playlist.m3u8",
+    "ᴄᴀᴘɪᴛᴀʟ ꜰᴍ": "http://media-ice.musicradio.com/CapitalMP3?.mp3&listening-from-radio-garden=1616312105154",
+    "ᴇɴɢʟɪsʜ": "https://hls-01-regions.emgsound.ru/11_msk/playlist.m3u8",
+    "ᴍɪʀᴄʜɪ": "http://peridot.streamguys.com:7150/Mirchi",
+    "ʀᴀᴅɪᴏ ᴛᴏᴅᴀʏ": "http://stream.zenolive.com/8wv4d8g4344tv",
+    "ʏᴏᴜᴛᴜʙᴇ": "https://www.youtube.com/live/eu191hR_LEc?si=T-9QYD548jd0Mogp",
+    "ᴢᴇᴇ ɴᴇᴡs": "https://www.youtube.com/live/TPcmrPrygDc?si=hiHBkIidgurQAd1P",
+    "ᴀᴀᴊ ᴛᴀᴋ": "https://www.youtube.com/live/Nq2wYlWFucg?si=usY4UYiSBInKA0S1",
 }
+
 
 # Function to create triangular buttons dynamically
 def create_triangular_buttons():
