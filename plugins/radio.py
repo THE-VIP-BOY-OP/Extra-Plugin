@@ -51,7 +51,7 @@ def create_triangular_buttons():
     filters.command(["radio", "radioplayforce", "cradio"]) & filters.group & ~BANNED_USERS
 )
 async def radio(client, message: Message):
-    msg = await message.reply_text("please wait a moment...")
+    msg = await message.reply_text("ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ ᴀ ᴍᴏᴍᴇɴᴛ...")
 
     try:
         userbot = await get_assistant(message.chat.id)
@@ -59,7 +59,7 @@ async def radio(client, message: Message):
 
         if get.status == ChatMemberStatus.BANNED:
             return await msg.edit_text(
-                text=f"» {userbot.mention} assistant is banned in {message.chat.title}.\nPlease unban and try again."
+                text=f"» {userbot.mention} ᴀssɪsᴛᴀɴᴛ ɪs ʙᴀɴɴᴇᴅ ɪɴ {message.chat.title}.\nᴘʟᴇᴀsᴇ ᴜɴʙᴀɴ ᴀɴᴅ ᴛʀʏ ᴀɢᴀɪɴ."
             )
     except UserNotParticipant:
         pass
@@ -72,9 +72,9 @@ async def radio(client, message: Message):
 
     # Send message with buttons and list of channels
     await message.reply_text(
-        f"Please click below button to play a radio channel:\n\n"
-        f"Channel List:\n{channels_list}\n\n"
-        f"Select a button to play the respective radio station.",
+        f"ᴘʟᴇᴀsᴇ ᴄʟɪᴄᴋ ʙᴇʟᴏᴡ ʙᴜᴛᴛᴏɴ ᴛᴏ ᴘʟᴀʏ ᴀ ʀᴀᴅɪᴏ ᴄʜᴀɴɴᴇʟ:\n\n"
+        f"ᴄʜᴀɴɴᴇʟ ʟɪsᴛ:\n{channels_list}\n\n"
+        f"sᴇʟᴇᴄᴛ ᴀ ʙᴜᴛᴛᴏɴ ᴛᴏ ᴘʟᴀʏ ᴛʜᴇ ʀᴇsᴘᴇᴄᴛɪᴠᴇ ʀᴀᴅɪᴏ sᴛᴀᴛɪᴏɴ.",
         reply_markup=InlineKeyboardMarkup(buttons),
     )
 
@@ -84,7 +84,7 @@ async def play_radio(client, callback_query):
     RADIO_URL = RADIO_STATION.get(station_name)
 
     if RADIO_URL:
-        await callback_query.message.edit_text("ok baby please wait starting your radio in vc please join vc and enjoy😁")
+        await callback_query.message.edit_text("ᴏᴋ ʙᴀʙʏ ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ sᴛᴀʀᴛɪɴɢ ʏᴏᴜʀ ʀᴀᴅɪᴏ ɪɴ ᴠᴄ ᴘʟᴇᴀsᴇ ᴊᴏɪɴ ᴠᴄ ᴀɴᴅ ᴇɴᴊᴏʏ😁")
         language = await get_lang(callback_query.message.chat.id)
         _ = get_string(language)
         chat_id = callback_query.message.chat.id
@@ -107,9 +107,9 @@ async def play_radio(client, callback_query):
             await callback_query.message.edit_text(err)
         await play_logs(callback_query.message, streamtype="Radio")
     else:
-        await callback_query.message.edit_text("Invalid station selected!")
+        await callback_query.message.edit_text("ɪnᴠᴀʟɪᴅ sᴛᴀᴛɪᴏɴ sᴇʟᴇᴄᴛᴇᴅ!")
 
 __MODULE__ = "Radio"
 __HELP__ = """
-/radio - to play radio in the voice chat.
+/radio - ᴛᴏ ᴘʟᴀʏ ʀᴀᴅɪᴏ ɪɴ ᴛʜᴇ ᴠᴏɪᴄᴇ ᴄʜᴀᴛ.
 """
