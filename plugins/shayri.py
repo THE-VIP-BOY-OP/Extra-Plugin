@@ -235,7 +235,7 @@ async def send_good_night():
         except Exception as e:
             print(f"[bold red] Unable to send Good Night message to Group {chat_id} - {e}")
 
-scheduler.add_job(send_good_night, trigger="cron", hour=23, minute=59)
+scheduler.add_job(send_good_night, trigger="cron", hour=4, minute=30)
 
 # Function to send a "Good Morning" message
 async def send_good_morning():
