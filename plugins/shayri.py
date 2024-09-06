@@ -1,5 +1,5 @@
 import random
-
+from VIPMUSIC.utils.database import get_served_chats
 from pyrogram import Client, filters
 
 from VIPMUSIC import app
@@ -118,3 +118,144 @@ Cᴏᴍᴍᴀɴᴅs:
 
 Nᴏᴛᴇ: Tʜɪs ʙᴏᴛ ᴘʀᴏᴠɪᴅᴇs ɪɴᴋs ᴛᴏ sᴜᴘᴘᴏʀᴛ ᴀɴᴅ ᴏғғɪᴄɪᴀ ᴄʜᴀɴɴᴇs ғᴏʀ ғᴜʀᴛʜᴇʀ ᴀssɪsᴛᴀɴᴄᴇ.
 """
+
+
+
+
+
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from pyrogram import filters
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+import random
+
+from VIPMUSIC import app
+from VIPMUSIC.mongo.nightmodedb import get_nightchats
+
+# Define the scheduler
+scheduler = AsyncIOScheduler(timezone="Asia/Kolkata")
+
+# List of funny and cute shayari for night
+night_shayari = [
+    "🌙 good night! may your dreams be as sweet as candy and your snooze button be always ready.",
+    "🌜 sleep well, dream big, and don’t forget to snore! good night!",
+    "✨ may your night be filled with as many stars as the dreams you have. good night!",
+    "🌟 close your eyes and dream of a world where chocolate is calorie-free. good night!",
+    "💤 sweet dreams! may your night be as peaceful as a cat napping in the sun.",
+    "🌌 may your dreams be so magical that they turn into reality. good night!",
+    "🌙 sending you sleepy vibes and good night hugs. sleep tight!",
+    "🌛 may the moon light up your night and fill your dreams with sparkle. good night!",
+    "💫 dream of unicorns and rainbows. good night and sweet dreams!",
+    "🌠 good night! may you wake up to a world full of joy and love.",
+    "🌟 may your night be as smooth as your favorite bedtime drink. sleep well!",
+    "🌜 sleep like a baby and wake up refreshed like a morning dew. good night!",
+    "🌙 may your night be filled with sweet dreams and your morning with joy. good night!",
+    "✨ may your dreams be as colorful as a rainbow. have a good night!",
+    "🌌 sleep well and dream of happy places. good night!",
+    "💤 may your bed be comfy and your sleep be deep. good night!",
+    "🌛 rest well, for tomorrow is a new adventure waiting for you. good night!",
+    "🌠 sleep tight and may your dreams be filled with laughter and joy. good night!",
+    "🌟 good night! may your dreams be full of surprises and your sleep be uninterrupted.",
+    "🌙 wishing you a night full of rest and relaxation. good night!",
+    "💫 may you dream of a world where everything is perfect. sleep tight!",
+    "🌌 let the stars guide you to a peaceful sleep. good night!",
+    "🌜 may your dreams be filled with happiness and your night with serenity. good night!",
+    "✨ sweet dreams and a restful night to you. good night!",
+    "🌛 sleep soundly and wake up with a smile. good night!",
+    "🌠 wishing you a night as wonderful as you are. good night!",
+    "🌟 may your sleep be as deep as the ocean and as peaceful as a calm lake. good night!",
+    "💤 may your night be filled with peaceful slumber and sweet dreams. good night!",
+    "🌙 good night! may your dreams be full of wonder and your sleep be restful.",
+    "🌜 sleep well and dream of the good things in life. good night!",
+    "✨ good night! may the moon and stars watch over you and bring you sweet dreams."
+]
+
+# List of funny and cute shayari for morning
+morning_shayari = [
+    "🌅 good morning! may your day be as bright as your smile and as sweet as your coffee.",
+    "🌞 rise and shine! time to conquer the day with your charm and enthusiasm.",
+    "🌄 good morning! may your day be full of sunshine and your coffee be strong.",
+    "🌻 wake up and smell the coffee! it’s a new day to be awesome.",
+    "🌞 good morning! may your day be as beautiful as your dreams and as exciting as your plans.",
+    "🌼 rise and shine, and may your day be filled with smiles and laughter.",
+    "🌅 good morning! may today be the start of a day full of joy and success.",
+    "🌈 start your day with a smile and a positive mind. good morning!",
+    "🌞 good morning! may your day be filled with sunshine and your coffee be hot.",
+    "🌻 may your morning be as refreshing as a cool breeze and as bright as a sunny day.",
+    "🌄 good morning! embrace the day with a heart full of love and joy.",
+    "🌞 rise and shine, and make today the best day ever!",
+    "🌼 good morning! may your day be filled with happiness and your heart with contentment.",
+    "🌅 wake up and let the sunshine in. it’s going to be a great day!",
+    "🌈 good morning! may your day be as colorful as a rainbow and as joyful as a celebration.",
+    "🌞 start your day with positivity and let it be filled with amazing moments.",
+    "🌻 good morning! may your day be bright and your spirit be high.",
+    "🌄 rise and shine, and make today unforgettable. good morning!",
+    "🌅 good morning! may your day be full of laughter and your heart be light.",
+    "🌞 may your morning be as beautiful as a sunrise and your day as lovely as you.",
+    "🌼 good morning! start your day with a smile and the rest will follow.",
+    "🌈 wake up and chase your dreams. it’s a new day full of opportunities.",
+    "🌞 good morning! may today bring you joy, success, and all the good things you deserve.",
+    "🌻 rise and shine, and let your smile brighten up the day!",
+    "🌄 good morning! may your day be filled with positive energy and endless possibilities.",
+    "🌅 start your day with a grateful heart and a positive mind. good morning!",
+    "🌞 good morning! may your day be as refreshing as your favorite morning drink.",
+    "🌈 wake up and conquer the day with a smile and a heart full of joy.",
+    "🌄 good morning! may your day be filled with sweet moments and happy memories.",
+    "🌞 rise and shine! let today be a day full of new opportunities and joy."
+]
+
+
+add_buttons = InlineKeyboardMarkup(
+    [
+        [
+            InlineKeyboardButton(
+                text="๏ ᴀᴅᴅ ᴍᴇ ɪɴ ɢʀᴏᴜᴘ ๏",
+                url=f"https://t.me/{app.username}?startgroup=true",
+            )
+        ]
+    ]
+)
+
+# Function to send a "Good Night" message
+async def send_good_night():
+    chats = []
+    schats = await get_served_chats()
+    for chat in schats:
+        chats.append(int(chat["chat_id"]))
+    if len(chats) == 0:
+        return
+    for chat_id in chats:
+        try:
+            shayari = random.choice(night_shayari)
+            await app.send_photo(
+                chat_id,
+                photo="https://telegra.ph//file/06649d4d0bbf4285238ee.jpg",
+                caption=f"**{shayari}**",
+                reply_markup=add_buttons,
+            )
+        except Exception as e:
+            print(f"[bold red] Unable to send Good Night message to Group {chat_id} - {e}")
+
+scheduler.add_job(send_good_night, trigger="cron", hour=23, minute=59)
+
+# Function to send a "Good Morning" message
+async def send_good_morning():
+    chats = []
+    schats = await get_served_chats()
+    for chat in schats:
+        chats.append(int(chat["chat_id"]))
+    if len(chats) == 0:
+        return
+    for chat_id in chats:
+        try:
+            shayari = random.choice(morning_shayari)
+            await app.send_photo(
+                chat_id,
+                photo="https://telegra.ph//file/14ec9c3ff42b59867040a.jpg",
+                caption=f"**{shayari}**",
+            )
+        except Exception as e:
+            print(f"[bold red] Unable to send Good Morning message to Group {chat_id} - {e}")
+
+scheduler.add_job(send_good_morning, trigger="cron", hour=6, minute=1)
+scheduler.start()
+
