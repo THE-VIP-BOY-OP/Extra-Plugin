@@ -134,73 +134,11 @@ from VIPMUSIC import app
 scheduler = AsyncIOScheduler(timezone="Asia/Kolkata")
 
 # List of funny and cute shayari for night
-night_shayari = [
-    "🌙 good night! may your dreams be as sweet as candy and your snooze button be always ready.",
-    "🌜 sleep well, dream big, and don’t forget to snore! good night!",
-    "✨ may your night be filled with as many stars as the dreams you have. good night!",
-    "🌟 close your eyes and dream of a world where chocolate is calorie-free. good night!",
-    "💤 sweet dreams! may your night be as peaceful as a cat napping in the sun.",
-    "🌌 may your dreams be so magical that they turn into reality. good night!",
-    "🌙 sending you sleepy vibes and good night hugs. sleep tight!",
-    "🌛 may the moon light up your night and fill your dreams with sparkle. good night!",
-    "💫 dream of unicorns and rainbows. good night and sweet dreams!",
-    "🌠 good night! may you wake up to a world full of joy and love.",
-    "🌟 may your night be as smooth as your favorite bedtime drink. sleep well!",
-    "🌜 sleep like a baby and wake up refreshed like a morning dew. good night!",
-    "🌙 may your night be filled with sweet dreams and your morning with joy. good night!",
-    "✨ may your dreams be as colorful as a rainbow. have a good night!",
-    "🌌 sleep well and dream of happy places. good night!",
-    "💤 may your bed be comfy and your sleep be deep. good night!",
-    "🌛 rest well, for tomorrow is a new adventure waiting for you. good night!",
-    "🌠 sleep tight and may your dreams be filled with laughter and joy. good night!",
-    "🌟 good night! may your dreams be full of surprises and your sleep be uninterrupted.",
-    "🌙 wishing you a night full of rest and relaxation. good night!",
-    "💫 may you dream of a world where everything is perfect. sleep tight!",
-    "🌌 let the stars guide you to a peaceful sleep. good night!",
-    "🌜 may your dreams be filled with happiness and your night with serenity. good night!",
-    "✨ sweet dreams and a restful night to you. good night!",
-    "🌛 sleep soundly and wake up with a smile. good night!",
-    "🌠 wishing you a night as wonderful as you are. good night!",
-    "🌟 may your sleep be as deep as the ocean and as peaceful as a calm lake. good night!",
-    "💤 may your night be filled with peaceful slumber and sweet dreams. good night!",
-    "🌙 good night! may your dreams be full of wonder and your sleep be restful.",
-    "🌜 sleep well and dream of the good things in life. good night!",
-    "✨ good night! may the moon and stars watch over you and bring you sweet dreams."
-]
 
-# List of funny and cute shayari for morning
-morning_shayari = [
-    "🌅 good morning! may your day be as bright as your smile and as sweet as your coffee.",
-    "🌞 rise and shine! time to conquer the day with your charm and enthusiasm.",
-    "🌄 good morning! may your day be full of sunshine and your coffee be strong.",
-    "🌻 wake up and smell the coffee! it’s a new day to be awesome.",
-    "🌞 good morning! may your day be as beautiful as your dreams and as exciting as your plans.",
-    "🌼 rise and shine, and may your day be filled with smiles and laughter.",
-    "🌅 good morning! may today be the start of a day full of joy and success.",
-    "🌈 start your day with a smile and a positive mind. good morning!",
-    "🌞 good morning! may your day be filled with sunshine and your coffee be hot.",
-    "🌻 may your morning be as refreshing as a cool breeze and as bright as a sunny day.",
-    "🌄 good morning! embrace the day with a heart full of love and joy.",
-    "🌞 rise and shine, and make today the best day ever!",
-    "🌼 good morning! may your day be filled with happiness and your heart with contentment.",
-    "🌅 wake up and let the sunshine in. it’s going to be a great day!",
-    "🌈 good morning! may your day be as colorful as a rainbow and as joyful as a celebration.",
-    "🌞 start your day with positivity and let it be filled with amazing moments.",
-    "🌻 good morning! may your day be bright and your spirit be high.",
-    "🌄 rise and shine, and make today unforgettable. good morning!",
-    "🌅 good morning! may your day be full of laughter and your heart be light.",
-    "🌞 may your morning be as beautiful as a sunrise and your day as lovely as you.",
-    "🌼 good morning! start your day with a smile and the rest will follow.",
-    "🌈 wake up and chase your dreams. it’s a new day full of opportunities.",
-    "🌞 good morning! may today bring you joy, success, and all the good things you deserve.",
-    "🌻 rise and shine, and let your smile brighten up the day!",
-    "🌄 good morning! may your day be filled with positive energy and endless possibilities.",
-    "🌅 start your day with a grateful heart and a positive mind. good morning!",
-    "🌞 good morning! may your day be as refreshing as your favorite morning drink.",
-    "🌈 wake up and conquer the day with a smile and a heart full of joy.",
-    "🌄 good morning! may your day be filled with sweet moments and happy memories.",
-    "🌞 rise and shine! let today be a day full of new opportunities and joy."
-]
+
+night_shayari = [ "🌙 ɢᴏᴏᴅ ɴɪɢʜᴛ! ᴍᴀʏ ʏᴏᴜʀ ᴅʀᴇᴀᴍꜱ ʙᴇ ᴀꜱ ꜱᴡᴇᴇᴛ ᴀꜱ ᴛʜᴇ ꜰɪʀꜱᴛ ʙɪᴛᴇ ᴏꜰ ʏᴏᴜʀ ꜰᴀᴠᴏʀɪᴛᴇ ᴅᴇꜱꜱᴇʀᴛ. ᴀꜱ ʏᴏᴜ ᴅʀɪꜰᴛ ᴏꜰꜰ ᴛᴏ ꜱʟᴇᴇᴘ, ᴍᴀʏ ʏᴏᴜʀ ᴍɪɴᴅ ʙᴇ ꜰɪʟʟᴇᴅ ᴡɪᴛʜ ᴘᴇᴀᴄᴇꜰᴜʟ ᴛʜᴏᴜɢʜᴛꜱ ᴀɴᴅ ʏᴏᴜʀ ʜᴇᴀʀᴛ ʙᴇ ʟɪɢʜᴛ. ʀᴇᴍᴇᴍʙᴇʀ, ᴇᴠᴇʀʏ ᴅʀᴇᴀᴍ ɪꜱ ᴀ ᴡɪꜱʜ ʏᴏᴜʀ ʜᴇᴀʀᴛ ᴍᴀᴋᴇꜱ, ꜱᴏ ʟᴇᴛ ᴛʜᴇ ɴɪɢʜᴛ ʙᴇ ꜰᴜʟʟ ᴏꜰ ᴡᴏɴᴅᴇʀ ᴀɴᴅ ᴊᴏʏ ꜰᴏʀ ʏᴏᴜ. ꜱʟᴇᴇᴘ ᴛɪɢʜᴛ ᴀɴᴅ ʜᴀᴠᴇ ᴛʜᴇ ꜱᴡᴇᴇᴛᴇꜱᴛ ᴅʀᴇᴀᴍꜱ. ɢᴏᴏᴅ ɴɪɢʜᴛ!", "🌜 ꜱʟᴇᴇᴘ ᴡᴇʟʟ, ᴀɴᴅ ᴍᴀʏ ʏᴏᴜʀ ɴɪɢʜᴛ ʙᴇ ꜰɪʟʟᴇᴅ ᴡɪᴛʜ ꜱᴛᴀʀꜱ ᴛʜᴀᴛ ʟɪɢʜᴛ ᴜᴘ ʏᴏᴜʀ ᴅʀᴇᴀᴍꜱ. ɪᴍᴀɢɪɴᴇ ᴀ ᴡᴏʀʟᴅ ᴡʜᴇʀᴇ ᴇᴠᴇʀʏᴛʜɪɴɢ ʏᴏᴜ ᴅᴇꜱɪʀᴇ ᴄᴏᴍᴇꜱ ᴛʀᴜᴇ, ᴀɴᴅ ʟᴇᴛ ᴛʜᴀᴛ ᴛʜᴏᴜɢʜᴛ ᴄᴀʀʀʏ ʏᴏᴜ ɪɴᴛᴏ ᴀ ʙʟɪꜱꜱꜰᴜʟ ꜱʟᴇᴇᴘ. ᴍᴀʏ ʏᴏᴜʀ ᴘɪʟʟᴏᴡ ʙᴇ ᴀꜱ ꜱᴏꜰᴛ ᴀꜱ ᴄʟᴏᴜᴅꜱ ᴀɴᴅ ʏᴏᴜʀ ᴅʀᴇᴀᴍꜱ ᴀꜱ ᴍᴀɢɪᴄᴀʟ ᴀꜱ ꜰᴀɪʀʏ ᴛᴀʟᴇꜱ. ɢᴏᴏᴅ ɴɪɢʜᴛ ᴀɴᴅ ꜱᴡᴇᴇᴛ ᴅʀᴇᴀᴍꜱ, ᴍᴀʏ ʏᴏᴜ ᴡᴀᴋᴇ ᴜᴘ ʀᴇꜰʀᴇꜱʜᴇᴅ ᴀɴᴅ ʀᴇᴀᴅʏ ᴛᴏ ᴄᴏɴQᴜᴇʀ ᴛʜᴇ ᴅᴀʏ!", "✨ ɢᴏᴏᴅ ɴɪɢʜᴛ! ᴍᴀʏ ʏᴏᴜʀ ꜱʟᴇᴇᴘ ʙᴇ ᴀꜱ ᴅᴇᴇᴘ ᴀꜱ ᴛʜᴇ ᴏᴄᴇᴀɴ ᴀɴᴅ ᴀꜱ ᴘᴇᴀᴄᴇꜰᴜʟ ᴀꜱ ᴀ ᴄᴀʟᴍ ʟᴀᴋᴇ. ᴀꜱ ʏᴏᴜ ᴄʟᴏꜱᴇ ʏᴏᴜʀ ᴇʏᴇꜱ, ʟᴇᴛ ɢᴏ ᴏꜰ ᴀʟʟ ᴡᴏʀʀɪᴇꜱ ᴀɴᴅ ꜱᴛʀᴇꜱꜱ. ᴅʀᴇᴀᴍ ᴏꜰ ʙᴇᴀᴜᴛɪꜰᴜʟ ᴘʟᴀᴄᴇꜱ ᴀɴᴅ ᴊᴏʏꜰᴜʟ ᴍᴏᴍᴇɴᴛꜱ, ᴀɴᴅ ʟᴇᴛ ᴛʜᴏꜱᴇ ᴅʀᴇᴀᴍꜱ ꜰɪʟʟ ʏᴏᴜʀ ɴɪɢʜᴛ ᴡɪᴛʜ ʜᴀᴘᴘɪɴᴇꜱꜱ. ʀᴇᴍᴇᴍʙᴇʀ, ᴛʜᴇ ɴɪɢʜᴛ ɪꜱ ᴀ ᴄᴀɴᴠᴀꜱ ꜰᴏʀ ʏᴏᴜʀ ᴅʀᴇᴀᴍꜱ, ꜱᴏ ᴘᴀɪɴᴛ ɪᴛ ᴡɪᴛʜ ᴛʜᴇ ᴄᴏʟᴏʀꜱ ᴏꜰ ᴊᴏʏ ᴀɴᴅ ᴄᴏɴᴛᴇɴᴛᴍᴇɴᴛ. ꜱʟᴇᴇᴘ ᴡᴇʟʟ!", "🌟 ᴡɪꜱʜɪɴɢ ʏᴏᴜ ᴀ ʀᴇꜱᴛꜰᴜʟ ɴɪɢʜᴛ ꜰɪʟʟᴇᴅ ᴡɪᴛʜ ꜱᴡᴇᴇᴛ ᴅʀᴇᴀᴍꜱ ᴀɴᴅ ᴡᴀʀᴍ ʜᴜɢꜱ. ᴍᴀʏ ʏᴏᴜʀ ᴅʀᴇᴀᴍꜱ ʙᴇ ᴀꜱ ᴅᴇʟɪɢʜᴛꜰᴜʟ ᴀꜱ ᴀ ꜱᴜʀᴘʀɪꜱᴇ ɢɪꜰᴛ ᴀɴᴅ ᴀꜱ ᴄᴏᴍꜰᴏʀᴛɪɴɢ ᴀꜱ ᴀ ᴄᴏᴢʏ ʙʟᴀɴᴋᴇᴛ. ᴀꜱ ʏᴏᴜ ᴅʀɪꜰᴛ ɪɴᴛᴏ ꜱʟᴜᴍʙᴇʀ, ᴍᴀʏ ʏᴏᴜʀ ᴍɪɴᴅ ʙᴇ ᴀᴛ ᴇᴀꜱᴇ ᴀɴᴅ ʏᴏᴜʀ ʜᴇᴀʀᴛ ʙᴇ ʟɪɢʜᴛ. ɢᴏᴏᴅ ɴɪɢʜᴛ, ᴀɴᴅ ᴍᴀʏ ʏᴏᴜ ᴡᴀᴋᴇ ᴜᴘ ᴡɪᴛʜ ᴀ ꜱᴍɪʟᴇ ᴀɴᴅ ᴀ ʜᴇᴀʀᴛ ꜰᴜʟʟ ᴏꜰ ᴘᴏꜱɪᴛɪᴠɪᴛʏ!", "🌙 ɢᴏᴏᴅ ɴɪɢʜᴛ! ᴍᴀʏ ʏᴏᴜʀ ᴅʀᴇᴀᴍꜱ ʙᴇ ᴀꜱ ꜱᴡᴇᴇᴛ ᴀꜱ ʜᴏɴᴇʏ ᴀɴᴅ ᴀꜱ ᴄᴏᴍꜰᴏʀᴛɪɴɢ ᴀꜱ ᴀ ᴡᴀʀᴍ ᴄᴜᴘ ᴏꜰ ᴄᴏᴄᴏᴀ. ᴀꜱ ʏᴏᴜ ʟᴀʏ ᴅᴏᴡɴ ᴛᴏ ʀᴇꜱᴛ, ʟᴇᴛ ᴛʜᴇ ᴛʀᴀɴQᴜɪʟɪᴛʏ ᴏꜰ ᴛʜᴇ ɴɪɢʜᴛ ᴡʀᴀᴘ ᴀʀᴏᴜɴᴅ ʏᴏᴜ ʟɪᴋᴇ ᴀ ꜱᴏꜰᴛ ʙʟᴀɴᴋᴇᴛ. ꜱʟᴇᴇᴘ ᴡᴇʟʟ, ᴀɴᴅ ᴍᴀʏ ʏᴏᴜ ᴡᴀᴋᴇ ᴜᴘ ᴡɪᴛʜ ᴀ ʜᴇᴀʀᴛ ꜰᴜʟʟ ᴏꜰ ɢʀᴀᴛɪᴛᴜᴅᴇ ᴀɴᴅ ᴀ ꜱᴍɪʟᴇ ᴛʜᴀᴛ ʙʀɪɢʜᴛᴇɴꜱ ᴛʜᴇ ᴅᴀʏ. ꜱᴡᴇᴇᴛ ᴅʀᴇᴀᴍꜱ!", "🌛 ᴍᴀʏ ʏᴏᴜʀ ɴɪɢʜᴛ ʙᴇ ᴀꜱ ꜱᴏᴏᴛʜɪɴɢ ᴀꜱ ᴀ ʟᴜʟʟᴀʙʏ ᴀɴᴅ ᴀꜱ ᴄᴏᴍꜰᴏʀᴛɪɴɢ ᴀꜱ ᴀ ʜᴜɢ ꜰʀᴏᴍ ᴀ ʟᴏᴠᴇᴅ ᴏɴᴇ. ᴀꜱ ʏᴏᴜ ᴄʟᴏꜱᴇ ʏᴏᴜʀ ᴇʏᴇꜱ, ɪᴍᴀɢɪɴᴇ ᴀ ᴡᴏʀʟᴅ ᴡʜᴇʀᴇ ᴇᴠᴇʀʏᴛʜɪɴɢ ɪꜱ ᴘᴇʀꜰᴇᴄᴛ ᴀɴᴅ ʏᴏᴜʀ ᴅʀᴇᴀᴍꜱ ᴄᴏᴍᴇ ᴛʀᴜᴇ. ʟᴇᴛ ᴛʜᴇ ᴘᴇᴀᴄᴇ ᴏꜰ ᴛʜᴇ ɴɪɢʜᴛ ᴇᴍʙʀᴀᴄᴇ ʏᴏᴜ ᴀɴᴅ ᴄᴀʀʀʏ ʏᴏᴜ ᴛᴏ ᴀ ᴘʟᴀᴄᴇ ᴏꜰ ᴛʀᴀɴQᴜɪʟɪᴛʏ. ɢᴏᴏᴅ ɴɪɢʜᴛ, ᴀɴᴅ ᴍᴀʏ ʏᴏᴜ ᴡᴀᴋᴇ ᴜᴘ ᴡɪᴛʜ ʀᴇɴᴇᴡᴇᴅ ᴇɴᴇʀɢʏ ᴀɴᴅ ᴊᴏʏ!", "🌌 ɢᴏᴏᴅ ɴɪɢʜᴛ! ᴍᴀʏ ʏᴏᴜʀ ᴅʀᴇᴀᴍꜱ ʙᴇ ꜰɪʟʟᴇᴅ ᴡɪᴛʜ ᴍᴀɢɪᴄᴀʟ ᴍᴏᴍᴇɴᴛꜱ ᴀɴᴅ ʏᴏᴜʀ ꜱʟᴇᴇᴘ ʙᴇ ᴀꜱ ᴅᴇᴇᴘ ᴀꜱ ᴛʜᴇ ɴɪɢʜᴛ ꜱᴋʏ. ᴀꜱ ʏᴏᴜ ᴅʀɪꜰᴛ ᴏꜰꜰ ᴛᴏ ꜱʟᴇᴇᴘ, ʟᴇᴛ ʏᴏᴜʀ ᴍɪɴᴅ ᴡᴀɴᴅᴇʀ ᴛᴏ ʙᴇᴀᴜᴛɪꜰᴜʟ ᴘʟᴀᴄᴇꜱ ᴀɴᴅ ʏᴏᴜʀ ʜᴇᴀʀᴛ ʙᴇ ᴀᴛ ᴘᴇᴀᴄᴇ. ʀᴇᴍᴇᴍʙᴇʀ, ᴛʜᴇ ɴɪɢʜᴛ ɪꜱ ᴀ ᴛɪᴍᴇ ꜰᴏʀ ʀᴇꜱᴛ ᴀɴᴅ ʀᴇᴊᴜᴠᴇɴᴀᴛɪᴏɴ, ꜱᴏ ᴇᴍʙʀᴀᴄᴇ ɪᴛ ꜰᴜʟʟʏ. ꜱʟᴇᴇᴘ ᴡᴇʟʟ ᴀɴᴅ ᴡᴀᴋᴇ ᴜᴘ ʀᴇᴀᴅʏ ꜰᴏʀ ᴀ ʙʀᴀɴᴅ ɴᴇᴡ ᴅᴀʏ!", "💤 ꜱᴡᴇᴇᴛ ᴅʀᴇᴀᴍꜱ! ᴍᴀʏ ʏᴏᴜʀ ɴɪɢʜᴛ ʙᴇ ᴀꜱ ᴘᴇᴀᴄᴇꜰᴜʟ ᴀꜱ ᴀ ꜱᴇʀᴇɴᴇ ʟᴀᴋᴇ ᴀɴᴅ ᴀꜱ ᴄᴀʟᴍ ᴀꜱ ᴀ ɢᴇɴᴛʟᴇ ʙʀᴇᴇᴢᴇ. ᴀꜱ ʏᴏᴜ ᴄʟᴏꜱᴇ ʏᴏᴜʀ ᴇʏᴇꜱ, ʟᴇᴛ ɢᴏ ᴏꜰ ᴀʟʟ ᴛʜᴇ ᴅᴀʏ'ꜱ ᴡᴏʀʀɪᴇꜱ ᴀɴᴅ ʟᴇᴛ ʏᴏᴜʀ ᴅʀᴇᴀᴍꜱ ᴛᴀᴋᴇ ʏᴏᴜ ᴛᴏ ᴀ ᴡᴏʀʟᴅ ᴏꜰ ʜᴀᴘᴘɪɴᴇꜱꜱ ᴀɴᴅ ᴊᴏʏ. ɢᴏᴏᴅ ɴɪɢʜᴛ, ᴀɴᴅ ᴍᴀʏ ʏᴏᴜ ᴡᴀᴋᴇ ᴜᴘ ʀᴇꜰʀᴇꜱʜᴇᴅ ᴀɴᴅ ᴇxᴄɪᴛᴇᴅ ꜰᴏʀ ᴛʜᴇ ᴀᴅᴠᴇɴᴛᴜʀᴇꜱ ᴏꜰ ᴛʜᴇ ɴᴇᴡ ᴅᴀʏ ᴀʜᴇᴀᴅ!", "🌙 ɢᴏᴏᴅ ɴɪɢʜᴛ! ᴍᴀʏ ᴛʜᴇ ꜱᴛᴀʀꜱ ꜱʜɪɴᴇ ʙʀɪɢʜᴛʟʏ ᴏᴠᴇʀ ʏᴏᴜ ᴀɴᴅ ɢᴜɪᴅᴇ ʏᴏᴜ ᴛᴏ ᴀ ᴘᴇᴀᴄᴇꜰᴜʟ ꜱʟᴇᴇᴘ. ᴀꜱ ʏᴏᴜ ᴅʀɪꜰᴛ ɪɴᴛᴏ ᴅʀᴇᴀᴍʟᴀɴᴅ, ᴍᴀʏ ʏᴏᴜʀ ᴍɪɴᴅ ʙᴇ ꜰʀᴇᴇ ᴏꜰ ᴡᴏʀʀɪᴇꜱ ᴀɴᴅ ʏᴏᴜʀ ʜᴇᴀʀᴛ ʙᴇ ꜰᴜʟʟ ᴏꜰ ᴊᴏʏ. ʀᴇᴍᴇᴍʙᴇʀ, ᴇᴠᴇʀʏ ɴɪɢʜᴛ ɪꜱ ᴀ ᴄʜᴀɴᴄᴇ ᴛᴏ ʀᴇꜱᴇᴛ ᴀɴᴅ ʀᴇᴄʜᴀʀɢᴇ, ꜱᴏ ᴛᴀᴋᴇ ᴛʜɪꜱ ᴛɪᴍᴇ ᴛᴏ ʀᴇʟᴀx ᴀɴᴅ ᴇɴᴊᴏʏ ᴛʜᴇ ꜱᴇʀᴇɴɪᴛʏ ᴏꜰ ᴛʜᴇ ɴɪɢʜᴛ. ꜱʟᴇᴇᴘ ᴛɪɢʜᴛ!", "🌜 ɢᴏᴏᴅ ɴɪɢʜᴛ! ᴍᴀʏ ʏᴏᴜʀ ᴅʀᴇᴀᴍꜱ ʙᴇ ᴀꜱ ꜱᴡᴇᴇᴛ ᴀꜱ ᴛʜᴇ ꜰɪʀꜱᴛ ʙɪᴛᴇ ᴏꜰ ʏᴏᴜʀ ꜰᴀᴠᴏʀɪᴛᴇ ᴅᴇꜱꜱᴇʀᴛ ᴀɴᴅ ᴀꜱ ᴄᴏᴍꜰᴏʀᴛɪɴɢ ᴀꜱ ᴀ ᴡᴀʀᴍ ʜᴜɢ. ᴀꜱ ʏᴏᴜ ᴅʀɪꜰᴛ ᴏꜰꜰ ᴛᴏ ꜱʟᴇᴇᴘ, ʟᴇᴛ ʏᴏᴜʀ ᴍɪɴᴅ ʙᴇ ꜰɪʟʟᴇᴅ ᴡɪᴛʜ ᴘᴇᴀᴄᴇꜰᴜʟ ᴛʜᴏᴜɢʜᴛꜱ ᴀɴᴅ ʏᴏᴜʀ ʜᴇᴀʀᴛ ʙᴇ ʟɪɢʜᴛ. ʀᴇᴍᴇᴍʙᴇʀ, ᴇᴠᴇʀʏ ᴅʀᴇᴀᴍ ɪꜱ ᴀ ᴄʜᴀɴᴄᴇ ᴛᴏ ᴇxᴘʟᴏʀᴇ ɴᴇᴡ ᴡᴏʀʟᴅꜱ ᴀɴᴅ ᴍᴀᴋᴇ ɴᴇᴡ ᴍᴇᴍᴏʀɪᴇꜱ. ꜱʟᴇᴇᴘ ᴡᴇʟʟ ᴀɴᴅ ʜᴀᴠᴇ ᴀ ᴡᴏɴᴅᴇʀꜰᴜʟ ɴɪɢʜᴛ!", ]
+morning_shayari = [ "🌅 ɢᴏᴏᴅ ᴍᴏʀɴɪɴɢ! ᴍᴀʏ ʏᴏᴜʀ ᴅᴀʏ ʙᴇ ᴀꜱ ʙʀɪɢʜᴛ ᴀɴᴅ ᴄʜᴇᴇʀꜰᴜʟ ᴀꜱ ᴛʜᴇ ʀɪꜱɪɴɢ ꜱᴜɴ. ᴀꜱ ʏᴏᴜ ꜱᴛᴀʀᴛ ʏᴏᴜʀ ᴅᴀʏ, ʟᴇᴛ ᴘᴏꜱɪᴛɪᴠɪᴛʏ ᴀɴᴅ ᴊᴏʏ ꜰɪʟʟ ʏᴏᴜʀ ʜᴇᴀʀᴛ. ᴇᴍʙʀᴀᴄᴇ ᴇᴠᴇʀʏ ᴍᴏᴍᴇɴᴛ ᴡɪᴛʜ ᴀ ꜱᴍɪʟᴇ ᴀɴᴅ ʟᴇᴛ ʏᴏᴜʀ ᴇɴᴛʜᴜꜱɪᴀꜱᴍ ꜱʜɪɴᴇ ᴛʜʀᴏᴜɢʜ. ᴍᴀʏ ʏᴏᴜʀ ᴍᴏʀɴɪɴɢ ʙᴇ ꜰɪʟʟᴇᴅ ᴡɪᴛʜ ᴛʜᴇ ᴀʀᴏᴍᴀ ᴏꜰ ꜰʀᴇꜱʜ ᴄᴏꜰꜰᴇᴇ ᴀɴᴅ ᴛʜᴇ ᴘʀᴏᴍɪꜱᴇ ᴏꜰ ᴀ ᴡᴏɴᴅᴇʀꜰᴜʟ ᴅᴀʏ ᴀʜᴇᴀᴅ. ʀɪꜱᴇ ᴀɴᴅ ꜱʜɪɴᴇ, ᴀɴᴅ ᴍᴀᴋᴇ ᴛᴏᴅᴀʏ ᴀᴍᴀᴢɪɴɢ!", "🌞 ʀɪꜱᴇ ᴀɴᴅ ꜱʜɪɴᴇ! ᴀ ɴᴇᴡ ᴅᴀʏ ɪꜱ ʜᴇʀᴇ, ꜰᴜʟʟ ᴏꜰ ᴏᴘᴘᴏʀᴛᴜɴɪᴛɪᴇꜱ ᴀɴᴅ ᴀᴅᴠᴇɴᴛᴜʀᴇꜱ ᴡᴀɪᴛɪɴɢ ꜰᴏʀ ʏᴏᴜ. ᴍᴀʏ ʏᴏᴜʀ ᴍᴏʀɴɪɴɢ ʙᴇ ᴀꜱ ʀᴇꜰʀᴇꜱʜɪɴɢ ᴀꜱ ᴀ ᴄᴏᴏʟ ʙʀᴇᴇᴢᴇ ᴀɴᴅ ᴀꜱ ᴠɪʙʀᴀɴᴛ ᴀꜱ ᴀ ʙʟᴏᴏᴍɪɴɢ ꜰʟᴏᴡᴇʀ. ꜱᴛᴀʀᴛ ʏᴏᴜʀ ᴅᴀʏ ᴡɪᴛʜ ᴀ ꜱᴍɪʟᴇ ᴀɴᴅ ᴀ ʜᴇᴀʀᴛ ꜰᴜʟʟ ᴏꜰ ʜᴏᴘᴇ. ʀᴇᴍᴇᴍʙᴇʀ, ᴇᴠᴇʀʏ ꜱᴜɴʀɪꜱᴇ ɪꜱ ᴀ ɴᴇᴡ ʙᴇɢɪɴɴɪɴɢ, ꜱᴏ ᴍᴀᴋᴇ ᴛʜᴇ ᴍᴏꜱᴛ ᴏꜰ ɪᴛ ᴀɴᴅ ʜᴀᴠᴇ ᴀ ꜰᴀɴᴛᴀꜱᴛɪᴄ ᴅᴀʏ!", "🌄 ɢᴏᴏᴅ ᴍᴏʀɴɪɴɢ! ᴍᴀʏ ʏᴏᴜʀ ᴅᴀʏ ʙᴇ ꜰɪʟʟᴇᴅ ᴡɪᴛʜ ʜᴀᴘᴘɪɴᴇꜱꜱ ᴀɴᴅ ꜱᴜᴄᴄᴇꜱꜱ. ᴀꜱ ʏᴏᴜ ᴏᴘᴇɴ ʏᴏᴜʀ ᴇʏᴇꜱ ᴛᴏ ᴛʜᴇ ɴᴇᴡ ᴅᴀʏ, ʟᴇᴛ ɢᴏ ᴏꜰ ᴀɴʏ ɴᴇɢᴀᴛɪᴠɪᴛʏ ᴀɴᴅ ᴇᴍʙʀᴀᴄᴇ ᴛʜᴇ ᴘᴏꜱɪᴛɪᴠᴇ ᴇɴᴇʀɢʏ ᴀʀᴏᴜɴᴅ ʏᴏᴜ. ᴍᴀʏ ʏᴏᴜʀ ᴍᴏʀɴɪɴɢ ʙᴇ ʙʀɪɢʜᴛ ᴀɴᴅ ʏᴏᴜʀ ꜱᴘɪʀɪᴛ ʜɪɢʜ. ᴡɪᴛʜ ᴇᴀᴄʜ ꜱᴛᴇᴘ ʏᴏᴜ ᴛᴀᴋᴇ, ᴍᴀʏ ʏᴏᴜ ꜰɪɴᴅ ᴊᴏʏ ᴀɴᴅ ꜰᴜʟꜰɪʟʟᴍᴇɴᴛ. ʜᴀᴠᴇ ᴀ ᴡᴏɴᴅᴇʀꜰᴜʟ ᴅᴀʏ ᴀʜᴇᴀᴅ!", "🌻 ᴡᴀᴋᴇ ᴜᴘ ᴀɴᴅ ꜱᴛᴀʀᴛ ʏᴏᴜʀ ᴅᴀʏ ᴡɪᴛʜ ᴀ ʜᴇᴀʀᴛ ꜰᴜʟʟ ᴏꜰ ɢʀᴀᴛɪᴛᴜᴅᴇ ᴀɴᴅ ᴀ ꜱᴍɪʟᴇ ᴏɴ ʏᴏᴜʀ ꜰᴀᴄᴇ. ᴍᴀʏ ʏᴏᴜʀ ᴍᴏʀɴɪɴɢ ʙᴇ ᴀꜱ ʟᴏᴠᴇʟʏ ᴀꜱ ᴀ ʙᴏᴜQᴜᴇᴛ ᴏꜰ ꜰʀᴇꜱʜ ꜰʟᴏᴡᴇʀꜱ ᴀɴᴅ ᴀꜱ ᴜᴘʟɪꜰᴛɪɴɢ ᴀꜱ ᴀ ᴄʜᴇᴇʀꜰᴜʟ ꜱᴏɴɢ. ᴇᴍʙʀᴀᴄᴇ ᴛʜᴇ ɴᴇᴡ ᴅᴀʏ ᴡɪᴛʜ ᴇɴᴛʜᴜꜱɪᴀꜱᴍ ᴀɴᴅ ʟᴇᴛ ɪᴛ ʙʀɪɴɢ ʏᴏᴜ ᴀʟʟ ᴛʜᴇ ʜᴀᴘᴘɪɴᴇꜱꜱ ᴀɴᴅ ꜱᴜᴄᴄᴇꜱꜱ ʏᴏᴜ ᴅᴇꜱᴇʀᴠᴇ. ɢᴏᴏᴅ ᴍᴏʀɴɪɴɢ ᴀɴᴅ ʜᴀᴠᴇ ᴀ ꜰᴀʙᴜʟᴏᴜꜱ ᴅᴀʏ!", "🌞 ɢᴏᴏᴅ ᴍᴏʀɴɪɴɢ! ᴍᴀʏ ʏᴏᴜʀ ᴅᴀʏ ʙᴇ ꜰɪʟʟᴇᴅ ᴡɪᴛʜ ᴊᴏʏ ᴀɴᴅ ᴇxᴄɪᴛᴇᴍᴇɴᴛ. ᴀꜱ ʏᴏᴜ ꜱᴛᴇᴘ ɪɴᴛᴏ ᴛʜᴇ ɴᴇᴡ ᴅᴀʏ, ʟᴇᴛ ʏᴏᴜʀ ᴘᴏꜱɪᴛɪᴠɪᴛʏ ᴀɴᴅ ᴇɴᴇʀɢʏ ꜱʜɪɴᴇ ʙʀɪɢʜᴛʟʏ. ᴍᴀʏ ʏᴏᴜʀ ᴍᴏʀɴɪɴɢ ʙᴇ ᴀꜱ ᴠɪʙʀᴀɴᴛ ᴀꜱ ᴀ ꜱᴜɴɴʏ ᴅᴀʏ ᴀɴᴅ ᴀꜱ ʀᴇꜰʀᴇꜱʜɪɴɢ ᴀꜱ ᴀ ᴄᴏᴏʟ ᴅʀɪɴᴋ. ꜱᴛᴀʀᴛ ʏᴏᴜʀ ᴅᴀʏ ᴡɪᴛʜ ᴀ ꜱᴍɪʟᴇ ᴀɴᴅ ʟᴇᴛ ᴛʜᴇ ᴡᴏʀʟᴅ ꜱᴇᴇ ʏᴏᴜʀ ᴡᴏɴᴅᴇʀꜰᴜʟ ꜱᴘɪʀɪᴛ. ʜᴀᴠᴇ ᴀ ɢʀᴇᴀᴛ ᴅᴀʏ ᴀʜᴇᴀᴅ!", "🌄 ʀɪꜱᴇ ᴀɴᴅ ꜱʜɪɴᴇ! ᴀ ɴᴇᴡ ᴅᴀʏ ɪꜱ ʜᴇʀᴇ, ꜰᴜʟʟ ᴏꜰ ᴘʀᴏᴍɪꜱᴇ ᴀɴᴅ ᴘᴏꜱꜱɪʙɪʟɪᴛɪᴇꜱ. ᴍᴀʏ ʏᴏᴜʀ ᴍᴏʀɴɪɴɢ ʙᴇ ᴀꜱ ʙᴇᴀᴜᴛɪꜰᴜʟ ᴀꜱ ᴀ ꜱᴜɴʀɪꜱᴇ ᴀɴᴅ ᴀꜱ ɪɴꜱᴘɪʀɪɴɢ ᴀꜱ ᴀ ɴᴇᴡ ʙᴇɢɪɴɴɪɴɢ. ꜱᴛᴀʀᴛ ʏᴏᴜʀ ᴅᴀʏ ᴡɪᴛʜ ᴀ ᴘᴏꜱɪᴛɪᴠᴇ ᴍɪɴᴅꜱᴇᴛ ᴀɴᴅ ʟᴇᴛ ʏᴏᴜʀ ᴊᴏʏ ᴀɴᴅ ᴇɴᴛʜᴜꜱɪᴀꜱᴍ ɢᴜɪᴅᴇ ʏᴏᴜ. ᴍᴀʏ ᴛᴏᴅᴀʏ ʙᴇ ꜰɪʟʟᴇᴅ ᴡɪᴛʜ ᴡᴏɴᴅᴇʀꜰᴜʟ ᴍᴏᴍᴇɴᴛꜱ ᴀɴᴅ ᴀᴍᴀᴢɪɴɢ ᴏᴘᴘᴏʀᴛᴜɴɪᴛɪᴇꜱ. ɢᴏᴏᴅ ᴍᴏʀɴɪɴɢ!", "🌻 ɢᴏᴏᴅ ᴍᴏʀɴɪɴɢ! ᴍᴀʏ ʏᴏᴜʀ ᴅᴀʏ ʙᴇ ꜰɪʟʟᴇᴅ ᴡɪᴛʜ ꜱᴜɴꜱʜɪɴᴇ ᴀɴᴅ ʏᴏᴜʀ ʜᴇᴀʀᴛ ᴡɪᴛʜ ʜᴀᴘᴘɪɴᴇꜱꜱ. ᴀꜱ ʏᴏᴜ ʙᴇɢɪɴ ʏᴏᴜʀ ᴅᴀʏ, ʟᴇᴛ ɢᴏ ᴏꜰ ᴀɴʏ ᴡᴏʀʀɪᴇꜱ ᴀɴᴅ ꜰᴏᴄᴜꜱ ᴏɴ ᴛʜᴇ ᴊᴏʏ ᴀɴᴅ ᴇxᴄɪᴛᴇᴍᴇɴᴛ ᴛʜᴀᴛ ʟɪᴇ ᴀʜᴇᴀᴅ. ᴍᴀʏ ʏᴏᴜʀ ᴍᴏʀɴɪɴɢ ʙᴇ ᴀꜱ ᴅᴇʟɪɢʜᴛꜰᴜʟ ᴀꜱ ᴀ ꜰʀᴇꜱʜ ᴄᴜᴘ ᴏꜰ ᴄᴏꜰꜰᴇᴇ ᴀɴᴅ ᴀꜱ ᴜᴘʟɪꜰᴛɪɴɢ ᴀꜱ ᴀ ꜰʀɪᴇɴᴅʟʏ ꜱᴍɪʟᴇ. ʀɪꜱᴇ ᴀɴᴅ ꜱʜɪɴᴇ, ᴀɴᴅ ᴍᴀᴋᴇ ᴛᴏᴅᴀʏ ɪɴᴄʀᴇᴅɪʙʟᴇ!", "🌞 ɢᴏᴏᴅ ᴍᴏʀɴɪɴɢ! ᴍᴀʏ ʏᴏᴜʀ ᴅᴀʏ ʙᴇ ᴀꜱ ʙʀɪɢʜᴛ ᴀɴᴅ ᴄʜᴇᴇʀꜰᴜʟ ᴀꜱ ʏᴏᴜʀ ꜱᴍɪʟᴇ. ᴀꜱ ʏᴏᴜ ᴏᴘᴇɴ ʏᴏᴜʀ ᴇʏᴇꜱ ᴛᴏ ᴛʜᴇ ɴᴇᴡ ᴅᴀʏ, ʟᴇᴛ ʏᴏᴜʀ ᴘᴏꜱɪᴛɪᴠɪᴛʏ ᴀɴᴅ ᴇɴᴛʜᴜꜱɪᴀꜱᴍ ꜱᴇᴛ ᴛʜᴇ ᴛᴏɴᴇ ꜰᴏʀ ᴛʜᴇ ʜᴏᴜʀꜱ ᴀʜᴇᴀᴅ. ᴍᴀʏ ʏᴏᴜʀ ᴍᴏʀɴɪɴɢ ʙᴇ ꜰɪʟʟᴇᴅ ᴡɪᴛʜ ʟᴏᴠᴇ, ʟᴀᴜɢʜᴛᴇʀ, ᴀɴᴅ ᴀʟʟ ᴛʜᴇ ᴛʜɪɴɢꜱ ᴛʜᴀᴛ ᴍᴀᴋᴇ ʏᴏᴜ ʜᴀᴘᴘʏ. ᴇᴍʙʀᴀᴄᴇ ᴛʜᴇ ᴅᴀʏ ᴡɪᴛʜ ᴏᴘᴇɴ ᴀʀᴍꜱ ᴀɴᴅ ᴀ ᴊᴏʏꜰᴜʟ ʜᴇᴀʀᴛ!", "🌄 ɢᴏᴏᴅ ᴍᴏʀɴɪɴɢ! ᴍᴀʏ ʏᴏᴜʀ ᴅᴀʏ ʙᴇ ꜰɪʟʟᴇᴅ ᴡɪᴛʜ ᴇɴᴅʟᴇꜱꜱ ᴘᴏꜱꜱɪʙɪʟɪᴛɪᴇꜱ ᴀɴᴅ ᴊᴏʏꜰᴜʟ ᴍᴏᴍᴇɴᴛꜱ. ᴀꜱ ʏᴏᴜ ꜱᴛᴀʀᴛ ʏᴏᴜʀ ᴅᴀʏ, ʟᴇᴛ ʏᴏᴜʀ ꜱᴘɪʀɪᴛ ꜱᴏᴀʀ ᴀɴᴅ ʏᴏᴜʀ ʜᴇᴀʀᴛ ʙᴇ ʟɪɢʜᴛ. ᴍᴀʏ ʏᴏᴜʀ ᴍᴏʀɴɪɴɢ ʙᴇ ᴀꜱ ꜰʀᴇꜱʜ ᴀɴᴅ ɪɴᴠɪɢᴏʀᴀᴛɪɴɢ ᴀꜱ ᴀ ɢᴇɴᴛʟᴇ ʙʀᴇᴇᴢᴇ ᴀɴᴅ ᴀꜱ ʙʀɪɢʜᴛ ᴀꜱ ᴛʜᴇ ꜱᴜɴ. ᴡᴇʟᴄᴏᴍᴇ ᴛʜᴇ ɴᴇᴡ ᴅᴀʏ ᴡɪᴛʜ ᴀ ꜱᴍɪʟᴇ ᴀɴᴅ ʟᴇᴛ ɪᴛ ʙʀɪɴɢ ʏᴏᴜ ᴀʟʟ ᴛʜᴇ ʜᴀᴘᴘɪɴᴇꜱꜱ ʏᴏᴜ ᴅᴇꜱᴇʀᴠᴇ.", "🌞 ʀɪꜱᴇ ᴀɴᴅ ꜱʜɪɴᴇ! ɪᴛ’ꜱ ᴀ ʙʀᴀɴᴅ ɴᴇᴡ ᴅᴀʏ ꜰᴜʟʟ ᴏꜰ ᴏᴘᴘᴏʀᴛᴜɴɪᴛɪᴇꜱ ᴀɴᴅ ᴀᴅᴠᴇɴᴛᴜʀᴇꜱ. ᴍᴀʏ ʏᴏᴜʀ ᴍᴏʀɴɪɴɢ ʙᴇ ᴀꜱ ʟɪᴠᴇʟʏ ᴀꜱ ᴀ ꜱᴜɴʀɪꜱᴇ ᴀɴᴅ ᴀꜱ ɪɴꜱᴘɪʀɪɴɢ ᴀꜱ ᴀ ɴᴇᴡ ʙᴇɢɪɴɴɪɴɢ. ꜱᴛᴀʀᴛ ʏᴏᴜʀ ᴅᴀʏ ᴡɪᴛʜ ᴀ ᴘᴏꜱɪᴛɪᴠᴇ ᴀᴛᴛɪᴛᴜᴅᴇ ᴀɴᴅ ʟᴇᴛ ᴛʜᴇ ᴡᴏʀʟᴅ ꜱᴇᴇ ʏᴏᴜʀ ʙʀɪʟʟɪᴀɴᴄᴇ. ᴍᴀʏ ᴛᴏᴅᴀʏ ʙʀɪɴɢ ʏᴏᴜ ᴊᴏʏ, ꜱᴜᴄᴄᴇꜱꜱ, ᴀɴᴅ ᴀʟʟ ᴛʜᴇ ᴛʜɪɴɢꜱ ᴛʜᴀᴛ ᴍᴀᴋᴇ ʏᴏᴜ ꜱᴍɪʟᴇ. ɢᴏᴏᴅ ᴍᴏʀɴɪɴɢ!", ]
+
 
 
 add_buttons = InlineKeyboardMarkup(
