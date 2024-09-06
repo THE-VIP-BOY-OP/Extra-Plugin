@@ -1,17 +1,24 @@
 from strings import get_string
+import asyncio
 import logging
 from pyrogram import filters
 from pyrogram.enums import ChatMemberStatus
-from pyrogram.errors import ChatAdminRequired, InviteRequestSent, UserAlreadyParticipant, UserNotParticipant
+from pyrogram.errors import (
+    ChatAdminRequired,
+    InviteRequestSent,
+    UserAlreadyParticipant,
+    UserNotParticipant,
+)
 from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
 
-from config import BANNED_USERS, adminlist
+from config import BANNED_USERS
 from VIPMUSIC import app
-from VIPMUSIC.misc import SUDOERS
 from VIPMUSIC.utils.database import get_assistant, get_cmode, get_lang, get_playmode, get_playtype
 from VIPMUSIC.utils.logger import play_logs
 from VIPMUSIC.utils.stream.stream import stream
+from VIPMUSIC.misc import SUDOERS
 
+# Radio Station List
 RADIO_STATION = {
     "air bilaspur": "http://air.pc.cdn.bitgravity.com/air/live/pbaudio110/playlist.m3u8",
     "air raipur": "http://air.pc.cdn.bitgravity.com/air/live/pbaudio118/playlist.m3u8",
@@ -24,86 +31,84 @@ RADIO_STATION = {
     "aaj tak": "https://www.youtube.com/live/Nq2wYlWFucg?si=usY4UYiSBInKA0S1",
 }
 
+# Function to create triangular buttons dynamically
+def create_triangular_buttons():
+    buttons = []
+    stations = list(RADIO_STATION.keys())
+    button_row = []
+    row_count = 3  # Start with 3 buttons in the first row
+    
+    i = 0
+    while stations:
+        button_row = []
+        for _ in range(min(row_count, len(stations))):
+            button_row.append(InlineKeyboardButton(str(i + 1), callback_data=f"radio_station_{stations[i]}"))
+            i += 1
+        buttons.append(button_row)
+        row_count -= 1
+        if row_count == 0:
+            row_count = 3  # Reset back to 3 buttons for the next set
+    
+    return buttons
+
 @app.on_message(
-    filters.command(["radioplayforce", "radio", "cradio"]) & filters.group & ~BANNED_USERS
+    filters.command(["radio", "radioplayforce", "cradio"]) & filters.group & ~BANNED_USERS
 )
 async def radio(client, message: Message):
     msg = await message.reply_text("please wait a moment...")
-
-    # Ensure Assistant is in chat
+    
     try:
         userbot = await get_assistant(message.chat.id)
         get = await app.get_chat_member(message.chat.id, userbot.id)
-    except ChatAdminRequired:
-        return await msg.edit_text(
-            f"I don't have permissions to invite users for inviting {userbot.mention} assistant."
-        )
-    if get.status == ChatMemberStatus.BANNED:
-        return await msg.edit_text(
-            text=f"{userbot.mention} assistant is banned in this chat.\nPlease unban the assistant and try again."
-        )
+        
+        if get.status == ChatMemberStatus.BANNED:
+            return await msg.edit_text(
+                text=f"» {userbot.mention} assistant is banned in {message.chat.title}.\nPlease unban and try again."
+            )
+    except UserNotParticipant:
+        pass
 
-    await msg.delete()
+    # Create triangular buttons for available radio stations
+    buttons = create_triangular_buttons()
 
-    # Create buttons in a triangular shape
-    buttons = []
-    row_count = 3
-    row = []
-    
-    for idx, (name, url) in enumerate(RADIO_STATION.items(), 1):
-        row.append(InlineKeyboardButton(text=str(idx), callback_data=f"radio_{name}"))
-        if len(row) == row_count:  # If the row has enough buttons for the current row
-            buttons.append(row)
-            row_count -= 1  # Decrease the number of buttons in the next row
-            row = []
-        if row_count == 0:
-            break
-
-    if row:  # Append any remaining buttons
-        buttons.append(row)
-
-    # Send message with buttons
+    # Send message with buttons and small text alert
     await message.reply_text(
-        "please click below button to play radio channel.",
-        reply_markup=InlineKeyboardMarkup(buttons)
+        "pls click below button to play radio channel",
+        reply_markup=InlineKeyboardMarkup(buttons),
     )
 
-
-@app.on_callback_query(filters.regex(r"radio_(.*)"))
-async def radio_callback(client, callback_query):
-    station_name = callback_query.data.split("_")[1]
+@app.on_callback_query(filters.regex(r"radio_station_(.*)"))
+async def play_radio(client, callback_query):
+    station_name = callback_query.data.split("_")[-1]
     RADIO_URL = RADIO_STATION.get(station_name)
-    
-    if not RADIO_URL:
-        await callback_query.answer("Station not found!", show_alert=True)
-        return
-    
-    message = callback_query.message
-    user_id = callback_query.from_user.id
-    chat_id = message.chat.id
-    language = await get_lang(chat_id)
-    _ = get_string(language)
-    
-    playmode = await get_playmode(chat_id)
-    playty = await get_playtype(chat_id)
-    
-    if playty != "Everyone" and user_id not in SUDOERS:
-        admins = adminlist.get(chat_id)
-        if not admins or user_id not in admins:
-            return await message.reply_text(_["play_4"])
-    
-    try:
-        await stream(
-            _,
-            message,
-            user_id,
-            RADIO_URL,
-            chat_id,
-            callback_query.from_user.mention,
-            chat_id,
-            streamtype="index",
-        )
-        await play_logs(message, streamtype="Radio")
-    except Exception as e:
-        err_msg = f"Error occurred: {type(e).__name__}"
-        await message.edit_text(err_msg)
+
+    if RADIO_URL:
+        await callback_query.message.edit_text("ok baby please wait starting your radio in vc please join vc and enjoy😁")
+        language = await get_lang(callback_query.message.chat.id)
+        _ = get_string(language)
+        chat_id = callback_query.message.chat.id
+        
+        try:
+            await stream(
+                _,
+                callback_query.message,
+                callback_query.from_user.id,
+                RADIO_URL,
+                chat_id,
+                callback_query.from_user.mention,
+                callback_query.message.chat.id,
+                video=None,
+                streamtype="index",
+            )
+        except Exception as e:
+            ex_type = type(e).__name__
+            err = e if ex_type == "AssistantErr" else _["general_3"].format(ex_type)
+            await callback_query.message.edit_text(err)
+        await play_logs(callback_query.message, streamtype="Radio")
+    else:
+        await callback_query.message.edit_text("Invalid station selected!")
+
+__MODULE__ = "Radio"
+__HELP__ = """
+/radio - to play radio in the voice chat.
+"""
