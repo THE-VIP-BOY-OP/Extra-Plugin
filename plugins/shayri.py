@@ -129,7 +129,6 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 import random
 
 from VIPMUSIC import app
-from VIPMUSIC.mongo.nightmodedb import get_nightchats
 
 # Define the scheduler
 scheduler = AsyncIOScheduler(timezone="Asia/Kolkata")
