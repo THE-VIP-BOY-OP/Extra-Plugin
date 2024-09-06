@@ -23,7 +23,6 @@ async def react_with_random_emoji(client, message):
         emoji = random.choice(EMOJI_LIST)
         await app.send_reaction(message.chat.id, message.id, emoji)
     except Exception as e:
-        # If sending the reaction fails, just log the error silently and continue
         print(f"Failed to send reaction: {str(e)}")
 
 # Function to convert text to small caps
@@ -40,10 +39,8 @@ def to_small_caps(text):
     
     for word in words:
         if word.startswith('@'):
-            # Leave the username as it is
             transformed_words.append(word)
         else:
-            # Convert the word to small caps
             transformed_words.append(''.join(small_caps.get(char, char) for char in word.lower()))
 
     return ' '.join(transformed_words)
@@ -66,17 +63,24 @@ def truncate_text(text, max_words=50):
         return ' '.join(words[:max_words]) + "..."
     return text
 
+# Dictionary to store full messages
+full_messages = {}
+
 # Handler for "Read More" button
-@app.on_callback_query(filters.regex("read_more"))
+@app.on_callback_query(filters.regex(r"read_more:(\d+)"))
 async def read_more_callback(client, callback_query):
-    message = callback_query.message
-    full_message = callback_query.data.split(":", 1)[1]  # Extract full message
-    await message.edit_text(full_message, parse_mode=ParseMode.MARKDOWN)
+    message_id = int(callback_query.data.split(":")[1])
+    full_message = full_messages.get(message_id)
+
+    if full_message:
+        await callback_query.message.edit_text(full_message, parse_mode=ParseMode.MARKDOWN)
+    else:
+        await callback_query.message.edit_text("Message not found.", parse_mode=ParseMode.MARKDOWN)
 
 # Handler for direct messages (DMs)
 @app.on_message(filters.private & ~filters.service)
 async def gemini_dm_handler(client, message):
-    await react_with_random_emoji(client, message)  # Attempt to send a reaction
+    await react_with_random_emoji(client, message)
     await app.send_chat_action(message.chat.id, ChatAction.TYPING)
     
     user_input = message.text
@@ -88,12 +92,14 @@ async def gemini_dm_handler(client, message):
 
         if x:
             truncated_response = truncate_text(x)
+            full_messages[message.id] = x  # Store the full message using message ID as key
+
             if image_url:
                 await message.reply_photo(
                     image_url, 
                     caption=truncated_response, 
                     reply_markup=InlineKeyboardMarkup(
-                        [[InlineKeyboardButton("Read More", callback_data=f"read_more:{x}")]]
+                        [[InlineKeyboardButton("Read More", callback_data=f"read_more:{message.id}")]]
                     ), 
                     quote=True
                 )
@@ -101,7 +107,7 @@ async def gemini_dm_handler(client, message):
                 await message.reply_text(
                     truncated_response, 
                     reply_markup=InlineKeyboardMarkup(
-                        [[InlineKeyboardButton("Read More", callback_data=f"read_more:{x}")]]
+                        [[InlineKeyboardButton("Read More", callback_data=f"read_more:{message.id}")]]
                     ),
                     quote=True
                 )
@@ -119,7 +125,6 @@ async def gemini_group_handler(client, message):
     if message.text:
         # Check if the message is a reply to the bot's message
         if message.reply_to_message and message.reply_to_message.from_user.username == bot_username:
-            # Process the reply
             await react_with_random_emoji(client, message)
             await app.send_chat_action(message.chat.id, ChatAction.TYPING)
 
@@ -131,12 +136,14 @@ async def gemini_group_handler(client, message):
 
                 if x:
                     truncated_response = truncate_text(x)
+                    full_messages[message.id] = x  # Store the full message
+
                     if image_url:
                         await message.reply_photo(
                             image_url, 
                             caption=truncated_response, 
                             reply_markup=InlineKeyboardMarkup(
-                                [[InlineKeyboardButton("Read More", callback_data=f"read_more:{x}")]]
+                                [[InlineKeyboardButton("Read More", callback_data=f"read_more:{message.id}")]]
                             ), 
                             quote=True
                         )
@@ -144,7 +151,7 @@ async def gemini_group_handler(client, message):
                         await message.reply_text(
                             truncated_response, 
                             reply_markup=InlineKeyboardMarkup(
-                                [[InlineKeyboardButton("Read More", callback_data=f"read_more:{x}")]]
+                                [[InlineKeyboardButton("Read More", callback_data=f"read_more:{message.id}")]]
                             ), 
                             quote=True
                         )
@@ -155,11 +162,9 @@ async def gemini_group_handler(client, message):
         
         # Check if the bot's username is mentioned anywhere in the text
         elif f"@{bot_username}" in message.text:
-            # Process the message
             await react_with_random_emoji(client, message)
             await app.send_chat_action(message.chat.id, ChatAction.TYPING)
 
-            # Remove the bot's username from the message text before processing
             user_input = message.text.replace(f"@{bot_username}", "").strip()
 
             try:
@@ -169,12 +174,14 @@ async def gemini_group_handler(client, message):
 
                 if x:
                     truncated_response = truncate_text(x)
+                    full_messages[message.id] = x  # Store the full message
+
                     if image_url:
                         await message.reply_photo(
                             image_url, 
                             caption=truncated_response, 
                             reply_markup=InlineKeyboardMarkup(
-                                [[InlineKeyboardButton("Read More", callback_data=f"read_more:{x}")]]
+                                [[InlineKeyboardButton("Read More", callback_data=f"read_more:{message.id}")]]
                             ), 
                             quote=True
                         )
@@ -182,7 +189,7 @@ async def gemini_group_handler(client, message):
                         await message.reply_text(
                             truncated_response, 
                             reply_markup=InlineKeyboardMarkup(
-                                [[InlineKeyboardButton("Read More", callback_data=f"read_more:{x}")]]
+                                [[InlineKeyboardButton("Read More", callback_data=f"read_more:{message.id}")]]
                             ), 
                             quote=True
                         )
@@ -190,5 +197,3 @@ async def gemini_group_handler(client, message):
                     await message.reply_text(to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"), quote=True)
             except requests.exceptions.RequestException as e:
                 pass
-
-        # Ignore messages that are neither replies to the bot nor mention the bot
