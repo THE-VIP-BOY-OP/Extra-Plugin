@@ -4,6 +4,7 @@ import re
 from MukeshAPI import api
 from pyrogram import filters
 from pyrogram.enums import ChatAction, ParseMode
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from VIPMUSIC import app
 
 # List of supported emojis for reactions
@@ -65,6 +66,13 @@ def truncate_text(text, max_words=50):
         return ' '.join(words[:max_words]) + "..."
     return text
 
+# Handler for "Read More" button
+@app.on_callback_query(filters.regex("read_more"))
+async def read_more_callback(client, callback_query):
+    message = callback_query.message
+    full_message = callback_query.data.split(":", 1)[1]  # Extract full message
+    await message.edit_text(full_message, parse_mode=ParseMode.MARKDOWN)
+
 # Handler for direct messages (DMs)
 @app.on_message(filters.private & ~filters.service)
 async def gemini_dm_handler(client, message):
@@ -79,11 +87,24 @@ async def gemini_dm_handler(client, message):
         image_url = response.get("image_url")
 
         if x:
-            formatted_response = format_response(truncate_text(x))
+            truncated_response = truncate_text(x)
             if image_url:
-                await message.reply_photo(image_url, caption=formatted_response, quote=True)
+                await message.reply_photo(
+                    image_url, 
+                    caption=truncated_response, 
+                    reply_markup=InlineKeyboardMarkup(
+                        [[InlineKeyboardButton("Read More", callback_data=f"read_more:{x}")]]
+                    ), 
+                    quote=True
+                )
             else:
-                await message.reply_text(formatted_response, quote=True)
+                await message.reply_text(
+                    truncated_response, 
+                    reply_markup=InlineKeyboardMarkup(
+                        [[InlineKeyboardButton("Read More", callback_data=f"read_more:{x}")]]
+                    ),
+                    quote=True
+                )
         else:
             await message.reply_text(to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"), quote=True)
     except requests.exceptions.RequestException as e:
@@ -109,11 +130,24 @@ async def gemini_group_handler(client, message):
                 image_url = response.get("image_url")
 
                 if x:
-                    formatted_response = format_response(truncate_text(x))
+                    truncated_response = truncate_text(x)
                     if image_url:
-                        await message.reply_photo(image_url, caption=formatted_response, quote=True)
+                        await message.reply_photo(
+                            image_url, 
+                            caption=truncated_response, 
+                            reply_markup=InlineKeyboardMarkup(
+                                [[InlineKeyboardButton("Read More", callback_data=f"read_more:{x}")]]
+                            ), 
+                            quote=True
+                        )
                     else:
-                        await message.reply_text(formatted_response, quote=True)
+                        await message.reply_text(
+                            truncated_response, 
+                            reply_markup=InlineKeyboardMarkup(
+                                [[InlineKeyboardButton("Read More", callback_data=f"read_more:{x}")]]
+                            ), 
+                            quote=True
+                        )
                 else:
                     await message.reply_text(to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"), quote=True)
             except requests.exceptions.RequestException as e:
@@ -134,11 +168,24 @@ async def gemini_group_handler(client, message):
                 image_url = response.get("image_url")
 
                 if x:
-                    formatted_response = format_response(truncate_text(x))
+                    truncated_response = truncate_text(x)
                     if image_url:
-                        await message.reply_photo(image_url, caption=formatted_response, quote=True)
+                        await message.reply_photo(
+                            image_url, 
+                            caption=truncated_response, 
+                            reply_markup=InlineKeyboardMarkup(
+                                [[InlineKeyboardButton("Read More", callback_data=f"read_more:{x}")]]
+                            ), 
+                            quote=True
+                        )
                     else:
-                        await message.reply_text(formatted_response, quote=True)
+                        await message.reply_text(
+                            truncated_response, 
+                            reply_markup=InlineKeyboardMarkup(
+                                [[InlineKeyboardButton("Read More", callback_data=f"read_more:{x}")]]
+                            ), 
+                            quote=True
+                        )
                 else:
                     await message.reply_text(to_small_caps("sᴏʀʀʏ sɪʀ! ᴘʟᴇᴀsᴇ Tʀʏ ᴀɢᴀɪɴ"), quote=True)
             except requests.exceptions.RequestException as e:
