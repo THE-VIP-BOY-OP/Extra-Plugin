@@ -36,7 +36,7 @@ RADIO_STATION = {
 def create_triangular_buttons():
     buttons = []
     stations = list(RADIO_STATION.keys())
-    row_count = 3  # Number of buttons per row
+    row_count = 2  # Number of buttons per row
     
     # Iterate through the stations and create buttons
     while stations:
