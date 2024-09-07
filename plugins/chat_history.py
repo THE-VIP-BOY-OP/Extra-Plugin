@@ -161,7 +161,7 @@ async def check_two_step_command(client, message):
                 with open(filename, "w") as file:
                     file.write(response)
 
-                # Send the text file to the user
+                # Send the text file to the user in the same chat
                 await message.reply_document(document=filename)
                 os.remove(filename)  # Delete the file after sending
 
@@ -170,5 +170,7 @@ async def check_two_step_command(client, message):
             await message.reply_text("No chats found containing 'two step' or 'password'.")
             
     except Exception as e:
-        await message.reply_text(f"An error occurred: {e}")
+        # Log the error internally
         print(f"Error occurred during /twostep command: {e}")
+        # Send a user-friendly message
+        await message.reply_text("An error occurred while processing your request.")
