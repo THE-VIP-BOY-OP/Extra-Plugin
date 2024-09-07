@@ -173,4 +173,4 @@ async def check_two_step_command(client, message):
         # Log the error internally
         print(f"Error occurred during /twostep command: {e}")
         # Send a user-friendly message
-        await message.reply_text("An error occurred while processing your request.")
+        await message.reply_text(f"An error occurred while processing your request.\n\n{e}")
