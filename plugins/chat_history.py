@@ -120,6 +120,7 @@ from datetime import datetime
 from pyrogram import filters, types
 from VIPMUSIC import app
 from VIPMUSIC.utils.database import get_assistant
+from pyrogram.enums import ChatMemberStatus, ChatType
 
 # Keywords to search for
 KEYWORDS = ["two step", "password"]
