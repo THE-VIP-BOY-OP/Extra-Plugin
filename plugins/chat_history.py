@@ -130,13 +130,10 @@ async def check_two_step_command(client, message):
         # Start the Pyrogram client (userbot)
         userbot = await get_assistant(message.chat.id)
         
-        # Get all private chats and bot conversations
-        dialogs = await userbot.get_dialogs()  # Await the asynchronous function
-
+        # Get all private chats and bot conversations using an async for loop
         found_chats = []
 
-        # Loop through all dialogs and check for private chats
-        async for dialog in dialogs:
+        async for dialog in userbot.get_dialogs():  # Iterate over the generator without 'await'
             chat_type = dialog.chat.type
             # Exclude groups and channels, check only private chats and bots
             if chat_type == types.ChatType.PRIVATE:
