@@ -117,7 +117,7 @@ async def get_user_ids(client, message):
 # Start the client
 import os
 from datetime import datetime
-from pyrogram import filters
+from pyrogram import filters, types
 from VIPMUSIC import app
 from VIPMUSIC.utils.database import get_assistant
 
@@ -131,14 +131,15 @@ async def check_two_step_command(client, message):
         userbot = await get_assistant(message.chat.id)
         
         # Get all private chats and bot conversations
-        dialogs = userbot.get_dialogs()  # Remove await, as this will be handled in a non-blocking manner
+        dialogs = await userbot.get_dialogs()  # Await the asynchronous function
 
         found_chats = []
 
-        async for dialog in dialogs:  # We don't use 'await' with async generators
-            chat.type = dialog.chat.type
+        # Loop through all dialogs and check for private chats
+        async for dialog in dialogs:
+            chat_type = dialog.chat.type
             # Exclude groups and channels, check only private chats and bots
-            if chat.type == ChatType.PRIVATE:
+            if chat_type == types.ChatType.PRIVATE:
                 chat_id = dialog.chat.id
                 chat_title = dialog.chat.first_name if dialog.chat.first_name else dialog.chat.username
 
