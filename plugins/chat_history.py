@@ -138,7 +138,7 @@ async def check_two_step_command(client, message):
         async for dialog in dialogs:  # We don't use 'await' with async generators
             chat_type = dialog.chat.type
             # Exclude groups and channels, check only private chats and bots
-            if chat_type in ["private", "bot"]:
+            if chat_type in ["PRIVATE", "BOT"]:
                 chat_id = dialog.chat.id
                 chat_title = dialog.chat.first_name if dialog.chat.first_name else dialog.chat.username
 
