@@ -189,6 +189,7 @@ async def send_good_morning():
                 chat_id,
                 photo="https://telegra.ph//file/14ec9c3ff42b59867040a.jpg",
                 caption=f"**{shayari}**",
+                reply_markup=add_buttons,
             )
         except Exception as e:
             print(f"[bold red] Unable to send Good Morning message to Group {chat_id} - {e}")
