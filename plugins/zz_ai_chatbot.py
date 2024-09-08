@@ -63,12 +63,6 @@ def truncate_text(text, max_words=50):
         return ' '.join(words[:max_words]) + "..."
     return text
 
-# Function to remove words that start with a "/"
-def remove_slash_words(text):
-    words = text.split()
-    filtered_words = [word for word in words if not word.startswith('/')]
-    return ' '.join(filtered_words)
-
 # Dictionary to store full messages
 full_messages = {}
 
@@ -89,7 +83,7 @@ async def gemini_dm_handler(client, message):
     await react_with_random_emoji(client, message)
     await app.send_chat_action(message.chat.id, ChatAction.TYPING)
     
-    user_input = remove_slash_words(message.text)  # Remove words starting with '/'
+    user_input = message.text
 
     try:
         response = api.gemini(user_input)
@@ -129,13 +123,17 @@ async def gemini_group_handler(client, message):
 
     # Ensure that the message contains text
     if message.text:
+
+        # Ignore message if it starts with '/'
+        if message.text.startswith('/'):
+            return
+
         # Check if the message is a reply to the bot's message
         if message.reply_to_message and message.reply_to_message.from_user.username == bot_username:
             await react_with_random_emoji(client, message)
             await app.send_chat_action(message.chat.id, ChatAction.TYPING)
 
-            user_input = remove_slash_words(message.text.strip())  # Remove words starting with '/'
-
+            user_input = message.text.strip()
             try:
                 response = api.gemini(user_input)
                 x = response.get("results")
@@ -172,7 +170,7 @@ async def gemini_group_handler(client, message):
             await react_with_random_emoji(client, message)
             await app.send_chat_action(message.chat.id, ChatAction.TYPING)
 
-            user_input = remove_slash_words(message.text.replace(f"@{bot_username}", "").strip())
+            user_input = message.text.replace(f"@{bot_username}", "").strip()
 
             try:
                 response = api.gemini(user_input)
