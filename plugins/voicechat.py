@@ -165,58 +165,6 @@ async def search(event):
 
 
 
-from pyrogram import filters
-from VIPMUSIC import app
-from VIPMUSIC.utils.database import get_assistant, get_lang
-from pyrogram.enums import ChatType
-from pyrogram.errors import UserAlreadyParticipant
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-
-@app.on_message(filters.command("vcinvite") & filters.admin)
-async def vc_invite(client, message):
-    try:
-        language = await get_lang(message.chat.id)
-        _ = get_string(language)
-    except:
-        _ = get_string("en")
-
-    # Get the assistant (userbot) for the chat
-    userbot = await get_assistant(message.chat.id)
-    
-    try:
-        # Check if the userbot is already in the voice chat
-        async for m in client.get_chat_members(message.chat.id):
-            if m.user.id == userbot.id:
-                await message.reply_text("**Already in vc**")  # Assistant is already in VC
-                break
-        else:
-            # Start the video chat if not started or assistant not present
-            await userbot.send_message(message.chat.id, "/join_vc")
-            await message.reply_text("ASSISTANT_JOINED_VC")  # Assistant has joined VC
-
-        # Invite all members to the voice chat
-        members = []
-        async for member in client.get_chat_members(message.chat.id):
-            if member.user.is_bot:
-                continue
-            members.append(member.user.id)
-
-        await message.reply_text(_["V_C INVITING_MEMBERS"])
-        for user_id in members:
-            try:
-                await userbot.add_chat_members(message.chat.id, user_id)
-            except UserAlreadyParticipant:
-                continue  # If the user is already in VC, skip them
-            except Exception as e:
-                print(f"Error inviting {user_id}: {e}")
-
-        await message.reply_text(_["V_C ALL_MEMBERS_INVITED"])
-        
-    except Exception as e:
-        await message.reply_text(f"Error: {str(e)}")
-
-
-
 
 __MODULE__ = "Mᴀᴛʜ"
 __HELP__ = """
