@@ -78,7 +78,7 @@ async def read_more_callback(client, callback_query):
         await callback_query.message.edit_text("Message not found.", parse_mode=ParseMode.MARKDOWN)
 
 # Handler for direct messages (DMs)
-@app.on_message(filters.private & ~filters.service)
+@app.on_message(filters.group & ~filters.private & ~filters.service)
 async def gemini_dm_handler(client, message):
     await react_with_random_emoji(client, message)
     await app.send_chat_action(message.chat.id, ChatAction.TYPING)
@@ -117,7 +117,7 @@ async def gemini_dm_handler(client, message):
         pass
 
 # Handler for group chats when replying to the bot's message or mentioning the bot
-@app.on_message(filters.group)
+@app.on_message(filters.group & ~filters.private)
 async def gemini_group_handler(client, message):
     bot_username = (await app.get_me()).username
 
