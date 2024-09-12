@@ -117,7 +117,7 @@ async def gemini_dm_handler(client, message):
         pass
 
 # Handler for group chats when replying to the bot's message or mentioning the bot
-@app.on_message(filters.group & ~filters.private)
+@app.on_message(filters.group)
 async def gemini_group_handler(client, message):
     bot_username = (await app.get_me()).username
 
