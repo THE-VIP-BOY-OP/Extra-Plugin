@@ -28,7 +28,7 @@ RADIO_STATION = {
     "ʀᴀᴅɪᴏ ᴛᴏᴅᴀʏ": "http://stream.zenolive.com/8wv4d8g4344tv",
     "ʏᴏᴜᴛᴜʙᴇ": "https://www.youtube.com/live/eu191hR_LEc?si=T-9QYD548jd0Mogp",
     "ᴢᴇᴇ ɴᴇᴡs": "https://www.youtube.com/live/TPcmrPrygDc?si=hiHBkIidgurQAd1P",
-    "ᴀᴀᴊ ᴛᴀᴋ": "https://www.youtube.com/live/Nq2wYlWFucg?si=usY4UYiSBInKA0S1",
+    "Chill out": "https://www.youtube.com/live/36YnV9STBqc",
 }
 
 
