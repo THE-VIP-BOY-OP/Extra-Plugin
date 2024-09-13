@@ -100,13 +100,13 @@ async def play_radio(client, callback_query):
                 callback_query.from_user.mention,
                 callback_query.message.chat.id,
                 video=None,
-                streamtype="youtube",
+                streamtype="index",
             )
         except Exception as e:
             ex_type = type(e).__name__
             err = e if ex_type == "AssistantErr" else _["general_3"].format(ex_type)
             await callback_query.message.edit_text(err)
-        await play_logs(callback_query.message, streamtype="youtube")
+        await play_logs(callback_query.message, streamtype="Radio")
     else:
         await callback_query.message.edit_text("ɪnᴠᴀʟɪᴅ sᴛᴀᴛɪᴏɴ sᴇʟᴇᴄᴛᴇᴅ!")
 
