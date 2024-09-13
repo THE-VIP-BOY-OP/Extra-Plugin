@@ -100,7 +100,7 @@ async def play_radio(client, callback_query):
                 callback_query.from_user.mention,
                 callback_query.message.chat.id,
                 video=None,
-                streamtype="index",
+                streamtype="youtube",
             )
         except Exception as e:
             ex_type = type(e).__name__
