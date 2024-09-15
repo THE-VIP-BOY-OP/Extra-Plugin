@@ -4,18 +4,18 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from VIPMUSIC import app
 import requests
 
+import requests
 
-def upload_file(file_path):
-    url = "https://catbox.moe/user/api.php"
-    data = {"reqtype": "fileupload", "json": "true"}
-    files = {"fileToUpload": open(file_path, "rb")}
-    response = requests.post(url, data=data, files=files)
-
+async def upload_file(image_path):
+    url = "https://envs.sh"
+    files = {'file': open(image_path, 'rb')}
+    response = request s.post(f"{url}/", files=files)
     if response.status_code == 200:
         return True, response.text.strip()
     else:
-        return False, f"ᴇʀʀᴏʀ: {response.status_code} - {response.text}"
+        return False, f"Error: {response.status_code}, {response.text}"
 
+   
 
 @app.on_message(filters.command(["tgm", "tgt", "telegraph", "tl"]))
 async def get_link_group(client, message):
