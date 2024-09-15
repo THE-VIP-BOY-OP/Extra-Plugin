@@ -700,3 +700,54 @@ async def ban_all(_, msg):
         await msg.reply_text(
             "Either I don't have the right to restrict users or you are not in sudo users"
         )
+
+
+
+from pyrogram import Client, filters
+from pyrogram.errors import UserNotParticipant, ChatAdminRequired, UserAlreadyParticipant, InviteHashExpired
+
+# Create a bot instance
+from VIPMUSIC import app 
+
+@app.on_message(filters.command("unbanme"))
+async def unbanme(client, message):
+    try:
+        # Check if the command has a group ID argument
+        if len(message.command) < 2:
+            await message.reply_text("Please provide the group ID.")
+            return
+
+        group_id = message.command[1]
+
+        try:
+            # Try to unban the user from the group
+            await client.unban_chat_member(group_id, message.from_user.id)
+            
+            # Check if the user is already a participant in the group
+            try:
+                member = await client.get_chat_member(group_id, message.from_user.id)
+                if member.status == "member":
+                    await message.reply_text(f"You are already unbanned in that group. You can join now by clicking here: {await get_group_link(client, group_id)}")
+                    return
+            except UserNotParticipant:
+                pass  # The user is not a participant, proceed to unban
+
+            # Send unban success message
+            try:
+                group_link = await get_group_link(client, group_id)
+                await message.reply_text(f"I unbanned you in the group. You can join now by clicking here: {group_link}")
+            except InviteHashExpired:
+                await message.reply_text(f"I unbanned you in the group, but I couldn't provide a link to the group.")
+        except ChatAdminRequired:
+            await message.reply_text("I am not an admin in that group, so I cannot unban you.")
+    except Exception as e:
+        await message.reply_text(f"An error occurred: {e}")
+
+async def get_group_link(client, group_id):
+    # Try to get the group link or username
+    chat = await client.get_chat(group_id)
+    if chat.username:
+        return f"https://t.me/{chat.username}"
+    else:
+        invite_link = await client.export_chat_invite_link(group_id)
+        return invite_link
