@@ -9,7 +9,7 @@ import requests
 async def upload_file(image_path):
     url = "https://envs.sh"
     files = {'file': open(image_path, 'rb')}
-    response = request s.post(f"{url}/", files=files)
+    response = requests.post(f"{url}/", files=files)
     if response.status_code == 200:
         return True, response.text.strip()
     else:
