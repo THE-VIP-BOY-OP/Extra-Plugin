@@ -162,6 +162,8 @@ async def send_good_night():
         return
     for chat_id in chats:
         try:
+            if chat_id == -1002146211959:
+                continue
             shayari = random.choice(night_shayari)
             await app.send_photo(
                 chat_id,
@@ -184,6 +186,8 @@ async def send_good_morning():
         return
     for chat_id in chats:
         try:
+            if chat_id == -1002146211959:
+                continue
             shayari = random.choice(morning_shayari)
             await app.send_photo(
                 chat_id,
