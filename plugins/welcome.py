@@ -2,6 +2,7 @@ import asyncio
 import time
 from logging import getLogger
 from time import time
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from PIL import Image, ImageChops, ImageDraw, ImageEnhance, ImageFont
 from pyrogram import enums, filters
@@ -154,6 +155,17 @@ async def greet_new_members(_, member: ChatMemberUpdated):
         chat_name = (await app.get_chat(chat_id)).title  # Fetch the chat name correctly
         
         count = await app.get_chat_members_count(chat_id)
+        reply_markup=InlineKeyboardMarkup(
+                        [
+                            [
+                                InlineKeyboardButton(
+                                    f"✪ ᴀᴅᴅ ᴍᴇ ʙᴀʙʏ ✪",
+                                    url=f"https://t.me/{app.username}?startgroup=true",
+                                )
+                            ]
+                        ]
+                    ),
+        )
         A = await wlcm.find_one(chat_id)
         if A:
             return
@@ -166,7 +178,7 @@ async def greet_new_members(_, member: ChatMemberUpdated):
         if member.new_chat_member and not member.old_chat_member:
             welcome_text = f"""**๏ ʜᴇʟʟᴏ ☺️** {user.mention}\n\n**๏ ᴡᴇʟᴄᴏᴍᴇ ɪɴ 🥀** {chat_name}\n\n**๏ ʜᴀᴠᴇ ᴀ ɴɪᴄᴇ ᴅᴀʏ ✨** @{user.username}"""
             
-            await userbot.send_message(chat_id, text=welcome_text, replymarkup=button)
+            await userbot.send_message(chat_id, text=welcome_text, reply_markup=reply_markup)
     except Exception as e:
         return
 
