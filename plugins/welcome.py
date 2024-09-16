@@ -159,8 +159,8 @@ async def greet_new_members(_, member: ChatMemberUpdated):
                         [
                             [
                                 InlineKeyboardButton(
-                                    f"✪ ᴀᴅᴅ ᴍᴇ ʙᴀʙʏ ✪",
-                                    url=f"https://t.me/{app.username}?startgroup=true",
+                                    f"✪ ᴛᴀᴘ ᴛᴏ ᴄʟᴏsᴇ ✪",
+                                    url=f"https://t.me/joinchat/tg_friendsss",
                                 )
                             ]
                         ]
