@@ -152,7 +152,7 @@ async def greet_new_members(_, member: ChatMemberUpdated):
     try:
 
         chat_id = member.chat.id
-        chat_name = chat_id.name
+        chat_name = chat_id.title
         userbot = await get_assistant(chat_id)
         count = await app.get_chat_members_count(chat_id)
         A = await wlcm.find_one(chat_id)
