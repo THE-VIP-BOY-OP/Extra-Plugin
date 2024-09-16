@@ -150,8 +150,8 @@ async def auto_state(_, message):
 @app.on_chat_member_updated(filters.group, group=6)
 async def greet_new_members(_, member: ChatMemberUpdated):
     try:
-
         chat_id = member.chat.id
+        chat_name = (await app.get_chat(chat_id)).title  # Fetch the chat name correctly
         
         count = await app.get_chat_members_count(chat_id)
         A = await wlcm.find_one(chat_id)
@@ -164,9 +164,9 @@ async def greet_new_members(_, member: ChatMemberUpdated):
 
         # Add the modified condition here
         if member.new_chat_member and not member.old_chat_member:
-            welcome_text = f"""**ᴡᴇʟᴄᴏᴍᴇ** {user.mention}\n**» @{user.username}**"""
-            await asyncio.sleep(3)
-            await app.send_message(chat_id, text=welcome_text)
+            welcome_text = f"""**๏ ʜᴇʟʟᴏ ☺️** {user.mention}\n\n**๏ ᴡᴇʟᴄᴏᴍᴇ ɪɴ 🥀** {chat_name}\n\n**๏ ʜᴀᴠᴇ ᴀ ɴɪᴄᴇ ᴅᴀʏ ✨** @{user.username}"""
+            
+            await userbot.send_message(chat_id, text=welcome_text, replymarkup=button)
     except Exception as e:
         return
 
