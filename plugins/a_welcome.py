@@ -152,6 +152,7 @@ async def greet_new_members(_, member: ChatMemberUpdated):
     try:
 
         chat_id = member.chat.id
+        chat_name = chat_id.name
         userbot = await get_assistant(chat_id)
         count = await app.get_chat_members_count(chat_id)
         A = await wlcm.find_one(chat_id)
@@ -164,7 +165,7 @@ async def greet_new_members(_, member: ChatMemberUpdated):
 
         # Add the modified condition here
         if member.new_chat_member and not member.old_chat_member:
-            welcome_text = f"""**Wᴇʟᴄᴏᴍᴇ** {user.mention}\n**@{user.username}**"""
+            welcome_text = f"""**ʜᴇʟʟᴏ,** {user.mention}\n\n**ᴡᴇʟᴄᴏᴍᴇ ᴅᴇᴀʀ ᴏᴜʀ ɢʀᴏᴜᴘ** {chat_name}\n\n**ʜᴀᴠᴇ ᴀ ɴɪᴄᴇ ᴅᴀʏ** @{user.username}"""
             await asyncio.sleep(3)
             await userbot.send_message(chat_id, text=welcome_text)
     except Exception as e:
