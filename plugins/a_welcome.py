@@ -30,7 +30,7 @@ random_photo = [
 LOGGER = getLogger(__name__)
 
 
-class WelDatabase:
+class AWelDatabase:
     def __init__(self):
         self.data = {}
 
@@ -46,7 +46,7 @@ class WelDatabase:
             del self.data[chat_id]
 
 
-wlcm = WelDatabase()
+wlcm = AWelDatabase()
 
 
 class temp:
