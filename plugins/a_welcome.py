@@ -150,9 +150,8 @@ async def auto_state(_, message):
 @app.on_chat_member_updated(filters.group, group=5)
 async def greet_new_members(_, member: ChatMemberUpdated):
     try:
-
         chat_id = member.chat.id
-        chat_name = chat_id.title
+        chat_name = (await app.get_chat(chat_id)).title  # Fetch the chat name correctly
         userbot = await get_assistant(chat_id)
         count = await app.get_chat_members_count(chat_id)
         A = await wlcm.find_one(chat_id)
