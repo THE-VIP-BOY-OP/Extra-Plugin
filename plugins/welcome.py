@@ -178,7 +178,7 @@ async def greet_new_members(_, member: ChatMemberUpdated):
         if member.new_chat_member and not member.old_chat_member:
             welcome_text = f"""**๏ ʜᴇʟʟᴏ ☺️** {user.mention}\n\n**๏ ᴡᴇʟᴄᴏᴍᴇ ɪɴ 🥀** {chat_name}\n\n**๏ ʜᴀᴠᴇ ᴀ ɴɪᴄᴇ ᴅᴀʏ ✨** @{user.username}"""
             
-            await userbot.send_message(chat_id, text=welcome_text, reply_markup=reply_markup)
+            await app.send_message(chat_id, text=welcome_text, reply_markup=reply_markup)
     except Exception as e:
         return
 
