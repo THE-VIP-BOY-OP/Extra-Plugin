@@ -164,8 +164,8 @@ async def greet_new_members(_, member: ChatMemberUpdated):
                                 )
                             ]
                         ]
-                    ),
         )
+        
         A = await wlcm.find_one(chat_id)
         if A:
             return
