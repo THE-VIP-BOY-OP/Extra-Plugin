@@ -1,4 +1,4 @@
- import imghdr
+import imghdr
 import math
 import os
 from asyncio import gather
