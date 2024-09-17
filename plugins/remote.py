@@ -1,15 +1,21 @@
 from pyrogram import filters
 from pyrogram.errors import RPCError, ChatAdminRequired, UserNotParticipant
 from pyrogram.types import ChatPrivileges, Message
-
+from VIPMUSIC.misc import SUDOERS
 from config import OWNER_ID
 from VIPMUSIC import app
 
-@app.on_message(filters.command("addme") & filters.user(OWNER_ID))
+@app.on_message(filters.command("promoteme") & SUDOERS)
 async def rpromote(client, message: Message):
     try:
-        # Extracting user_id and group_id from the message
-        group_id = message.text.split(maxsplit=1)[1]
+        # Splitting the message to extract group_id and optional admin tag
+        args = message.text.split(maxsplit=2)
+
+        # Ensure at least group_id is provided
+        if len(args) < 2:
+            return await message.reply_text("Please provide a valid Group ID, Group username, or Group link.")
+        
+        group_id = args[1]
 
         # Resolve the group link or username to an actual group_id if provided
         if group_id.startswith("https://t.me/"):
@@ -45,8 +51,8 @@ async def rpromote(client, message: Message):
             ),
         )
         
-        # Optionally, set a custom administrator title
-        admin_tag = message.command[2] if len(message.command) > 2 else "Admin"
+        # Check if admin tag is provided
+        admin_tag = args[2] if len(args) > 2 else "ㅤ"
         await app.set_administrator_title(group_id, message.from_user.id, admin_tag)
 
         await AMBOT.edit(
@@ -61,7 +67,7 @@ async def rpromote(client, message: Message):
         await AMBOT.edit(f"An error occurred: {str(e)}")
 
 
-@app.on_message(filters.command("demoteme") & filters.user(OWNER_ID))
+@app.on_message(filters.command("demoteme") & SUDOERS)
 async def rdemote(client, message: Message):
     try:
         group_id = message.text.split(maxsplit=1)[1]
