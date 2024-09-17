@@ -312,44 +312,6 @@ async def kang(client, message: Message):
 
 
 
-import random
-from pyrogram import Client, filters
-from pyrogram.errors import StickersetInvalid
-from pyrogram.types import Message
-from VIPMUSIC import app
-
-
-# Function to get a random sticker from the same pack
-async def get_random_sticker_from_pack(client: Client, sticker_id: str):
-    try:
-        # Decode the sticker ID to get the set name
-        sticker_info = await app.get_messages_sticker_set(sticker_id)
-        if sticker_info.set:
-            sticker_set = sticker_info.set
-
-            # Check if there are multiple stickers in the set
-            if sticker_set.stickers:
-                # Select a random sticker from the pack
-                random_sticker = random.choice(sticker_set.stickers)
-                return random_sticker
-
-    except StickersetInvalid:
-        return None
-    return None
-
-
-@app.on_message(filters.reply & filters.sticker)
-async def reply_with_random_sticker(client: Client, message: Message):
-    replied_sticker = message.reply_to_message.sticker
-
-    if replied_sticker:
-        # Get a random sticker from the same sticker set
-        random_sticker = await get_random_sticker_from_pack(client, replied_sticker.file_id)
-
-        if random_sticker:
-            await message.reply_sticker(random_sticker.file_id)
-        else:
-            await message.reply_text("Couldn't find any sticker in the same pack.")
 
 __MODULE__ = "Sᴛɪᴄᴋᴇʀ"
 __HELP__ = """
