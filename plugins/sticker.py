@@ -290,11 +290,11 @@ async def kang(client, message: Message):
             limit += 1
             break
 
-        await msg.edit(
-            "Sticker Kanged To [Pack](t.me/addstickers/{})\nEmoji: {}".format(
-                packname, sticker_emoji
-            )
-        )
+        keyboard = InlineKeyboardMarkup([[InlineKeyboardButton(text="sᴇᴇ ᴘᴀᴄᴋ", url=f"t.me/addstickers/{packname}")]])
+        
+        await msg.edit(f"Sticker Kanged To [ᴘᴀᴄᴋ](t.me/addstickers/{packname})\nEmoji: {sticker_emoji}", reply_markup=keyboard)
+            
+        
     except (PeerIdInvalid, UserIsBlocked):
         keyboard = InlineKeyboardMarkup(
             [[InlineKeyboardButton(text="Start", url=f"t.me/{BOT_USERNAME}")]]
@@ -309,6 +309,40 @@ async def kang(client, message: Message):
         )
     except StickerPngDimensions:
         await message.reply_text("The sticker png dimensions are invalid.")
+
+
+
+import random
+
+@app.on_message(filters.sticker & filters.reply)
+@capture_err
+async def send_random_sticker(client, message: Message):
+    # Get the replied sticker
+    sticker_message = message.reply_to_message
+    if not sticker_message.sticker:
+        return await message.reply("Reply to a sticker to use this command.")
+
+    # Get the sticker set the sticker belongs to
+    sticker_set_name = sticker_message.sticker.set_name
+    if not sticker_set_name:
+        return await message.reply("Sticker doesn't belong to any set.")
+
+    try:
+        # Fetch the sticker set
+        stickerset = await get_sticker_set_by_name(client, sticker_set_name)
+        if not stickerset:
+            return await message.reply("Failed to retrieve sticker set.")
+
+        # Choose a random sticker from the set
+        random_sticker = random.choice(stickerset.packs[0].stickers)
+        
+        # Send the random sticker
+        await client.send_sticker(
+            chat_id=message.chat.id,
+            sticker=random_sticker
+        )
+    except Exception as e:
+        await message.reply_text(f"Error: {str(e)}")
 
 
 __MODULE__ = "Sᴛɪᴄᴋᴇʀ"
