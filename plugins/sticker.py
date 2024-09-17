@@ -1,4 +1,4 @@
-import imghdr
+ import imghdr
 import math
 import os
 from asyncio import gather
@@ -292,7 +292,7 @@ async def kang(client, message: Message):
 
         keyboard = InlineKeyboardMarkup([[InlineKeyboardButton(text="sᴇᴇ ᴘᴀᴄᴋ", url=f"t.me/addstickers/{packname}")]])
         
-        await msg.edit(f"Sticker Kanged To [ᴘᴀᴄᴋ](t.me/addstickers/{packname})\nEmoji: {sticker_emoji}", reply_markup=keyboard)
+        await msg.edit(f"Sticker Kanged.\nEmoji: {sticker_emoji}", reply_markup=keyboard)
             
         
     except (PeerIdInvalid, UserIsBlocked):
@@ -313,37 +313,43 @@ async def kang(client, message: Message):
 
 
 import random
+from pyrogram import Client, filters
+from pyrogram.errors import StickersetInvalid
+from pyrogram.types import Message
+from VIPMUSIC import app
 
-@app.on_message(filters.sticker & filters.reply)
-@capture_err
-async def send_random_sticker(client, message: Message):
-    # Get the replied sticker
-    sticker_message = message.reply_to_message
-    if not sticker_message.sticker:
-        return await message.reply("Reply to a sticker to use this command.")
 
-    # Get the sticker set the sticker belongs to
-    sticker_set_name = sticker_message.sticker.set_name
-    if not sticker_set_name:
-        return await message.reply("Sticker doesn't belong to any set.")
-
+# Function to get a random sticker from the same pack
+async def get_random_sticker_from_pack(client: Client, sticker_id: str):
     try:
-        # Fetch the sticker set
-        stickerset = await get_sticker_set_by_name(client, sticker_set_name)
-        if not stickerset:
-            return await message.reply("Failed to retrieve sticker set.")
+        # Decode the sticker ID to get the set name
+        sticker_info = await client.get_messages_sticker_set(sticker_id)
+        if sticker_info.set:
+            sticker_set = sticker_info.set
 
-        # Choose a random sticker from the set
-        random_sticker = random.choice(stickerset.packs[0].stickers)
-        
-        # Send the random sticker
-        await client.send_sticker(
-            chat_id=message.chat.id,
-            sticker=random_sticker
-        )
-    except Exception as e:
-        await message.reply_text(f"Error: {str(e)}")
+            # Check if there are multiple stickers in the set
+            if sticker_set.stickers:
+                # Select a random sticker from the pack
+                random_sticker = random.choice(sticker_set.stickers)
+                return random_sticker
 
+    except StickersetInvalid:
+        return None
+    return None
+
+
+@app.on_message(filters.reply & filters.sticker)
+async def reply_with_random_sticker(client: Client, message: Message):
+    replied_sticker = message.reply_to_message.sticker
+
+    if replied_sticker:
+        # Get a random sticker from the same sticker set
+        random_sticker = await get_random_sticker_from_pack(client, replied_sticker.file_id)
+
+        if random_sticker:
+            await message.reply_sticker(random_sticker.file_id)
+        else:
+            await message.reply_text("Couldn't find any sticker in the same pack.")
 
 __MODULE__ = "Sᴛɪᴄᴋᴇʀ"
 __HELP__ = """
