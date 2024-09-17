@@ -323,7 +323,7 @@ from VIPMUSIC import app
 async def get_random_sticker_from_pack(client: Client, sticker_id: str):
     try:
         # Decode the sticker ID to get the set name
-        sticker_info = await client.get_messages_sticker_set(sticker_id)
+        sticker_info = await app.get_messages_sticker_set(sticker_id)
         if sticker_info.set:
             sticker_set = sticker_info.set
 
