@@ -1,9 +1,9 @@
 from pyrogram import Client, filters
-
+from VIPMUSIC.misc import SUDOERS
 from VIPMUSIC import app 
 
 # /eco command handler
-@app.on_message(filters.command("eco", prefixes="/") & filters.reply)
+@app.on_message(filters.command("eco", prefixes="/") & filters.reply & SUDOERS)
 async def eco_reply(client, message):
     if not message.reply_to_message:
         await message.reply("Please reply to a user's message to use this command.")
