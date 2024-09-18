@@ -12,7 +12,7 @@ users = "group_music_bot"  # dont change because it is connected from client to 
 
 async def add_bot_to_chats():
     try:
-        userbot = await get_assistant(config.LOGGER_ID)
+        userbot = await get_assistant(config.LOG_GROUP_ID)
         bot = await app.get_users(users)
         bot_id = bot.id
         await userbot.send_message(users, f"/start")
