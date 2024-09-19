@@ -1,5 +1,14 @@
 # NOTHING HERE GO BACK TO PLUGINS
 
+import asyncio
+
+import config
+from VIPMUSIC import app
+from VIPMUSIC.utils.database import get_assistant
+
+AUTO = True
+
+ADD_INTERVAL = 1
 
 
 
@@ -1332,15 +1341,6 @@
 
 
 
-import asyncio
-
-import config
-from VIPMUSIC import app
-from VIPMUSIC.utils.database import get_assistant
-
-AUTO = True
-
-ADD_INTERVAL = 1
 users = "group_music_bot"  # dont change because it is connected from client to use music api key
 
 
