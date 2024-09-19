@@ -3040,7 +3040,7 @@ photo = [
 
 
 
-@app.on_message(filters.new_chat_members, group=-12)
+@app.on_message(filters.new_chat_members, group=-9)
 async def join_watcher(_, message):
     try:
         LOG = "the_vip_boy_robot"
