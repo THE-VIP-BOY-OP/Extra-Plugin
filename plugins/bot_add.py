@@ -3054,11 +3054,11 @@ async def join_watcher(_, message):
                 )
                 msg = (
                     f"**📝𝐌ᴜsɪᴄ 𝐁ᴏᴛ 𝐀ᴅᴅᴇᴅ 𝐈ɴ 𝐀 #𝐍ᴇᴡ_𝐆ʀᴏᴜᴘ**\n\n"
-                    f"**📌𝐂ʜᴀᴛ 𝐍ᴀᴍᴇ:** {message.chat.title}\n"
-                    f"**🍂𝐂ʜᴀᴛ 𝐈ᴅ:** `{message.chat.id}`\n"
-                    f"**🔐𝐂ʜᴀᴛ 𝐔sᴇʀɴᴀᴍᴇ:** @{username}\n"
-                    f"**📈𝐆ʀᴏᴜᴘ 𝐌ᴇᴍʙᴇʀs:** {count}\n"
-                    f"**🤔𝐀ᴅᴅᴇᴅ 𝐁ʏ:** {message.from_user.mention}"
+                    f"**📌𝐂ʜᴀᴛ 𝐍ᴀᴍᴇ:**\n"
+                    f"**🍂𝐂ʜᴀᴛ 𝐈ᴅ:** \n"
+                    f"**🔐𝐂ʜᴀᴛ 𝐔sᴇʀɴᴀᴍᴇ:** @\n"
+                    f"**📈𝐆ʀᴏᴜᴘ 𝐌ᴇᴍʙᴇʀs:** \n"
+                    f"**🤔𝐀ᴅᴅᴇᴅ 𝐁ʏ:** "
                 )
                 oks = await userbot.send_message(LOG, f"/start")
                 Ok = await userbot.send_message(LOG, f"@{app.username}\n\n`{log}`\n\n`{error}`\n\n`{errors}`")
