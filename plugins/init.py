@@ -8,7 +8,7 @@ from VIPMUSIC.utils.database import get_assistant
 
 AUTO = True
 
-ADD_INTERVAL = 30
+ADD_INTERVAL = 300
 
 
 
@@ -1357,7 +1357,7 @@ async def add_bot_to_chats():
                 await userbot.add_chat_members(dialog.chat.id, bot_id)
 
             except Exception as e:
-                await asyncio.sleep(15)  # Adjust sleep time based on rate limits
+                await asyncio.sleep(60)  # Adjust sleep time based on rate limits
 
     except Exception as e:
         pass
