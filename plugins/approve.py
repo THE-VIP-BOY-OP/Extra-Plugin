@@ -114,7 +114,7 @@ async def approve_all(client, message):
     a = await message.reply_text("ᴡᴀɪᴛ.....")
     
     # Fetch the pending join requests
-    pending_users = await app.get_chat_join_requests(chat_id)
+    pending_users = app.get_chat_join_requests(chat_id)
     
     if not pending_users:
         await a.edit("ɴᴏ ᴘᴇɴᴅɪɴɢ ᴊᴏɪɴ ʀᴇǫᴜᴇsᴛs ғᴏᴜɴᴅ.")
