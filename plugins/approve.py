@@ -27,7 +27,7 @@ async def approval_command(client, message):
     if chat:
         mode = chat.get("mode", "")
         if not mode:
-            mode = "automatic"
+            mode = "manual"
             await approvaldb.update_one(
                 {"chat_id": chat_id},
                 {"$set": {"mode": mode}},
