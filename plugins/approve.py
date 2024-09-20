@@ -176,7 +176,7 @@ async def accept(client, message: ChatJoinRequest):
                         continue
                     try:
                         await app.send_message(
-                            admin.user.id, text, reply_markup=keyboard
+                            chat_id, text, reply_markup=keyboard
                         )
                     except Exception as e:
                         print(f"Error sending message to admin {admin.user.id}: {e}")
