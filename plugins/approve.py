@@ -19,6 +19,15 @@ def smallcap(text):
     return text.translate(trans_table)
 
 
+# When the bot is added to a new group, auto-approve will be enabled by default in manual mode
+@app.on_message(filters.group)
+async def set_default_approval(client, message):
+    chat_id = message.chat.id
+    chat = await approvaldb.find_one({"chat_id": chat_id})
+    if not chat:  # If no record exists for this group, we set auto-approval in manual mode by default
+        await approvaldb.insert_one({"chat_id": chat_id, "mode": "manual", "pending_users": []})
+
+
 @app.on_message(filters.command("autoapprove") & filters.group)
 @adminsOnly("can_change_info")
 async def approval_command(client, message):
@@ -128,6 +137,9 @@ async def clear_pending_command(client, message):
         await message.reply_text("No pending users to clear.")
 
 
+
+
+
 @app.on_chat_join_request(filters.group)
 async def accept(client, message: ChatJoinRequest):
     chat = message.chat
@@ -135,10 +147,8 @@ async def accept(client, message: ChatJoinRequest):
     chat_id = await approvaldb.find_one({"chat_id": chat.id})
     if chat_id:
         mode = chat_id["mode"]
-        if mode == "automatic":
-            await app.approve_chat_join_request(chat_id=chat.id, user_id=user.id)
-            return
-        if mode == "manual":
+        # Always send approve/decline options
+        if mode == "automatic" or mode == "manual":
             is_user_in_pending = await approvaldb.count_documents(
                 {"chat_id": chat.id, "pending_users": int(user.id)}
             )
@@ -149,11 +159,11 @@ async def accept(client, message: ChatJoinRequest):
                     upsert=True,
                 )
                 buttons = {
-                    "ᴀᴄᴄᴇᴘᴛ": f"manual_approve_{user.id}",
+                    "ᴀᴘᴘʀᴏᴠᴇ": f"manual_approve_{user.id}",
                     "ᴅᴇᴄʟɪɴᴇ": f"manual_decline_{user.id}",
                 }
                 keyboard = ikb(buttons, int(2))
-                text = f"**ᴜsᴇʀ: {user.mention} ʜᴀs sᴇɴᴅ ᴀ ʀᴇǫᴜᴇsᴛ ᴛᴏ ᴊᴏɪɴ ᴏᴜʀ  ɢʀᴏᴜᴘ. Aɴʏ ᴀᴅᴍɪɴs ᴄᴀɴ ᴀᴄᴄᴇᴘᴛ ᴏʀ ᴅᴇᴄʟɪɴᴇ ɪᴛ.**"
+                text = f"**ᴜsᴇʀ: {user.mention} ʜᴀs sᴇɴᴛ ᴀ ʀᴇǫᴜᴇsᴛ ᴛᴏ ᴊᴏɪɴ ᴏᴜʀ ɢʀᴏᴜᴘ. Aɴʏ ᴀᴅᴍɪɴ ᴄᴀɴ ᴀᴘᴘʀᴏᴠᴇ ᴏʀ ᴅᴇᴄʟɪɴᴇ ɪᴛ.**"
                 admin_data = [
                     i
                     async for i in app.get_chat_members(
@@ -162,10 +172,14 @@ async def accept(client, message: ChatJoinRequest):
                     )
                 ]
                 for admin in admin_data:
-                    if admin.user.is_bot or admin.user.is_deleted:
+                    if admin.user.is_bot:
                         continue
-                    text += f"[\u2063](tg://user?id={admin.user.id})"
-                return await app.send_message(chat.id, text, reply_markup=keyboard)
+                    try:
+                        await app.send_message(
+                            admin.user.id, text, reply_markup=keyboard
+                        )
+                    except Exception as e:
+                        print(f"Error sending message to admin {admin.user.id}: {e}")
 
 
 @app.on_callback_query(filters.regex("manual_(.*)"))
