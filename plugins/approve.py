@@ -101,20 +101,60 @@ async def approval_cb(client, cb):
     )
 
 
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+import asyncio
+
+# Dictionary to track approval tasks by chat_id
+approval_tasks = {}
+
 @app.on_message(filters.command("approveall") & filters.group)
 @adminsOnly("can_restrict_members")
 async def approve_all(client, message):
-    a = await message.reply_text("ᴡᴀɪᴛ.....")
     chat_id = message.chat.id
-    await app.approve_all_chat_join_requests(chat_id)
-    await a.edit("ɪғ ᴀɴʏ ᴜsᴇʀ ᴀʀᴇ ᴡᴀɪᴛɪɴɢ ғᴏʀ ᴀᴘᴘʀᴏᴠᴇᴅ sᴏ ɪ ᴀᴍ ᴀᴘᴘʀᴏᴠᴇᴅ ʜɪᴍ")
-    await approvaldb.update_one(
-        {"chat_id": chat_id},
-        {"$set": {"pending_users": []}},
+    a = await message.reply_text("ᴡᴀɪᴛ.....")
+    
+    # Fetch the pending join requests
+    pending_users = await app.get_chat_join_requests(chat_id)
+    
+    if not pending_users:
+        await a.edit("ɴᴏ ᴘᴇɴᴅɪɴɢ ᴊᴏɪɴ ʀᴇǫᴜᴇsᴛs ғᴏᴜɴᴅ.")
+        return
+
+    cancel_button = InlineKeyboardMarkup(
+        [[InlineKeyboardButton("CANCEL PROCESS", callback_data=f"cancel_approval:{chat_id}")]]
     )
+    
+    # Set approval task as active
+    approval_tasks[chat_id] = True
+    
+    for user in pending_users:
+        if not approval_tasks.get(chat_id):
+            await message.reply_text("ᴀᴘᴘʀᴏᴠᴀʟ ᴘʀᴏᴄᴇss ᴄᴀɴᴄᴇʟᴇᴅ.")
+            break
+        
+        try:
+            # Approving one user at a time
+            await app.approve_chat_join_request(chat_id, user.from_user.id)
+            await message.reply_text(f"ᴀᴘᴘʀᴏᴠɪɴɢ: {user.from_user.first_name}", reply_markup=cancel_button)
+            await asyncio.sleep(0.5)  # Delay to simulate step-by-step approval
+        except Exception as e:
+            await message.reply_text(f"ғᴀɪʟᴇᴅ ᴛᴏ ᴀᴘᴘʀᴏᴠᴇ: {str(e)}")
+            continue
+
+    if approval_tasks.get(chat_id):
+        await a.edit("ᴀʟʟ ᴘᴇɴᴅɪɴɢ ᴊᴏɪɴ ʀᴇǫᴜᴇsᴛs ᴀᴘᴘʀᴏᴠᴇᴅ!")
+    
+    # Remove the task after completion
+    approval_tasks.pop(chat_id, None)
+
+@app.on_callback_query(filters.regex("cancel_approval"))
+async def cancel_approval_callback(client, callback_query):
+    chat_id = int(callback_query.data.split(":")[1])
+    approval_tasks[chat_id] = False  # Cancel the approval process
+    await callback_query.message.edit_text("ᴀᴘᴘʀᴏᴠᴀʟ ᴘʀᴏᴄᴇss ᴄᴀɴᴄᴇʟᴇᴅ.")
 
 
-@app.on_message(filters.command("clearpending") & filters.group)
+@app.on_message(filters.command(["clearpending", "unapproveall"]) & filters.group)
 @adminsOnly("can_restrict_members")
 async def clear_pending_command(client, message):
     chat_id = message.chat.id
