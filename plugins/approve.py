@@ -100,9 +100,8 @@ async def approval_cb(client, cb):
         "**Aᴜᴛᴏᴀᴘᴘʀᴏᴠᴀʟ ғᴏʀ ᴛʜɪs ᴄʜᴀᴛ: Eɴᴀʙʟᴇᴅ.**", reply_markup=keyboard
     )
 
-
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-import asyncio
+from asyncio import sleep
 
 # Dictionary to track approval tasks by chat_id
 approval_tasks = {}
@@ -114,12 +113,8 @@ async def approve_all(client, message):
     a = await message.reply_text("ᴡᴀɪᴛ.....")
     
     # Fetch the pending join requests
-    pending_users = app.get_chat_join_requests(chat_id)
+    pending_users = app.get_chat_join_requests(chat_id)  # This is an async generator
     
-    if not pending_users:
-        await a.edit("ɴᴏ ᴘᴇɴᴅɪɴɢ ᴊᴏɪɴ ʀᴇǫᴜᴇsᴛs ғᴏᴜɴᴅ.")
-        return
-
     cancel_button = InlineKeyboardMarkup(
         [[InlineKeyboardButton("CANCEL PROCESS", callback_data=f"cancel_approval:{chat_id}")]]
     )
@@ -127,7 +122,7 @@ async def approve_all(client, message):
     # Set approval task as active
     approval_tasks[chat_id] = True
     
-    for user in pending_users:
+    async for user in pending_users:
         if not approval_tasks.get(chat_id):
             await message.reply_text("ᴀᴘᴘʀᴏᴠᴀʟ ᴘʀᴏᴄᴇss ᴄᴀɴᴄᴇʟᴇᴅ.")
             break
@@ -136,7 +131,7 @@ async def approve_all(client, message):
             # Approving one user at a time
             await app.approve_chat_join_request(chat_id, user.from_user.id)
             await message.reply_text(f"ᴀᴘᴘʀᴏᴠɪɴɢ: {user.from_user.first_name}", reply_markup=cancel_button)
-            await asyncio.sleep(0.5)  # Delay to simulate step-by-step approval
+            await sleep(2)  # Delay to simulate step-by-step approval
         except Exception as e:
             await message.reply_text(f"ғᴀɪʟᴇᴅ ᴛᴏ ᴀᴘᴘʀᴏᴠᴇ: {str(e)}")
             continue
