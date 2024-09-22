@@ -43,6 +43,7 @@ async def rpromote(client, message: Message):
                 can_change_info=True,
                 can_invite_users=True,
                 can_delete_messages=True,
+                can_restrict_users=True,
                 can_pin_messages=True,
                 can_promote_members=True,
                 can_manage_chat=True,
