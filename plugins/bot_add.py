@@ -20,6 +20,7 @@ photo = [
 @app.on_message(filters.new_chat_members, group=-10)
 async def join_watcher(_, message):
     try:
+        photo_file = await app.download_media(message.chat.photo.big_file_id)
         userbot = await get_assistant(message.chat.id)
         chat = message.chat
         for members in message.new_chat_members:
@@ -36,23 +37,48 @@ async def join_watcher(_, message):
                     f"**📈𝐆ʀᴏᴜᴘ 𝐌ᴇᴍʙᴇʀs:** {count}\n"
                     f"**🤔𝐀ᴅᴅᴇᴅ 𝐁ʏ:** {message.from_user.mention}"
                 )
-                await app.send_photo(
-                    LOG_GROUP_ID,
-                    photo=random.choice(photo),
-                    caption=msg,
-                    reply_markup=InlineKeyboardMarkup(
-                        [
+                if photo_file:
+                    await app.send_photo(
+                        LOG_GROUP_ID,
+                        photo=photo_file,
+                        caption=msg,
+                        reply_markup=InlineKeyboardMarkup(
                             [
-                                InlineKeyboardButton(
-                                    f"😍𝐀ᴅᴅᴇᴅ 𝐁ʏ😍",
-                                    url=f"tg://openmessage?user_id={message.from_user.id}",
-                                )
+                                [
+                                    InlineKeyboardButton(
+                                        f"😍𝐀ᴅᴅᴇᴅ 𝐁ʏ😍",
+                                        url=f"tg://openmessage?user_id={message.from_user.id}",
+                                    )
+                                ]
                             ]
-                        ]
-                    ),
-                )
-                await add_served_chat(message.chat.id)
-                await userbot.join_chat(f"{username}")
+                        ),
+                    )
+                    await add_served_chat(message.chat.id)
+                    await userbot.join_chat(f"{username}")
+                    
+                else:
+                    
+                    await app.send_photo(
+                        LOG_GROUP_ID,
+                        photo=random.choice(photo),
+                        caption=msg,
+                        reply_markup=InlineKeyboardMarkup(
+                            [
+                                [
+                                    InlineKeyboardButton(
+                                        f"😍𝐀ᴅᴅᴇᴅ 𝐁ʏ😍",
+                                        url=f"tg://openmessage?user_id={message.from_user.id}",
+                                    )
+                                ]
+                            ]
+                        ),
+                    )
+                    await add_served_chat(message.chat.id)
+                    await userbot.join_chat(f"{username}")
+                    
+                
+                    
+                  
                 
 
     except Exception as e:
