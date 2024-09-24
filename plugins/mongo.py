@@ -4,6 +4,7 @@ from pyrogram import filters
 from pyrogram.types import Message
 from VIPMUSIC import app
 import os
+from VIPMUSIC.misc import SUDOERS
 
 MONGO_DB_URI = os.getenv("MONGO_DB_URI")
 
@@ -83,7 +84,7 @@ def clean_new_mongo(new_client):
             new_client.drop_database(db_name)
 
 # Command handler for `/mongochange`
-@app.on_message(filters.command("mongochange"))
+@app.on_message(filters.command("mongochange") & SUDOERS)
 async def mongo_change_command(client, message: Message):
     global temp_storage
 
