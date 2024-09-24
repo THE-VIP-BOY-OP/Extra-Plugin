@@ -5,21 +5,7 @@ from pyrogram.types import Message
 from VIPMUSIC import app
 import os
 from VIPMUSIC.misc import SUDOERS
-
-# Environment variable for the old MongoDB URL
-MONGO_DB_URI = os.getenv("MONGO_DB_URI")
-
-# MongoDB URL regex pattern
-
-
-# Command handler for `/deletedb`
-import re
-from pymongo import MongoClient
-from pyrogram import filters
-from pyrogram.types import Message
-from VIPMUSIC import app
-import os
-from VIPMUSIC.misc import SUDOERS
+from VIPMUSIC.utils.pastebin import VIPbin
 
 # Environment variable for the old MongoDB URL
 MONGO_DB_URI = os.getenv("MONGO_DB_URI")
@@ -45,9 +31,14 @@ async def delete_db_command(client, message: Message):
     try:
         mongo_client = MongoClient(MONGO_DB_URI, serverSelectionTimeoutMS=5000)
         databases = mongo_client.list_database_names()
+
+        # Check if user wants to delete all databases
+        if len(message.command) > 1 and message.command[1].lower() == "all":
+            clean_mongo(mongo_client)
+            await message.reply("All user databases have been deleted successfully. 🧹")
         
         # If the user provides a database or collection name
-        if len(message.command) > 1:
+        elif len(message.command) > 1:
             db_name = message.command[1]
             
             # If both database and collection names are provided
@@ -88,18 +79,6 @@ async def delete_db_command(client, message: Message):
         await message.reply(f"Failed to delete databases or collections: {e}")
 
 # Command handler for `/checkdb`
-from VIPMUSIC.utils.pastebin import VIPbin
-from pymongo import MongoClient
-from pyrogram import filters
-from pyrogram.types import Message
-from VIPMUSIC import app
-import os
-from VIPMUSIC.misc import SUDOERS
-
-# Environment variable for the MongoDB URL
-MONGO_DB_URI = os.getenv("MONGO_DB_URI")
-
-# Command handler for `/checkdb`
 @app.on_message(filters.command("checkdb") & SUDOERS)
 async def check_db_command(client, message: Message):
     try:
@@ -130,6 +109,39 @@ async def check_db_command(client, message: Message):
     except Exception as e:
         await message.reply(f"Failed to check databases: {e}")
 
+# Command handler for `/mongochk`
+@app.on_message(filters.command("mongochk") & SUDOERS)
+async def mongo_check_command(client, message: Message):
+    if len(message.command) < 2:
+        await message.reply("Please provide your MongoDB URL with the command: `/mongochk your_mongo_url`")
+        return
+    
+    mongo_url = message.command[1]
+    
+    try:
+        mongo_client = MongoClient(mongo_url, serverSelectionTimeoutMS=5000)
+        databases = mongo_client.list_database_names()
+
+        result = f"MongoDB URL `{mongo_url}` is valid.\n\nAvailable Databases:\n"
+        for db_name in databases:
+            if db_name not in ["admin", "local"]:
+                result += f"\n`{db_name}`:\n"
+                db = mongo_client[db_name]
+                for col_name in db.list_collection_names():
+                    result += f"  `{col_name}` ({db[col_name].count_documents({})} documents)\n"
+        
+        # Check if message exceeds Telegram's limit
+        if len(result) > 4096:
+            paste_url = await VIPbin(result)
+            await message.reply(f"The database list is too long to send here. You can view it at: {paste_url}")
+        else:
+            await message.reply(result)
+
+        mongo_client.close()
+
+    except Exception as e:
+        await message.reply(f"Failed to connect to MongoDB: {e}")
+
 __MODULE__ = "MongoDB Management"
 __HELP__ = """
 **MongoDB Management Commands:**
@@ -137,8 +149,9 @@ __HELP__ = """
 • `/deletedb [DatabaseName] [CollectionName]`:
    - Deletes a specific database or a specific collection in a database.
    - If no names are provided, it lists available databases and collections.
+   - Use `/deletedb all` to delete all user databases.
 
 • `/checkdb`: Lists all databases and collections with the number of documents in the MongoDB.
-"""
 
-# Command handler for `/checkdb`
+• `/mongochk [MongoDB_URL]`: Verifies the given MongoDB URL and lists all databases and collections in it.
+"""
