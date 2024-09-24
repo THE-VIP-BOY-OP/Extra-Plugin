@@ -248,10 +248,8 @@ async def unban_func(_, message: Message):
 
 
 # Promote Members
-
-
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-
+from pyrogram.enums import ChatPrivileges
 
 @app.on_message(
     filters.command(["promote", "fullpromote"]) & ~filters.private & ~BANNED_USERS
@@ -369,16 +367,30 @@ async def toggle_power_callback(_, query: CallbackQuery):
     if not bot or not getattr(bot, power, False):
         return await query.answer("I have no this power to give anyone", show_alert=True)
 
-    user_privileges = (await app.get_chat_member(query.message.chat.id, user_id)).privileges
-    new_state = not getattr(user_privileges, power, False)
+    # Get current user privileges
+    current_privs = (await app.get_chat_member(query.message.chat.id, user_id)).privileges
 
+    # Toggle the selected power
+    new_privs = ChatPrivileges(
+        can_change_info=current_privs.can_change_info,
+        can_invite_users=current_privs.can_invite_users,
+        can_delete_messages=current_privs.can_delete_messages,
+        can_restrict_members=current_privs.can_restrict_members,
+        can_pin_messages=current_privs.can_pin_messages,
+        can_promote_members=current_privs.can_promote_members,
+        can_manage_chat=current_privs.can_manage_chat,
+        can_manage_video_chats=current_privs.can_manage_video_chats
+    )
+    setattr(new_privs, power, not getattr(current_privs, power))
+
+    # Apply the new privileges
     await query.message.chat.promote_member(
         user_id=user_id,
-        privileges=ChatPrivileges(**{power: new_state})
+        privileges=new_privs
     )
 
     await query.answer(
-        f"{'Allowed' if new_state else 'Disallowed'} {power.replace('_', ' ').capitalize()}",
+        f"{'Allowed' if getattr(new_privs, power) else 'Disallowed'} {power.replace('_', ' ').capitalize()}",
         show_alert=True
     )
 
@@ -392,6 +404,7 @@ async def close_callback(_, query: CallbackQuery):
 @app.on_callback_query(filters.regex(r"^back"))
 async def back_callback(_, query: CallbackQuery):
     await query.message.edit_caption("Action cancelled.")
+
 
 # Demote Member
 
