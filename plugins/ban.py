@@ -250,6 +250,9 @@ async def unban_func(_, message: Message):
 # Promote Members
 
 
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+
+
 @app.on_message(
     filters.command(["promote", "fullpromote"]) & ~filters.private & ~BANNED_USERS
 )
@@ -260,6 +263,7 @@ async def promoteFunc(_, message: Message):
         return await message.reply_text("I can't find that user.")
 
     bot = (await app.get_chat_member(message.chat.id, app.id)).privileges
+
     if user_id == app.id:
         return await message.reply_text("I can't promote myself.")
     if not bot:
@@ -268,6 +272,7 @@ async def promoteFunc(_, message: Message):
         return await message.reply_text("I don't have enough permissions")
 
     umention = (await app.get_users(user_id)).mention
+    from_user_mention = message.from_user.mention
 
     if message.command[0][0] == "f":
         await message.chat.promote_member(
@@ -283,23 +288,110 @@ async def promoteFunc(_, message: Message):
                 can_manage_video_chats=bot.can_manage_video_chats,
             ),
         )
-        return await message.reply_text(f"Fully Promoted! {umention}")
+        await message.reply_text(
+            f"Fully Promoted! {umention} \n by {from_user_mention}",
+            reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton("Check Admin Power", callback_data=f"check_powers_{user_id}")]]
+            )
+        )
+    else:
+        await message.chat.promote_member(
+            user_id=user_id,
+            privileges=ChatPrivileges(
+                can_change_info=False,
+                can_invite_users=bot.can_invite_users,
+                can_delete_messages=bot.can_delete_messages,
+                can_restrict_members=False,
+                can_pin_messages=False,
+                can_promote_members=False,
+                can_manage_chat=bot.can_manage_chat,
+                can_manage_video_chats=bot.can_manage_video_chats,
+            ),
+        )
+        await message.reply_text(
+            f"Promoted! {umention} \n by {from_user_mention}",
+            reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton("Check Admin Power", callback_data=f"check_powers_{user_id}")]]
+            )
+        )
 
-    await message.chat.promote_member(
-        user_id=user_id,
-        privileges=ChatPrivileges(
-            can_change_info=False,
-            can_invite_users=bot.can_invite_users,
-            can_delete_messages=bot.can_delete_messages,
-            can_restrict_members=False,
-            can_pin_messages=False,
-            can_promote_members=False,
-            can_manage_chat=bot.can_manage_chat,
-            can_manage_video_chats=bot.can_manage_video_chats,
+# Handle callback to check and toggle admin powers
+@app.on_callback_query(filters.regex(r"^check_powers_(\d+)"))
+async def check_powers_callback(_, query: CallbackQuery):
+    user_id = int(query.data.split("_")[2])
+    bot = (await app.get_chat_member(query.message.chat.id, app.id)).privileges
+    user_privileges = (await app.get_chat_member(query.message.chat.id, user_id)).privileges
+
+    if not bot or not bot.can_promote_members:
+        return await query.answer("I don't have the required permissions.", show_alert=True)
+
+    def generate_privilege_buttons(privs):
+        buttons = []
+        for priv, name in [
+            ("can_change_info", "Change Info"),
+            ("can_invite_users", "Invite Users"),
+            ("can_delete_messages", "Delete Messages"),
+            ("can_restrict_members", "Restrict Members"),
+            ("can_pin_messages", "Pin Messages"),
+            ("can_promote_members", "Promote Members"),
+            ("can_manage_chat", "Manage Chat"),
+            ("can_manage_video_chats", "Manage Video Chats")
+        ]:
+            state = "✅ Allowed" if getattr(privs, priv, False) else "❌ Disallowed"
+            buttons.append([InlineKeyboardButton(f"{name}: {state}", callback_data=f"toggle_{priv}_{user_id}")])
+        buttons.append([InlineKeyboardButton("Back", callback_data="back")])
+        buttons.append([InlineKeyboardButton("Close", callback_data="close")])
+        return buttons
+
+    await query.message.edit_caption(
+        caption="Admin Powers:\n" + "\n".join(
+            f"{name}: {'✅ Allowed' if getattr(user_privileges, priv, False) else '❌ Disallowed'}"
+            for priv, name in [
+                ("can_change_info", "Change Info"),
+                ("can_invite_users", "Invite Users"),
+                ("can_delete_messages", "Delete Messages"),
+                ("can_restrict_members", "Restrict Members"),
+                ("can_pin_messages", "Pin Messages"),
+                ("can_promote_members", "Promote Members"),
+                ("can_manage_chat", "Manage Chat"),
+                ("can_manage_video_chats", "Manage Video Chats"),
+            ]
         ),
+        reply_markup=InlineKeyboardMarkup(generate_privilege_buttons(user_privileges))
     )
-    await message.reply_text(f"Promoted! {umention}")
 
+# Toggle admin power
+@app.on_callback_query(filters.regex(r"^toggle_(.+)_(\d+)"))
+async def toggle_power_callback(_, query: CallbackQuery):
+    power, user_id = query.data.split("_")[1], int(query.data.split("_")[2])
+    bot = (await app.get_chat_member(query.message.chat.id, app.id)).privileges
+
+    if not bot or not getattr(bot, power, False):
+        return await query.answer("I have no this power to give anyone", show_alert=True)
+
+    user_privileges = (await app.get_chat_member(query.message.chat.id, user_id)).privileges
+    new_state = not getattr(user_privileges, power, False)
+
+    await query.message.chat.promote_member(
+        user_id=user_id,
+        privileges=ChatPrivileges(**{power: new_state})
+    )
+
+    await query.answer(
+        f"{'Allowed' if new_state else 'Disallowed'} {power.replace('_', ' ').capitalize()}",
+        show_alert=True
+    )
+
+    # Update the buttons and caption
+    await check_powers_callback(_, query)
+
+@app.on_callback_query(filters.regex(r"^close"))
+async def close_callback(_, query: CallbackQuery):
+    await query.message.delete()
+
+@app.on_callback_query(filters.regex(r"^back"))
+async def back_callback(_, query: CallbackQuery):
+    await query.message.edit_caption("Action cancelled.")
 
 # Demote Member
 
