@@ -88,7 +88,7 @@ async def delete_db_command(client, message: Message):
         await message.reply(f"Failed to delete databases or collections: {e}")
 
 # Command handler for `/checkdb`
-from VIPMUSIC.utils.pastebin import VIPBin
+from VIPMUSIC.utils.pastebin import VIPbin
 from pymongo import MongoClient
 from pyrogram import filters
 from pyrogram.types import Message
