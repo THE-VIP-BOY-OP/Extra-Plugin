@@ -6,50 +6,6 @@ from VIPMUSIC import app
 import os
 from VIPMUSIC.misc import SUDOERS
 
-MONGO_DB_URI = os.getenv("MONGO_DB_URI")
-
-mongo_url_pattern = re.compile(r"mongodb(?:\+srv)?:\/\/[^\s]+")
-
-@app.on_message(filters.command("mongochk"))
-async def mongo_command(client, message: Message):
-    if len(message.command) < 2:
-        await message.reply(
-            "ᴘʟᴇᴀsᴇ ᴇɴᴛᴇʀ ʏᴏᴜʀ ᴍᴏɴɢᴏᴅʙ ᴜʀʟ ᴀғᴛᴇʀ ᴛʜᴇ ᴄᴏᴍᴍᴀɴᴅ  `/mongochk your_mongodb_url`"
-        )
-        return
-
-    mongo_url = message.command[1]
-    if re.match(mongo_url_pattern, mongo_url):
-        try:
-            # Use a different variable to avoid conflict with `client`
-            mongo_client = MongoClient(mongo_url, serverSelectionTimeoutMS=5000)
-            mongo_client.server_info()  # Will cause an exception if connection fails
-            await message.reply("ᴍᴏɴɢᴏᴅʙ ᴜʀʟ ɪs ᴠᴀʟɪᴅ ᴀɴᴅ ᴄᴏɴɴᴇᴄᴛɪᴏɴ sᴜᴄᴄᴇssғᴜʟ ✅")
-        except Exception as e:
-            await message.reply(f"ғᴀɪʟᴇᴅ ᴛᴏ ᴄᴏɴɴᴇᴄᴛ ᴍᴏɴɢᴏᴅʙ: {e}")
-        finally:
-            # Ensure the connection is closed after checking
-            mongo_client.close()
-    else:
-        await message.reply("ᴜᴘs! ʏᴏᴜʀ ᴍᴏɴɢᴏᴅʙ ғᴏʀᴍᴀᴛ ɪs ɪɴᴠᴀʟɪᴅ")
-
-__MODULE__ = "Mᴏɴɢᴏᴅʙ"
-__HELP__ = """
-**ᴍᴏɴɢᴏᴅʙ ᴄʜᴇᴄᴋᴇʀ:**
-
-• `/mongochk [mongo_url]`: Cʜᴇᴄᴋs ᴛʜᴇ ᴠᴀʟɪᴅɪᴛʏ ᴏғ ᴀ ᴍᴏɴɢᴏᴅʙ URL ᴀɴᴅ ᴄᴏɴɴᴇᴄᴛɪᴏɴ ᴛᴏ ᴛʜᴇ ᴍᴏɴɢᴏᴅʙ ɪɴsᴛᴀɴᴄᴇ.
-"""
-
-
-
-
-import re
-from pymongo import MongoClient
-from pyrogram import filters
-from pyrogram.types import Message
-from VIPMUSIC import app
-import os
-
 # Environment variable for the old MongoDB URL
 MONGO_DB_URI = os.getenv("MONGO_DB_URI")
 
@@ -77,11 +33,11 @@ def restore_data_to_new_mongo(new_client, backup_data):
             if documents:
                 collection.insert_many(documents)  # Insert all documents into the new collection
 
-# Function to delete all databases in the new MongoDB
-def clean_new_mongo(new_client):
-    for db_name in new_client.list_database_names():
+# Function to delete all databases in the MongoDB instance
+def clean_mongo(client):
+    for db_name in client.list_database_names():
         if db_name not in ["admin", "local"]:  # Exclude system databases
-            new_client.drop_database(db_name)
+            client.drop_database(db_name)
 
 # Command handler for `/mongochange`
 @app.on_message(filters.command("mongochange") & SUDOERS)
@@ -102,7 +58,7 @@ async def mongo_change_command(client, message: Message):
             await message.reply("New MongoDB URL is valid and connected successfully. ✅")
 
             # Step 2: Clean new MongoDB (delete all databases)
-            clean_new_mongo(new_mongo_client)
+            clean_mongo(new_mongo_client)
             await message.reply("All databases in the new MongoDB have been deleted. 🧹")
 
             # Step 3: Backup data from the old MongoDB instance
@@ -123,14 +79,53 @@ async def mongo_change_command(client, message: Message):
         await message.reply("The provided MongoDB URL format is invalid! ❌")
 
 
-__MODULE__ = "MongoDB Change"
+# Command handler for `/deletedb`
+@app.on_message(filters.command("deletedb") & SUDOERS)
+async def delete_db_command(client, message: Message):
+    try:
+        mongo_client = MongoClient(MONGO_DB_URI, serverSelectionTimeoutMS=5000)
+        databases = mongo_client.list_database_names()
+        if len(databases) > 2:  # Only system databases remain if 2 or less (admin, local)
+            clean_mongo(mongo_client)
+            await message.reply("All user databases have been deleted successfully. 🧹")
+        else:
+            await message.reply("No user databases found to delete. ❌")
+        mongo_client.close()
+    except Exception as e:
+        await message.reply(f"Failed to delete databases: {e}")
+
+# Command handler for `/checkdb`
+@app.on_message(filters.command("checkdb") & SUDOERS)
+async def check_db_command(client, message: Message):
+    try:
+        mongo_client = MongoClient(MONGO_DB_URI, serverSelectionTimeoutMS=5000)
+        databases = mongo_client.list_database_names()
+        if len(databases) > 2:  # More than just admin and local
+            result = "MongoDB Databases:\n"
+            for db_name in databases:
+                if db_name not in ["admin", "local"]:
+                    result += f"\nDatabase: {db_name}\n"
+                    db = mongo_client[db_name]
+                    for col_name in db.list_collection_names():
+                        collection = db[col_name]
+                        result += f"  Collection: {col_name} ({collection.count_documents({})} documents)\n"
+            await message.reply(result)
+        else:
+            await message.reply("No user databases found. ❌")
+        mongo_client.close()
+    except Exception as e:
+        await message.reply(f"Failed to check databases: {e}")
+
+__MODULE__ = "MongoDB Management"
 __HELP__ = """
-**MongoDB Changer:**
+**MongoDB Management Commands:**
 
 • `/mongochange [new_mongo_url]`: 
-   1. Verifies the new MongoDB URL.
-   2. Deletes all existing databases in the new MongoDB.
-   3. Temporarily stores all data from the old MongoDB.
-   4. Migrates the data to the new MongoDB.
-   5. Sends confirmation messages at each step.
+   - Verifies the new MongoDB URL.
+   - Deletes all existing databases in the new MongoDB.
+   - Migrates data from the old MongoDB to the new MongoDB.
+
+• `/deletedb`: Deletes all non-system databases from the MongoDB.
+
+• `/checkdb`: Lists all databases and collections with the number of documents in the MongoDB.
 """
