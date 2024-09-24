@@ -46,6 +46,12 @@ async def mongo_check_command(client, message: Message):
 #==============================[⚠️ DELETE DATABASE ⚠️]=======================================#
 
 # Function to delete a specific collection from a database
+
+
+# Environment variable for the old MongoDB URL
+MONGO_DB_URI = os.getenv("MONGO_DB_URI")
+
+# Function to delete a specific collection from a database
 def delete_collection(client, db_name, col_name):
     db = client[db_name]
     db.drop_collection(col_name)
@@ -66,9 +72,14 @@ async def delete_db_command(client, message: Message):
     try:
         mongo_client = MongoClient(MONGO_DB_URI, serverSelectionTimeoutMS=5000)
         databases = mongo_client.list_database_names()
+
+        # Check if user wants to delete all databases
+        if len(message.command) > 1 and message.command[1].lower() == "all":
+            clean_mongo(mongo_client)
+            await message.reply("All user databases have been deleted successfully. 🧹")
         
         # If the user provides a database or collection name
-        if len(message.command) > 1:
+        elif len(message.command) > 1:
             db_name = message.command[1]
             
             # If both database and collection names are provided
@@ -107,6 +118,7 @@ async def delete_db_command(client, message: Message):
 
     except Exception as e:
         await message.reply(f"Failed to delete databases or collections: {e}")
+
 
 #==============================[⚠️ CHECK DATABASE ⚠️]=======================================#
 
