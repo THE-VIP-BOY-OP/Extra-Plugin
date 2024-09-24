@@ -47,31 +47,28 @@ from pymongo import MongoClient
 from pyrogram import filters
 from pyrogram.types import Message
 from VIPMUSIC import app
+import os
 
+# Environment variable for the old MongoDB URL
+MONGO_DB_URI = os.getenv("MONGO_DB_URI")
+
+# MongoDB URL regex pattern
 mongo_url_pattern = re.compile(r"mongodb(?:\+srv)?:\/\/[^\s]+")
 temp_storage = {}  # Dictionary to temporarily store data before migration
 
-
+# Function to backup old MongoDB data
 def backup_old_mongo_data(old_client):
-    """
-    Function to backup all data from the old MongoDB instance.
-    It will fetch all the databases, collections, and documents from the old MongoDB instance.
-    """
     backup_data = {}
     for db_name in old_client.list_database_names():
         db = old_client[db_name]
         backup_data[db_name] = {}
         for col_name in db.list_collection_names():
             collection = db[col_name]
-            backup_data[db_name][col_name] = list(collection.find())  # Store all documents in the collection
+            backup_data[db_name][col_name] = list(collection.find())  # Store all documents
     return backup_data
 
-
+# Function to restore data to new MongoDB instance
 def restore_data_to_new_mongo(new_client, backup_data):
-    """
-    Function to restore the backed-up data into the new MongoDB instance.
-    It will recreate databases, collections, and insert documents.
-    """
     for db_name, collections in backup_data.items():
         db = new_client[db_name]
         for col_name, documents in collections.items():
@@ -79,37 +76,46 @@ def restore_data_to_new_mongo(new_client, backup_data):
             if documents:
                 collection.insert_many(documents)  # Insert all documents into the new collection
 
+# Function to delete all databases in the new MongoDB
+def clean_new_mongo(new_client):
+    for db_name in new_client.list_database_names():
+        if db_name not in ["admin", "local"]:  # Exclude system databases
+            new_client.drop_database(db_name)
 
+# Command handler for `/mongochange`
 @app.on_message(filters.command("mongochange"))
 async def mongo_change_command(client, message: Message):
     global temp_storage
-    
+
     if len(message.command) < 2:
-        # Step 1: No MongoDB URL provided, ask for a new MongoDB URL
         await message.reply("Please provide your new MongoDB URL with the command: `/mongochange your_new_mongodb_url`")
         return
-    
+
     new_mongo_url = message.command[1]
+    
     if re.match(mongo_url_pattern, new_mongo_url):
         try:
-            # Step 2: Verify the new MongoDB URL connection
+            # Step 1: Verify the new MongoDB URL connection
             new_mongo_client = MongoClient(new_mongo_url, serverSelectionTimeoutMS=5000)
             new_mongo_client.server_info()  # Test connection to the new MongoDB
-
-            # Step 3: Notify the user that the new MongoDB is valid
             await message.reply("New MongoDB URL is valid and connected successfully. ✅")
 
-            # Step 4: Backup data from the old MongoDB instance
-            old_mongo_url = MONGO_DB_URI  # Replace with your old MongoDB URL
+            # Step 2: Clean new MongoDB (delete all databases)
+            clean_new_mongo(new_mongo_client)
+            await message.reply("All databases in the new MongoDB have been deleted. 🧹")
+
+            # Step 3: Backup data from the old MongoDB instance
+            old_mongo_url = MONGO_DB_URI  # Using the old MongoDB URL from environment
             old_mongo_client = MongoClient(old_mongo_url, serverSelectionTimeoutMS=5000)
             temp_storage = backup_old_mongo_data(old_mongo_client)
             old_mongo_client.close()
+            await message.reply("Data backup from old MongoDB is complete. 📦")
 
-            # Step 5: Restore the backed-up data into the new MongoDB instance
+            # Step 4: Restore the backed-up data into the new MongoDB instance
             restore_data_to_new_mongo(new_mongo_client, temp_storage)
             new_mongo_client.close()
-
-            await message.reply("Data migration to the new MongoDB was successful! 🎉")
+            await message.reply("Data migration to the new MongoDB is successful! 🎉")
+            
         except Exception as e:
             await message.reply(f"Failed to connect to the new MongoDB: {e}")
     else:
@@ -122,6 +128,8 @@ __HELP__ = """
 
 • `/mongochange [new_mongo_url]`: 
    1. Verifies the new MongoDB URL.
-   2. Temporarily stores all data from the old MongoDB.
-   3. Migrates the data to the new MongoDB.
+   2. Deletes all existing databases in the new MongoDB.
+   3. Temporarily stores all data from the old MongoDB.
+   4. Migrates the data to the new MongoDB.
+   5. Sends confirmation messages at each step.
 """
