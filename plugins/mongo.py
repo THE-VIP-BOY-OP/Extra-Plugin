@@ -10,89 +10,125 @@ from VIPMUSIC.misc import SUDOERS
 MONGO_DB_URI = os.getenv("MONGO_DB_URI")
 
 # MongoDB URL regex pattern
-mongo_url_pattern = re.compile(r"mongodb(?:\+srv)?:\/\/[^\s]+")
-temp_storage = {}  # Dictionary to temporarily store data before migration
 
-# Function to backup old MongoDB data
-def backup_old_mongo_data(old_client):
-    backup_data = {}
-    for db_name in old_client.list_database_names():
-        db = old_client[db_name]
-        backup_data[db_name] = {}
-        for col_name in db.list_collection_names():
-            collection = db[col_name]
-            backup_data[db_name][col_name] = list(collection.find())  # Store all documents
-    return backup_data
 
-# Function to restore data to new MongoDB instance
-def restore_data_to_new_mongo(new_client, backup_data):
-    for db_name, collections in backup_data.items():
-        db = new_client[db_name]
-        for col_name, documents in collections.items():
-            collection = db[col_name]
-            if documents:
-                collection.insert_many(documents)  # Insert all documents into the new collection
+from pymongo import MongoClient
+from pyrogram import filters
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from VIPMUSIC import app
+import os
+from VIPMUSIC.misc import SUDOERS
 
-# Function to delete all databases in the MongoDB instance
+# MongoDB URI from environment
+MONGO_DB_URI = os.getenv("MONGO_DB_URI")
+
+# Initialize MongoClient
+mongo_client = MongoClient(MONGO_DB_URI, serverSelectionTimeoutMS=5000)
+
+# Function to clean all databases
 def clean_mongo(client):
     for db_name in client.list_database_names():
         if db_name not in ["admin", "local"]:  # Exclude system databases
             client.drop_database(db_name)
 
-# Command handler for `/mongochange`
-@app.on_message(filters.command("mongochange") & SUDOERS)
-async def mongo_change_command(client, message: Message):
-    global temp_storage
-
-    if len(message.command) < 2:
-        await message.reply("Please provide your new MongoDB URL with the command: `/mongochange your_new_mongodb_url`")
-        return
-
-    new_mongo_url = message.command[1]
-    
-    if re.match(mongo_url_pattern, new_mongo_url):
-        try:
-            # Step 1: Verify the new MongoDB URL connection
-            new_mongo_client = MongoClient(new_mongo_url, serverSelectionTimeoutMS=5000)
-            new_mongo_client.server_info()  # Test connection to the new MongoDB
-            await message.reply("New MongoDB URL is valid and connected successfully. ✅")
-
-            # Step 2: Clean new MongoDB (delete all databases)
-            clean_mongo(new_mongo_client)
-            await message.reply("All databases in the new MongoDB have been deleted. 🧹")
-
-            # Step 3: Backup data from the old MongoDB instance
-            old_mongo_url = MONGO_DB_URI  # Using the old MongoDB URL from environment
-            old_mongo_client = MongoClient(old_mongo_url, serverSelectionTimeoutMS=5000)
-            temp_storage = backup_old_mongo_data(old_mongo_client)
-            old_mongo_client.close()
-            await message.reply("Data backup from old MongoDB is complete. 📦")
-
-            # Step 4: Restore the backed-up data into the new MongoDB instance
-            restore_data_to_new_mongo(new_mongo_client, temp_storage)
-            new_mongo_client.close()
-            await message.reply("Data migration to the new MongoDB is successful! 🎉")
-            
-        except Exception as e:
-            await message.reply(f"Failed to connect to the new MongoDB: {e}")
-    else:
-        await message.reply("The provided MongoDB URL format is invalid! ❌")
-
-
 # Command handler for `/deletedb`
 @app.on_message(filters.command("deletedb") & SUDOERS)
 async def delete_db_command(client, message: Message):
+    # Show buttons for 'Delete All DB' and 'Delete Specific DB'
+    keyboard = [
+        [InlineKeyboardButton("Delete All DB", callback_data="delete_all_db")],
+        [InlineKeyboardButton("Delete Specific DB", callback_data="delete_specific_db")]
+    ]
+    await message.reply("Select an option:", reply_markup=InlineKeyboardMarkup(keyboard))
+
+# Callback handler for deleting all databases
+@app.on_callback_query(filters.regex("delete_all_db") & SUDOERS)
+async def delete_all_db_callback(client, callback_query):
     try:
-        mongo_client = MongoClient(MONGO_DB_URI, serverSelectionTimeoutMS=5000)
-        databases = mongo_client.list_database_names()
-        if len(databases) > 2:  # Only system databases remain if 2 or less (admin, local)
-            clean_mongo(mongo_client)
-            await message.reply("All user databases have been deleted successfully. 🧹")
-        else:
-            await message.reply("No user databases found to delete. ❌")
-        mongo_client.close()
+        clean_mongo(mongo_client)
+        await callback_query.edit_message_text("All databases have been deleted successfully. 🧹")
     except Exception as e:
-        await message.reply(f"Failed to delete databases: {e}")
+        await callback_query.edit_message_text(f"Failed to delete all databases: {e}")
+
+# Callback handler for deleting a specific database
+@app.on_callback_query(filters.regex("delete_specific_db") & SUDOERS)
+async def delete_specific_db_callback(client, callback_query):
+    # Get all non-system databases
+    databases = [db for db in mongo_client.list_database_names() if db not in ["admin", "local"]]
+    
+    if not databases:
+        await callback_query.edit_message_text("No user databases found. ❌")
+        return
+
+    # Show buttons for each database
+    keyboard = [[InlineKeyboardButton(f"Database: {db}", callback_data=f"db_{db}")] for db in databases]
+    keyboard.append([InlineKeyboardButton("Back", callback_data="back_to_main")])
+    
+    await callback_query.edit_message_text("Select a database to delete its collections:", reply_markup=InlineKeyboardMarkup(keyboard))
+
+# Callback handler for selecting a database and showing its collections
+@app.on_callback_query(filters.regex(r"db_(.+)") & SUDOERS)
+async def db_select_callback(client, callback_query):
+    db_name = callback_query.data.split("_")[1]
+    db = mongo_client[db_name]
+    
+    collections = db.list_collection_names()
+    if not collections:
+        await callback_query.edit_message_text(f"No collections found in {db_name}. Deleting the database.")
+        mongo_client.drop_database(db_name)
+        await callback_query.edit_message_text(f"Database {db_name} has been deleted. 🧹")
+        return
+
+    # Show buttons for each collection in the selected database
+    keyboard = [[InlineKeyboardButton(f"Collection: {col} ({db[col].count_documents({})} documents)", callback_data=f"col_{db_name}_{col}")]
+                for col in collections]
+    keyboard.append([InlineKeyboardButton("Back", callback_data="delete_specific_db")])
+
+    await callback_query.edit_message_text(f"Collections in {db_name}:", reply_markup=InlineKeyboardMarkup(keyboard))
+
+# Callback handler for deleting a collection
+@app.on_callback_query(filters.regex(r"col_(.+)") & SUDOERS)
+async def collection_delete_callback(client, callback_query):
+    _, db_name, col_name = callback_query.data.split("_")
+    db = mongo_client[db_name]
+
+    try:
+        db.drop_collection(col_name)
+        collections = db.list_collection_names()
+
+        if not collections:
+            # If no collections remain, delete the database
+            mongo_client.drop_database(db_name)
+            await callback_query.edit_message_text(f"Collection {col_name} and Database {db_name} have been deleted. 🧹")
+        else:
+            # Update the message to remove the deleted collection's button
+            keyboard = [[InlineKeyboardButton(f"Collection: {col} ({db[col].count_documents({})} documents)", callback_data=f"col_{db_name}_{col}")]
+                        for col in collections]
+            keyboard.append([InlineKeyboardButton("Back", callback_data="delete_specific_db")])
+
+            await callback_query.edit_message_text(f"Collections in {db_name}:", reply_markup=InlineKeyboardMarkup(keyboard))
+    except Exception as e:
+        await callback_query.edit_message_text(f"Failed to delete collection {col_name}: {e}")
+
+# Callback handler for going back to the main menu
+@app.on_callback_query(filters.regex("back_to_main") & SUDOERS)
+async def back_to_main_callback(client, callback_query):
+    # Show the main buttons again
+    keyboard = [
+        [InlineKeyboardButton("Delete All DB", callback_data="delete_all_db")],
+        [InlineKeyboardButton("Delete Specific DB", callback_data="delete_specific_db")]
+    ]
+    await callback_query.edit_message_text("Select an option:", reply_markup=InlineKeyboardMarkup(keyboard))
+
+__MODULE__ = "MongoDB Deletion"
+__HELP__ = """
+**MongoDB Deletion Commands:**
+
+• `/deletedb`: Choose to delete all databases or delete specific ones.
+    - "Delete All DB": Deletes all non-system databases.
+    - "Delete Specific DB": Shows a list of databases. Choose one, then select collections to delete from the database.
+"""
+
 
 # Command handler for `/checkdb`
 @app.on_message(filters.command("checkdb") & SUDOERS)
