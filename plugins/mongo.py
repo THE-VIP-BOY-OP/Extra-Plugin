@@ -42,8 +42,7 @@ async def mongo_check_command(client, message: Message):
     except Exception as e:
         await message.reply(f"Failed to connect to MongoDB: {e}")
 
-#==============================[⚠️ DELETE DATABSE ⚠️]=======================================#
-
+#==============================[⚠️ DELETE DATABASE ⚠️]=======================================#
 
 # Function to delete a specific collection in a database
 def delete_collection(client, db_name, col_name):
@@ -109,9 +108,7 @@ async def delete_db_command(client, message: Message):
 
     mongo_client.close()
 
-
-#==============================[⚠️ OPEN DATABSE ⚠️]=======================================#
-
+#==============================[⚠️ CHECK DATABASE ⚠️]=======================================#
 
 # Command handler for `/checkdb`
 @app.on_message(filters.command("checkdb") & SUDOERS)
@@ -128,12 +125,7 @@ async def check_db_command(client, message: Message):
     except Exception as e:
         await message.reply(f"Failed to check databases: {e}")
 
-
-
-
-
-#============================================[ ⚠️ TRANSFER DATABSE ⚠️ ]===============================#
-
+#============================================[ ⚠️ TRANSFER DATABASE ⚠️ ]===============================#
 
 mongo_url_pattern = re.compile(r"mongodb(?:\+srv)?:\/\/[^\s]+")
 
@@ -152,7 +144,7 @@ def backup_old_mongo_data(old_client):
 def restore_data_to_new_mongo(new_client, backup_data):
     for db_name, collections in backup_data.items():
         db = new_client[db_name]
-        for cl_name, documents in collections.items():
+        for col_name, documents in collections.items():
             collection = db[col_name]
             if documents:
                 collection.insert_many(documents)  # Insert all documents into the new collection
@@ -185,9 +177,7 @@ async def transfer_db_command(client, message: Message):
         await message.reply("Data transfer to the new MongoDB is successful! 🎉")
     
     except Exception as e:
-        await message.reply("Data transfer to the new MongoDB is successful! 🎉")
-    
-
+        await message.reply(f"Failed to transfer data: {e}")
 
 
 __MODULE__ = "MongoDB"
