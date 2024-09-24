@@ -249,7 +249,7 @@ async def unban_func(_, message: Message):
 
 # Promote Members
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
-from pyrogram.enums import ChatPrivileges
+
 
 @app.on_message(
     filters.command(["promote", "fullpromote"]) & ~filters.private & ~BANNED_USERS
