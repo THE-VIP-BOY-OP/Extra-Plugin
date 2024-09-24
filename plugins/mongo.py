@@ -110,18 +110,39 @@ async def delete_db_command(client, message: Message):
 
 #==============================[⚠️ CHECK DATABASE ⚠️]=======================================#
 
-# Command handler for `/checkdb`
+
+
+# Environment variable for the MongoDB URL
+MONGO_DB_URI = os.getenv("MONGO_DB_URI")
+
+# Command handler for /checkdb
 @app.on_message(filters.command("checkdb") & SUDOERS)
 async def check_db_command(client, message: Message):
     try:
         mongo_client = MongoClient(MONGO_DB_URI, serverSelectionTimeoutMS=5000)
         databases = mongo_client.list_database_names()
+        
         if len(databases) > 2:  # More than just admin and local
-            result = list_databases_and_collections(mongo_client)
-            await message.reply(result)
+            result = "MongoDB Databases:\n"
+            for db_name in databases:
+                if db_name not in ["admin", "local"]:
+                    result += f"\n{db_name}:\n"
+                    db = mongo_client[db_name]
+                    for col_name in db.list_collection_names():
+                        collection = db[col_name]
+                        result += f"  {col_name} ({collection.count_documents({})} documents)\n"
+            
+            # Check if message exceeds Telegram's limit
+            if len(result) > 4096:  # Telegram's message length limit is 4096 characters
+                paste_url = await VIPbin(result)
+                await message.reply(f"The database list is too long to send here. You can view it at: {paste_url}")
+            else:
+                await message.reply(result)
         else:
             await message.reply("No user databases found. ❌")
+        
         mongo_client.close()
+
     except Exception as e:
         await message.reply(f"Failed to check databases: {e}")
 
