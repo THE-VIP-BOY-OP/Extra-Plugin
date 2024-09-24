@@ -118,7 +118,7 @@ async def check_db_command(client, message: Message):
             
             # Check if message exceeds Telegram's limit
             if len(result) > 4096:  # Telegram's message length limit is 4096 characters
-                paste_url = await VIPBin(result)
+                paste_url = await VIPbin(result)
                 await message.reply(f"The database list is too long to send here. You can view it at: {paste_url}")
             else:
                 await message.reply(result)
