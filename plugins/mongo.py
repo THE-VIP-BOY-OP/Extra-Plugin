@@ -4,6 +4,7 @@ from pyrogram import filters
 from pyrogram.types import Message
 from VIPMUSIC import app
 import os
+from config import OWNER_ID
 from VIPMUSIC.misc import SUDOERS
 from VIPMUSIC.utils.pastebin import VIPbin
 
@@ -44,7 +45,7 @@ async def mongo_check_command(client, message: Message):
 
 #==============================[⚠️ DELETE DATABASE ⚠️]=======================================#
 
-# Function to delete a specific collection in a database
+# Function to delete a specific collection from a database
 def delete_collection(client, db_name, col_name):
     db = client[db_name]
     db.drop_collection(col_name)
@@ -53,60 +54,59 @@ def delete_collection(client, db_name, col_name):
 def delete_database(client, db_name):
     client.drop_database(db_name)
 
-# Function to list databases and collections
-def list_databases_and_collections(client):
-    result = "MongoDB Databases:\n"
+# Function to delete all user databases
+def clean_mongo(client):
     for db_name in client.list_database_names():
-        if db_name not in ["admin", "local"]:
-            result += f"\nDatabase: `{db_name}`\n"
-            db = client[db_name]
-            for col_name in db.list_collection_names():
-                collection = db[col_name]
-                result += f"  Collection: `{col_name}` ({collection.count_documents({})} documents)\n"
-    return result
+        if db_name not in ["admin", "local"]:  # Exclude system databases
+            client.drop_database(db_name)
 
 # Command handler for `/deletedb`
-@app.on_message(filters.command("deletedb") & SUDOERS)
+@app.on_message(filters.command("deletedb") & filters.user(OWNER_ID))
 async def delete_db_command(client, message: Message):
-    mongo_client = MongoClient(MONGO_DB_URI, serverSelectionTimeoutMS=5000)
-
-    if len(message.command) == 1:
-        # No database or collection name provided, show prompt
-        databases_list = list_databases_and_collections(mongo_client)
-        await message.reply(f"Please provide a database or collection name to delete:\n\n{databases_list}")
-        mongo_client.close()
-        return
-
-    # Handle "/deletedb all" to delete all databases
-    if message.command[1].lower() == "all":
-        for db_name in mongo_client.list_database_names():
-            if db_name not in ["admin", "local"]:
-                delete_database(mongo_client, db_name)
-        await message.reply("All user databases have been deleted successfully. 🧹")
-        mongo_client.close()
-        return
-
-    # Handle specific database or collection deletion
-    db_name = message.command[1]
-    if len(message.command) == 3:
-        col_name = message.command[2]
-        if db_name in mongo_client.list_database_names():
-            if col_name in mongo_client[db_name].list_collection_names():
-                delete_collection(mongo_client, db_name, col_name)
-                await message.reply(f"Collection `{col_name}` from database `{db_name}` has been deleted successfully. 🧹")
+    try:
+        mongo_client = MongoClient(MONGO_DB_URI, serverSelectionTimeoutMS=5000)
+        databases = mongo_client.list_database_names()
+        
+        # If the user provides a database or collection name
+        if len(message.command) > 1:
+            db_name = message.command[1]
+            
+            # If both database and collection names are provided
+            if len(message.command) == 3:
+                col_name = message.command[2]
+                if db_name in databases:
+                    delete_collection(mongo_client, db_name, col_name)
+                    await message.reply(f"Collection `{col_name}` from database `{db_name}` has been deleted successfully. 🧹")
+                else:
+                    await message.reply(f"Database `{db_name}` does not exist. ❌")
+            
+            # If only the database name is provided
             else:
-                await message.reply(f"Collection `{col_name}` not found in database `{db_name}`. ❌")
+                if db_name in databases:
+                    delete_database(mongo_client, db_name)
+                    await message.reply(f"Database `{db_name}` has been deleted successfully. 🧹")
+                else:
+                    await message.reply(f"Database `{db_name}` does not exist. ❌")
+        
+        # If no database or collection name is provided
         else:
-            await message.reply(f"Database `{db_name}` not found. ❌")
-    else:
-        # Delete the entire database if only the database name is provided
-        if db_name in mongo_client.list_database_names():
-            delete_database(mongo_client, db_name)
-            await message.reply(f"Database `{db_name}` has been deleted successfully. 🧹")
-        else:
-            await message.reply(f"Database `{db_name}` not found. ❌")
+            if len(databases) > 2:
+                result = "Please provide a database name or a collection name after the database name. Example:\n"
+                result += "/deletedb `DatabaseName` `CollectionName`\n\nAvailable Databases:\n"
+                for db_name in databases:
+                    if db_name not in ["admin", "local"]:
+                        result += f"\n`{db_name}`:\n"
+                        db = mongo_client[db_name]
+                        for col_name in db.list_collection_names():
+                            result += f"  `{col_name}`\n"
+                await message.reply(result)
+            else:
+                await message.reply("No user databases found. ❌")
+        
+        mongo_client.close()
 
-    mongo_client.close()
+    except Exception as e:
+        await message.reply(f"Failed to delete databases or collections: {e}")
 
 #==============================[⚠️ CHECK DATABASE ⚠️]=======================================#
 
@@ -171,7 +171,7 @@ def restore_data_to_new_mongo(new_client, backup_data):
                 collection.insert_many(documents)  # Insert all documents into the new collection
 
 # Command handler for `/transferdb`
-@app.on_message(filters.command("transferdb") & SUDOERS)
+@app.on_message(filters.command("transferdb") & filters.user(OWNER_ID))
 async def transfer_db_command(client, message: Message):
     try:
         if len(message.command) < 2:
