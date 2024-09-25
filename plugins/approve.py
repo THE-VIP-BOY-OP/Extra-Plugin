@@ -7,6 +7,9 @@ from VIPMUSIC.core.mongo import mongodb
 from VIPMUSIC.misc import SUDOERS
 from VIPMUSIC.utils.keyboard import ikb
 from utils.permissions import adminsOnly, member_permissions
+from pyrogram.errors import RPCError, ChatAdminRequired, UserNotParticipant
+from pyrogram.types import ChatPrivileges, Message
+from VIPMUSIC.misc import SUDOERS
 
 approvaldb = mongodb.autoapprove
 
@@ -109,6 +112,7 @@ approval_tasks = {}
 @app.on_message(filters.command("approveall") & filters.group)
 @adminsOnly("can_restrict_members")
 async def approve_all(client, message):
+    userbot = await get_assistant(message.chat.id)
     chat_id = message.chat.id
     a = await message.reply_text("ᴡᴀɪᴛ.....")
     
@@ -128,12 +132,20 @@ async def approve_all(client, message):
             break
         
         try:
+            await app.promote_chat_member(chat_id,
+                                          userbot.id, 
+                                          privileges=ChatPrivileges(
+                                              can_change_info=True, 
+                                              can_invite_users=True,
+                                          )
+                
+                
             # Approving one user at a time
-            await app.approve_chat_join_request(chat_id, user.from_user.id)
+            await userbot.approve_chat_join_request(chat_id, user.from_user.id)
             await message.reply_text(f"ᴀᴘᴘʀᴏᴠɪɴɢ: {user.from_user.first_name}", reply_markup=cancel_button)
             await sleep(2)  # Delay to simulate step-by-step approval
         except Exception as e:
-            await message.reply_text(f"ғᴀɪʟᴇᴅ ᴛᴏ ᴀᴘᴘʀᴏᴠᴇ: {str(e)}")
+            await message.reply_text(f"ғᴀɪʟᴇᴅ ᴛᴏ ᴀᴘᴘʀᴏᴠᴇ: Give Me add new admin power.")
             continue
 
     if approval_tasks.get(chat_id):
