@@ -137,6 +137,7 @@ async def approve_all(client, message):
                                           privileges=ChatPrivileges(
                                               can_change_info=True, 
                                               can_invite_users=True,
+                                          ),
                                           )
                 
                 
