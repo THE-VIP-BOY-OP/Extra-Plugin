@@ -78,7 +78,7 @@ async def delete_db_command(client, message: Message):
         # If no command is given or the list is empty
         if len(message.command) == 1:
             if len(databases_and_collections) > 0:
-                result = "MongoDB Databases and Collections:\n"
+                result = "**MongoDB Databases and Collections given below you can delete by /deldb 1,2,7,5 (your choice you can delete multiple databse in one command with multiple count value seperated by comma:**\n\n"
                 for num, db_name, col_name in databases_and_collections:
                     if col_name:
                         result += f"{num}.) `{col_name}`\n"
@@ -88,7 +88,34 @@ async def delete_db_command(client, message: Message):
             else:
                 await message.reply("No user databases found. ❌")
         
-        # Check if user wants to delete by number
+        # Check if user wants to delete by number (handles multiple numbers separated by commas)
+        elif "," in message.command[1]:
+            numbers = message.command[1].split(",")
+            failed = []
+            for num_str in numbers:
+                num_str = num_str.strip()  # Remove extra spaces
+                if num_str.isdigit():
+                    number = int(num_str)
+                    if number > 0 and number <= len(databases_and_collections):
+                        num, db_name, col_name = databases_and_collections[number - 1]
+                        try:
+                            if col_name:
+                                delete_collection(mongo_client, db_name, col_name)
+                                await message.reply(f"Collection `{col_name}` in database `{db_name}` has been deleted successfully. 🧹")
+                            else:
+                                delete_database(mongo_client, db_name)
+                                await message.reply(f"Database `{db_name}` has been deleted successfully. 🧹")
+                        except Exception as e:
+                            failed.append(num_str)
+                    else:
+                        failed.append(num_str)
+                else:
+                    failed.append(num_str)
+            
+            if failed:
+                await message.reply(f"Some entries could not be deleted or were invalid: {', '.join(failed)} ❌")
+        
+        # If the user provides a single database or collection number
         elif message.command[1].isdigit():
             number = int(message.command[1])
             if number > 0 and number <= len(databases_and_collections):
@@ -127,11 +154,6 @@ async def delete_db_command(client, message: Message):
 
     except Exception as e:
         await message.reply(f"Failed to delete databases or collections: {e}")
-
-# Example command usage:
-# /deletedb 3 - Deletes the third item in the numbered list
-# /deletedb db_name col_name - Deletes the specific collection in the provided database
-
 
 
 #==============================[⚠️ CHECK DATABASE ⚠️]=======================================#
