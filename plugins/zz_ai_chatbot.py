@@ -101,7 +101,7 @@ async def chatbot_toggle(client, message):
     else:
         await message.reply_text("**Usage:** /chatbot [enable|disable]")
 
-# Chatbot handler for text and sticker messages
+# Chatbot handler for text and sticker messages in group chats
 @nexichat.on_message(filters.text | filters.sticker | filters.group, group=4)
 async def chatbot_text(client: Client, message: Message):
     chatdb = MongoClient(MONGO_URL)
@@ -116,21 +116,26 @@ async def chatbot_text(client: Client, message: Message):
     
     await client.send_chat_action(message.chat.id, ChatAction.TYPING)
 
-    if message.text:
-        try:
-            response = api.gemini(message.text)
-            x = response.get("results")
-            if x:
-                formatted_response = to_small_caps(x)
-                await send_ai_response(client, message, formatted_response)
-            else:
-                await message.reply_text(to_small_caps("sᴏʀʀʏ! ᴘʟᴇᴀsᴇ ᴛʀʏ ᴀɢᴀɪɴ"), quote=True)
-        except requests.exceptions.RequestException:
-            pass
-    
-    # Handle sticker messages by sending a random sticker from the same sticker pack
-    elif message.sticker:
-        await get_random_sticker_from_pack(client, message)
+    # Check if the message is a reply to the bot's message or contains the bot's username
+    if (
+        message.reply_to_message and message.reply_to_message.from_user.id == client.me.id
+    ) or f"@{client.me.username}" in message.text:
+
+        if message.text:
+            try:
+                response = api.gemini(message.text)
+                x = response.get("results")
+                if x:
+                    formatted_response = to_small_caps(x)
+                    await send_ai_response(client, message, formatted_response)
+                else:
+                    await message.reply_text(to_small_caps("sᴏʀʀʏ! ᴘʟᴇᴀsᴇ ᴛʀʏ ᴀɢᴀɪɴ"), quote=True)
+            except requests.exceptions.RequestException:
+                pass
+        
+        # Handle sticker messages by sending a random sticker from the same sticker pack
+        elif message.sticker:
+            await get_random_sticker_from_pack(client, message)
 
 # Chatbot handler for private messages
 @nexichat.on_message(filters.private & filters.text)
@@ -138,11 +143,13 @@ async def chatbot_text_private(client: Client, message: Message):
     chatdb = MongoClient(MONGO_URL)
     processed_messages = chatdb["ProcessedMessages"]
 
-    # Only respond if the message is a reply to one of the bot's messages
-    if not message.reply_to_message or message.reply_to_message.from_user.id != client.me.id:
+    # Check if message is either a reply to the bot's message or contains the bot's username
+    if not (
+        message.reply_to_message and message.reply_to_message.from_user.id == client.me.id
+    ) and f"@{client.me.username}" not in message.text:
         return
     
-    # Check if message has already been processed
+    # Check if the message has already been processed
     if processed_messages.find_one({"message_id": message.message_id}):
         return
 
