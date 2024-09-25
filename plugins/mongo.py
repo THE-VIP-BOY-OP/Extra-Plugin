@@ -171,7 +171,7 @@ MONGO_DB_URI = os.getenv("MONGO_DB_URI")
 @app.on_message(filters.command(["checkdb", "checkdatabase"]) & SUDOERS)
 async def check_db_command(client, message: Message):
     try:
-        ok = await message.reply_text("**Please wait while checking your bot mongodb database**")
+        ok = await message.reply_text("**Please wait while checking your bot mongodb database...**")
         mongo_client = MongoClient(MONGO_DB_URI, serverSelectionTimeoutMS=5000)
         databases = mongo_client.list_database_names()
         
