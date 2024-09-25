@@ -10,7 +10,7 @@ from utils.permissions import adminsOnly, member_permissions
 from pyrogram.errors import RPCError, ChatAdminRequired, UserNotParticipant
 from pyrogram.types import ChatPrivileges, Message
 from VIPMUSIC.misc import SUDOERS
-
+from VIPMUSIC.utils.database import get_assistant
 approvaldb = mongodb.autoapprove
 
 
