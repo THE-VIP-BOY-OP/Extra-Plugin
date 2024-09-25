@@ -126,10 +126,10 @@ async def delete_db_command(client, message: Message):
                 num, db_name, col_name = databases_and_collections[number - 1]
                 if col_name:
                     delete_collection(mongo_client, db_name, col_name)
-                    await message.reply(f"**Collection** `{col_name}` **in database** `{db_name}` **has been deleted successfully. 🧹**")
+                    await message.reply(f"**Collection** `{col_name}` **in database** `{db_name}` **has been deleted successfully. 🧹**\n\n**Check Rest databse by: /checkdb, /deldb**")
                 else:
                     delete_database(mongo_client, db_name)
-                    await message.reply(f"**Database** `{db_name}` **has been deleted successfully. 🧹**")
+                    await message.reply(f"**Database** `{db_name}` **has been deleted successfully. 🧹**\n\n**Check Rest databse by: /checkdb, /deldb**")
             else:
                 await message.reply("**Invalid number. Please check the list again.**")
         
@@ -142,17 +142,17 @@ async def delete_db_command(client, message: Message):
                 col_name = message.command[2]
                 if db_name in [db[1] for db in databases_and_collections if not db[2]]:
                     delete_collection(mongo_client, db_name, col_name)
-                    await message.reply(f"Collection `{col_name}` in database `{db_name}` has been deleted successfully. 🧹")
+                    await message.reply(f"**Collection** `{col_name}` **in database** `{db_name}` **has been deleted successfully. 🧹**\n\n**Check Rest databse by: /checkdb, /deldb**")
                 else:
-                    await message.reply(f"Database `{db_name}` does not exist. ❌")
+                    await message.reply(f"**Database** `{db_name}` **does not exist. ❌**")
             
             
             else:
                 if db_name in [db[1] for db in databases_and_collections if not db[2]]:
                     delete_database(mongo_client, db_name)
-                    await message.reply(f"Database `{db_name}` has been deleted successfully. 🧹")
+                    await message.reply(f"**Database** `{db_name}` **has been deleted successfully. 🧹**\n\n**Check Rest databse by: /checkdb, /deldb**")
                 else:
-                    await message.reply(f"Database `{db_name}` does not exist. ❌")
+                    await message.reply(f"**Database** `{db_name}` **does not exist. ❌**")
         
         mongo_client.close()
 
