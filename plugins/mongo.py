@@ -81,7 +81,7 @@ async def delete_db_command(client, message: Message):
                 result = "**MongoDB Databases and Collections given below you can delete by /deldb 1,2,7,5 (your choice you can delete multiple databse in one command with multiple count value seperated by comma:**\n\n"
                 for num, db_name, col_name in databases_and_collections:
                     if col_name:
-                        result += f"{num}.) `{col_name}`\n"
+                        result += f"{num}.) `{col_name}`\n\n"
                     else:
                         result += f"{num}.) **{db_name}** (Database)\n"
                 await message.reply(result)
