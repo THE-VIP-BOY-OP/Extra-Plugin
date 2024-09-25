@@ -81,9 +81,9 @@ async def delete_db_command(client, message: Message):
                 result = "**MongoDB Databases and Collections given below you can delete by /deldb 1,2,7,5 (your choice you can delete multiple databse in one command with multiple count value seperated by comma:**\n\n"
                 for num, db_name, col_name in databases_and_collections:
                     if col_name:
-                        result += f"{num}.) `{col_name}`\n\n"
+                        result += f"{num}.) `{col_name}`\n"
                     else:
-                        result += f"{num}.) **{db_name}** (Database)\n"
+                        result += f"\n{num}.) **{db_name}** (Database)\n"
                 await message.reply(result)
             else:
                 await message.reply("No user databases found. ❌")
@@ -113,7 +113,7 @@ async def delete_db_command(client, message: Message):
                     failed.append(num_str)
             
             if failed:
-                await message.reply(f"Some entries could not be deleted or were invalid: {', '.join(failed)} ❌")
+                await message.reply(f"Some entries could not be deleted or were invalid: {', '.join(failed)} ❌\n\n**Check Rest databse by: /checkdb, /deldb**")
         
         # If the user provides a single database or collection number
         elif message.command[1].isdigit():
