@@ -234,7 +234,7 @@ async def transfer_db_command(client, message: Message):
         if len(message.command) < 2:
             await message.reply("Please provide the new MongoDB URL with the command: `/transferdb your_new_mongodb_url`")
             return
-       ok = await message.reply_text("**Ok wait transfer process Starting...**")
+        ok = await message.reply_text("**Ok wait transfer process Starting...**")
         new_mongo_url = message.command[1]
         
         if not re.match(mongo_url_pattern, new_mongo_url):
