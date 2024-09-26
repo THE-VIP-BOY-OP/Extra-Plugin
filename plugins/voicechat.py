@@ -14,7 +14,17 @@ from dotenv import load_dotenv
 import config
 
 from VIPMUSIC.logging import LOGGER
-
+from VIPMUSIC.utils.database import (
+    delete_filter,
+    get_cmode,
+    get_lang,
+    is_active_chat,
+    is_commanddelete_on,
+    is_maintenance,
+    is_nonadmin_chat,
+    set_loop,
+)
+from VIPMUSIC.core.call import VIP
 
 
 @app.on_message(
@@ -82,12 +92,16 @@ from VIPMUSIC import app
 @app.on_message(filters.video_chat_started)
 async def brah(_, msg):
     await msg.reply("**😍ᴠɪᴅᴇᴏ ᴄʜᴀᴛ sᴛᴀʀᴛᴇᴅ🥳**")
+    await VIP.st_stream(chat_id)
+    await set_loop(chat_id, 0)
 
 
 # vc off
 @app.on_message(filters.video_chat_ended)
 async def brah2(_, msg):
     await msg.reply("**😕ᴠɪᴅᴇᴏ ᴄʜᴀᴛ ᴇɴᴅᴇᴅ💔**")
+    await VIP.st_stream(chat_id)
+    await set_loop(chat_id, 0)
 
 @app.on_message(filters.video_chat_members_invited)
 async def brah3(app: app, message: Message):
