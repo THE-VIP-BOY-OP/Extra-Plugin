@@ -88,7 +88,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from VIPMUSIC import app
 
 
-# vc on
+"""# vc on
 @app.on_message(filters.video_chat_started)
 async def brah(_, msg):
     chat_id = msg.chat.id
@@ -104,7 +104,7 @@ async def brah2(_, msg):
     await msg.reply("**😕ᴠɪᴅᴇᴏ ᴄʜᴀᴛ ᴇɴᴅᴇᴅ💔**")
     await VIP.st_stream(chat_id)
     await set_loop(chat_id, 0)
-
+"""
 @app.on_message(filters.video_chat_members_invited)
 async def brah3(app: app, message: Message):
     text = f"➻ {message.from_user.mention}\n\n**๏ ɪɴᴠɪᴛɪɴɢ ɪɴ ᴠᴄ ᴛᴏ :**\n\n**➻ **"
