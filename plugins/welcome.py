@@ -124,7 +124,7 @@ async def auto_state(_, message):
         )
 
 
-from PIL import Image, ImageDraw, ImageEnhance, ImageFont, ImageChops
+
 
 def circle(pfp, size=(80, 80), brightness_factor=10):
     pfp = pfp.resize(size, Image.Resampling.LANCZOS).convert("RGBA")
@@ -138,21 +138,20 @@ def circle(pfp, size=(80, 80), brightness_factor=10):
     pfp.putalpha(mask)
     
     # Adding tricolour border
-    border_size = 10  # Adjust this to control the thickness of the tricolour border
+    border_size = 10
     outline = Image.new("RGBA", (pfp.size[0] + 2*border_size, pfp.size[1] + 2*border_size), (0, 0, 0, 0))
     outline_draw = ImageDraw.Draw(outline)
     
-    # Colors for the tricolour (saffron, white, green)
-    saffron = (255, 153, 51, 255)
+    # Define colors
+    bagni = (255, 184, 77, 255)
     white = (255, 255, 255, 255)
     green = (19, 136, 8, 255)
-    
+
     # Draw tricolour circles
-    outline_draw.ellipse((0, 0, outline.size[0], outline.size[1]), outline=saffron, width=border_size)
+    outline_draw.ellipse((0, 0, outline.size[0], outline.size[1]), outline=bagni, width=border_size)
     outline_draw.ellipse((border_size//2, border_size//2, outline.size[0] - border_size//2, outline.size[1] - border_size//2), outline=white, width=border_size)
     outline_draw.ellipse((border_size, border_size, outline.size[0] - border_size, outline.size[1] - border_size), outline=green, width=border_size)
 
-    # Paste the pfp image in the center of the outlined border
     outline.paste(pfp, (border_size, border_size), pfp)
     
     return outline
