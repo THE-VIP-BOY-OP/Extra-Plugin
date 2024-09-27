@@ -29,8 +29,9 @@ def convert_to_small_caps(text):
     # Mapping for regular letters to small caps
     mapping = str.maketrans(
         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
-        "ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘϙʀꜱᴛᴜᴠᴡxʏᴢABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        "ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘϙʀꜱᴛᴜᴠᴡxʏᴢᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘϙʀꜱᴛᴜᴠᴡxʏᴢ",
     )
+    return text.translate(mapping)
 
 
 class WelDatabase:
@@ -134,13 +135,13 @@ def circle(pfp, size=(80, 80), brightness_factor=10):
     pfp.putalpha(mask)
     return pfp
 
-def welcomepic(user_id, user_name, chat_name, user_photo, chat_photo):
+def welcomepic(user_id, user_username, user_name, chat_name, user_photo, chat_photo):
     background = Image.open("assets/wel2.png")
     user_img = Image.open(user_photo).convert("RGBA")
     chat_img = Image.open(chat_photo).convert("RGBA")
     
-    user_img_circle = circle(user_img, size=(200, 200), brightness_factor=1.2)
-    chat_img_circle = circle(chat_img, size=(200, 200), brightness_factor=1.2)
+    user_img_circle = circle(user_img, size=(230, 230), brightness_factor=1.2)
+    chat_img_circle = circle(chat_img, size=(230, 230), brightness_factor=1.2)
     
     background.paste(chat_img_circle, (280, 260), chat_img_circle)
     background.paste(user_img_circle, (827, 260), user_img_circle)
@@ -148,10 +149,11 @@ def welcomepic(user_id, user_name, chat_name, user_photo, chat_photo):
     draw = ImageDraw.Draw(background)
     font = ImageFont.truetype("assets/font.ttf", size=30)
    
-    draw.text((400, 180), f"WELCOME IN NEW GROUP", fill="red", font=font)
-    
-    draw.text((500, 500), f"Username: {user_name}", fill="blue", font=font)
-    draw.text((500, 530), f"User Id: {user_id}", fill="blue", font=font)
+    draw.text((480, 180), f"WELCOME IN NEW GROUP", fill="red", font=font)
+
+    draw.text((480, 470), f"Name: {user_name}", fill="blue", font=font)
+    draw.text((480, 500), f"User Id: {user_id}", fill="blue", font=font)
+    draw.text((480, 530), f"Username: {user_username}", fill="blue", font=font)
     
     background.save(f"downloads/welcome#{user_id}.png")
     return f"downloads/welcome#{user_id}.png"
@@ -174,10 +176,14 @@ async def greet_new_members(_, member: ChatMemberUpdated):
             chat_name = "Anjan Group"
         
         if user.username:
-            user_name = f"@{user.username}"
+            user_username = f"@{user.username}"
         else:
-            user_name = "No Username"
-        
+            user_username = "No Username"
+
+        if user.first_name:
+            user_name = user.first_name
+        else:
+            user_name = "No Name"
         # Convert current UTC time to IST (Indian Standard Time)
         ist = timezone('Asia/Kolkata')
         joined_time = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S')
@@ -210,12 +216,12 @@ async def greet_new_members(_, member: ChatMemberUpdated):
             
             # Modified welcome text
             welcome_text = (
-                f"**๏ ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ** {chat_name}\n\n"
-                f"**ɴᴀᴍᴇ :** {user.first_name}\n"
-                f"**ᴜꜱᴇʀ ɪᴅ :** `{user_id}`\n"
-                f"**ᴜꜱᴇʀɴᴀᴍᴇ :** {user_name}\n"
-                f"**ᴍᴇɴᴛɪᴏɴ :** {user_mention}\n"
-                f"**ᴊᴏɪɴᴇᴅ ᴀᴛ :** {joined_time}"
+                f"**{convert_to_small_caps('ᴡᴇʟᴄᴍ ᴛᴏ')}** {convert_to_small_caps(chat_name)}\n\n"
+                f"**{convert_to_small_caps('ɴᴀᴍᴇ')} :** {convert_to_small_caps(user.first_name)}\n"
+                f"**{convert_to_small_caps('ᴜꜱᴇʀ ɪᴅ')} :** `{user_id}`\n"
+                f"**{convert_to_small_caps('ᴜꜱᴇʀɴᴀᴍᴇ')} :** [{convert_to_small_caps(user_name)}](tg://openmessage?user_id={user_id})\n"
+                f"**{convert_to_small_caps('ᴍᴇɴᴛɪᴏɴ')} :** [ᴏᴘᴇɴ ᴘʀᴏғɪʟᴇ](tg://openmessage?user_id={user_id})\n"
+                f"**{convert_to_small_caps('ᴊᴏɪɴᴇᴅ ᴀᴛ')} :** {convert_to_small_caps(joined_time)}"
             )
             await app.send_photo(chat_id, photo=welcomeimg, caption=welcome_text, reply_markup=reply_markup)
 
