@@ -203,7 +203,7 @@ async def greet_new_members(_, member: ChatMemberUpdated):
             except AttributeError:
                 chat_pic = "VIPMUSIC/assets/upic.png"
             
-            welcomeimg = welcomepic(user_id, user_name, chat_name, pic, chat_pic)
+            welcomeimg = welcomepic(user_id, user_username, user_name, chat_name, user_photo, chat_photo)
             reply_markup = InlineKeyboardMarkup(
                 [[InlineKeyboardButton(f"✪ ᴛᴀᴘ ᴛᴏ ᴄʟᴏsᴇ ✪", url=f"https://t.me/ok_win_predictions")]]
             )
