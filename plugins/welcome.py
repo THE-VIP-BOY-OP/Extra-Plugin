@@ -18,13 +18,6 @@ user_command_count = {}
 SPAM_THRESHOLD = 2
 SPAM_WINDOW_SECONDS = 5
 
-random_photo = [
-    "https://telegra.ph/file/1949480f01355b4e87d26.jpg",
-    "https://telegra.ph/file/3ef2cc0ad2bc548bafb30.jpg",
-    "https://telegra.ph/file/a7d663cd2de689b811729.jpg",
-    "https://telegra.ph/file/6f19dc23847f5b005e922.jpg",
-    "https://telegra.ph/file/2973150dd62fd27a3a6ba.jpg",
-]
 # --------------------------------------------------------------------------------- #
 
 
@@ -90,39 +83,8 @@ def welcomepic(user_id, chat_username, user_photo, chat_photo):
     draw.text((1000, 1000), f"ID: {user_id}", fill="black", font=font)  
     draw.text((1200, 1200), f"Welcome In {chat_username}!", fill="black", font=font)  
     
-    background.save(f"downloads/welcome#{id}.png")
-    return f"downloads/welcome#{id}.png"
-
-
-"""
-def circle(pfp, size=(500, 500), brightness_factor=10):
-    pfp = pfp.resize(size, Image.ANTIALIAS).convert("RGBA")
-    pfp = ImageEnhance.Brightness(pfp).enhance(brightness_factor)
-    bigsize = (pfp.size[0] * 3, pfp.size[1] * 3)
-    mask = Image.new("L", bigsize, 0)
-    draw = ImageDraw.Draw(mask)
-    draw.ellipse((0, 0) + bigsize, fill=255)
-    mask = mask.resize(pfp.size, Image.ANTIALIAS)
-    mask = ImageChops.darker(mask, pfp.split()[-1])
-    pfp.putalpha(mask)
-    return pfp
-
-
-def welcomepic(pic, user, chatname, id, uname, brightness_factor=1.3):
-    background = Image.open("VIPMUSIC/assets/wel2.png")
-    pfp = Image.open(pic).convert("RGBA")
-    pfp = circle(pfp, brightness_factor=brightness_factor)
-    pfp = pfp.resize((825, 824))
-    draw = ImageDraw.Draw(background)
-    font = ImageFont.truetype("VIPMUSIC/assets/font.ttf", size=110)
-    welcome_font = ImageFont.truetype("VIPMUSIC/assets/font.ttf", size=60)
-    draw.text((2100, 1420), f"ID: {id}", fill=(12000, 12000, 12000), font=font)
-    pfp_position = (1990, 435)
-    background.paste(pfp, pfp_position, pfp)
-    background.save(f"downloads/welcome#{id}.png")
-    return f"downloads/welcome#{id}.png"
-
-"""
+    background.save(f"downloads/welcome#{user_id}.png")
+    return f"downloads/welcome#{user_id}.png"
 
 
 @app.on_message(filters.command("welcome") & ~filters.private)
