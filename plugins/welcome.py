@@ -135,11 +135,11 @@ def welcomepic(user_id, chat_username, user_photo, chat_photo):
     user_img = Image.open(user_photo).convert("RGBA")
     chat_img = Image.open(chat_photo).convert("RGBA")
     
-    user_img_circle = circle(user_img, size=(200, 200), brightness_factor=1.2)
-    chat_img_circle = circle(chat_img, size=(200, 200), brightness_factor=1.2)
+    user_img_circle = circle(user_img, size=(300, 300), brightness_factor=1.2)
+    chat_img_circle = circle(chat_img, size=(300, 300), brightness_factor=1.2)
     
-    background.paste(chat_img_circle, (150, 150), chat_img_circle)
-    background.paste(user_img_circle, (800, 300), user_img_circle)
+    background.paste(chat_img_circle, (200, 150), chat_img_circle)
+    background.paste(user_img_circle, (900, 400), user_img_circle)
     
     draw = ImageDraw.Draw(background)
     font = ImageFont.truetype("assets/font.ttf", size=45)
