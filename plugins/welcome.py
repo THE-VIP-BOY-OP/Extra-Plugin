@@ -149,9 +149,9 @@ def welcomepic(user_id, user_username, user_name, chat_name, user_photo, chat_ph
     draw = ImageDraw.Draw(background)
     font = ImageFont.truetype("assets/font.ttf", size=30)
   
-    draw.text((480, 470), f"Name: {user_name}", fill="blue", font=font)
-    draw.text((480, 500), f"User Id: {user_id}", fill="blue", font=font)
-    draw.text((480, 530), f"Username: {user_username}", fill="blue", font=font)
+    draw.text((480, 470), f"Name: {user_name}", fill=saffron, font=font)
+    draw.text((480, 500), f"User Id: {user_id}", fill=white, font=font)
+    draw.text((480, 530), f"Username: {user_username}", fill=green, font=font)
     
     background.save(f"downloads/welcome#{user_id}.png")
     return f"downloads/welcome#{user_id}.png"
