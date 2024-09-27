@@ -144,7 +144,7 @@ def welcomepic(user_id, chat_username, user_photo, chat_photo):
     draw = ImageDraw.Draw(background)
     font = ImageFont.truetype("assets/font.ttf", size=45)
    
-    draw.text((205, 90), f"Welcome In {chat_username}", fill="red", font=font)
+    draw.text((400, 90), f"WELCOME TO MY GROUP\n\n{chat_username}", fill="red", font=font)
     draw.text((400, 580), f"ID: {user_id}", fill="blue", font=font)
     
     background.save(f"downloads/welcome#{user_id}.png")
