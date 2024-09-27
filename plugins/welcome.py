@@ -51,41 +51,6 @@ class temp:
     U_NAME = None
     B_NAME = None
 
-from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageChops
-"""
-def circle(pfp, size=(500, 500), brightness_factor=10):
-    pfp = pfp.resize(size, Image.ANTIALIAS).convert("RGBA")
-    pfp = ImageEnhance.Brightness(pfp).enhance(brightness_factor)
-    bigsize = (pfp.size[0] * 3, pfp.size[1] * 3)
-    mask = Image.new("L", bigsize, 0)
-    draw = ImageDraw.Draw(mask)
-    draw.ellipse((0, 0) + bigsize, fill=255)
-    mask = mask.resize(pfp.size, Image.ANTIALIAS)
-    mask = ImageChops.darker(mask, pfp.split()[-1])
-    pfp.putalpha(mask)
-    return pfp
-
-def welcomepic(user_id, chat_username, user_photo, chat_photo):
-    
-    background = Image.open("assets/wel2.png")  
-    user_img = Image.open(user_photo).convert("RGBA")
-    chat_img = Image.open(chat_photo).convert("RGBA")
-    
-    user_img_circle = circle(user_img, size=(500, 500), brightness_factor=1.2)
-    chat_img_circle = circle(chat_img, size=(500, 500), brightness_factor=1.2)
-    
-    background.paste(user_img_circle, (800, 400), user_img_circle)  
-    background.paste(chat_img_circle, (100, 400), chat_img_circle)  
-    
-    draw = ImageDraw.Draw(background)
-    font = ImageFont.truetype("assets/font.ttf", size=45)
-    
-    draw.text((1000, 1000), f"ID: {user_id}", fill="black", font=font)  
-    draw.text((1200, 1200), f"Welcome In {chat_username}!", fill="black", font=font)  
-    
-    background.save(f"downloads/welcome#{user_id}.png")
-    return f"downloads/welcome#{user_id}.png"
-"""
 
 @app.on_message(filters.command("welcome") & ~filters.private)
 async def auto_state(_, message):
@@ -173,7 +138,7 @@ def welcomepic(user_id, chat_username, user_photo, chat_photo):
     user_img_circle = circle(user_img, size=(500, 500), brightness_factor=1.2)
     chat_img_circle = circle(chat_img, size=(500, 500), brightness_factor=1.2)
     
-    background.paste(user_img_circle, (800, 400), user_img_circle)
+    background.paste(user_img_circle, (400, 200), user_img_circle)
     background.paste(chat_img_circle, (100, 400), chat_img_circle)
     
     draw = ImageDraw.Draw(background)
