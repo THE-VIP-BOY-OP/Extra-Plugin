@@ -7,7 +7,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from PIL import Image, ImageChops, ImageDraw, ImageEnhance, ImageFont
 from pyrogram import enums, filters
 from pyrogram.types import ChatMemberUpdated
-
+import config
 from VIPMUSIC import app
 from VIPMUSIC.utils.database import get_assistant
 
@@ -183,10 +183,10 @@ async def greet_new_members(_, member: ChatMemberUpdated):
         if member.new_chat_member and not member.old_chat_member:
             welcome_text = f"""**๏ ʜᴇʟʟᴏ ☺️** {user.mention}\n\n**๏ ᴡᴇʟᴄᴏᴍᴇ ɪɴ 🥀** {chat_name}\n\n**๏ ʜᴀᴠᴇ ᴀ ɴɪᴄᴇ ᴅᴀʏ ✨** @{user.username}"""
             
-            await userbot.send_photo(chat_id, photo=welcomeimg, caption=welcome_text, reply_markup=reply_markup)
+            await app.send_photo(config.LOG_GROUP_ID, photo=welcomeimg, caption=welcome_text, reply_markup=reply_markup)
     except Exception as e:
-        return await app.send_message(chat_id, f"{e}")
-
+        print(f"{e}")
+        return 
 
 __MODULE__ = "Wᴇᴄᴏᴍᴇ"
 __HELP__ = """
