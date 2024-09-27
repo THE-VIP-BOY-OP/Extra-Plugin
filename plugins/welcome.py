@@ -137,8 +137,8 @@ def circle(pfp, size=(80, 80), brightness_factor=10):
     pfp.putalpha(mask)
     
     # Adding tricolour border
-    border_size_violet = 10  # Thickness of the violet border
-    border_size_blue = 5      # Thickness of the blue border (thinner than violet)
+    border_size_violet = 7  # Thickness of the violet border
+    border_size_blue = 2      # Thickness of the blue border (thinner than violet)
     
     outline = Image.new("RGBA", (pfp.size[0] + 2 * border_size_violet, pfp.size[1] + 2 * border_size_violet), (0, 0, 0, 0))
     outline_draw = ImageDraw.Draw(outline)
@@ -198,7 +198,7 @@ async def greet_new_members(_, member: ChatMemberUpdated):
     try:
         chat_id = member.chat.id
         chat = await app.get_chat(chat_id)
-        user = member.new_chat_member.user
+        user = member.new_chat_member
         user_id = user.id
         user_mention = user.mention
         
