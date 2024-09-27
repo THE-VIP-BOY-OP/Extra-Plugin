@@ -118,7 +118,7 @@ from pyrogram.types import ChatMemberUpdated, InlineKeyboardMarkup, InlineKeyboa
 
 # Other necessary imports...
 
-def circle(pfp, size=(100, 100), brightness_factor=10):
+def circle(pfp, size=(80, 80), brightness_factor=10):
     pfp = pfp.resize(size, Image.Resampling.LANCZOS).convert("RGBA")
     pfp = ImageEnhance.Brightness(pfp).enhance(brightness_factor)
     bigsize = (pfp.size[0] * 3, pfp.size[1] * 3)
@@ -139,13 +139,13 @@ def welcomepic(user_id, chat_username, user_photo, chat_photo):
     chat_img_circle = circle(chat_img, size=(250, 250), brightness_factor=1.2)
     
     background.paste(chat_img_circle, (212, 120), chat_img_circle)
-    background.paste(user_img_circle, (822, 347), user_img_circle)
+    background.paste(user_img_circle, (827, 350), user_img_circle)
     
     draw = ImageDraw.Draw(background)
     font = ImageFont.truetype("assets/font.ttf", size=45)
-    
-    draw.text((200, 500), f"ID: {user_id}", fill="black", font=font)
-    draw.text((800, 50), f"Welcome In {chat_username}!", fill="black", font=font)
+   
+    draw.text((205, 60), f"Welcome In {chat_username}!", fill="black", font=font)
+    draw.text((300, 700), f"ID: {user_id}", fill="black", font=font)
     
     background.save(f"downloads/welcome#{user_id}.png")
     return f"downloads/welcome#{user_id}.png"
