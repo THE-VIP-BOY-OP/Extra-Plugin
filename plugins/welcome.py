@@ -148,9 +148,7 @@ def welcomepic(user_id, user_username, user_name, chat_name, user_photo, chat_ph
     
     draw = ImageDraw.Draw(background)
     font = ImageFont.truetype("assets/font.ttf", size=30)
-   
-    draw.text((480, 180), f"WELCOME IN NEW GROUP", fill="red", font=font)
-
+  
     draw.text((480, 470), f"Name: {user_name}", fill="blue", font=font)
     draw.text((480, 500), f"User Id: {user_id}", fill="blue", font=font)
     draw.text((480, 530), f"Username: {user_username}", fill="blue", font=font)
@@ -219,7 +217,7 @@ async def greet_new_members(_, member: ChatMemberUpdated):
                 f"**{convert_to_small_caps('ᴡᴇʟᴄᴍ ᴛᴏ')}** {convert_to_small_caps(chat_name)}\n\n"
                 f"**{convert_to_small_caps('ɴᴀᴍᴇ')} :** {convert_to_small_caps(user.first_name)}\n"
                 f"**{convert_to_small_caps('ᴜꜱᴇʀ ɪᴅ')} :** `{user_id}`\n"
-                f"**{convert_to_small_caps('ᴜꜱᴇʀɴᴀᴍᴇ')} :** [{convert_to_small_caps(user_name)}](tg://openmessage?user_id={user_id})\n"
+                f"**{convert_to_small_caps('ᴜꜱᴇʀɴᴀᴍᴇ')} :** [@{convert_to_small_caps(user_name)}](tg://openmessage?user_id={user_id})\n"
                 f"**{convert_to_small_caps('ᴍᴇɴᴛɪᴏɴ')} :** [ᴏᴘᴇɴ ᴘʀᴏғɪʟᴇ](tg://openmessage?user_id={user_id})\n"
                 f"**{convert_to_small_caps('ᴊᴏɪɴᴇᴅ ᴀᴛ')} :** {convert_to_small_caps(joined_time)}"
             )
