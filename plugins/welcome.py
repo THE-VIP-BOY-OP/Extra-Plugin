@@ -129,8 +129,8 @@ def circle(pfp, size=(80, 80), brightness_factor=10):
     mask = ImageChops.darker(mask, pfp.split()[-1])
     pfp.putalpha(mask)
     return pfp
-"""
-def welcomepic(user_id, chat_name, user_photo, chat_photo):
+
+def welcomepic(user_id, user_name, chat_name, user_photo, chat_photo):
     background = Image.open("assets/wel2.png")
     user_img = Image.open(user_photo).convert("RGBA")
     chat_img = Image.open(chat_photo).convert("RGBA")
@@ -142,11 +142,12 @@ def welcomepic(user_id, chat_name, user_photo, chat_photo):
     background.paste(user_img_circle, (827, 260), user_img_circle)
     
     draw = ImageDraw.Draw(background)
-    font = ImageFont.truetype("assets/font.ttf", size=45)
+    font = ImageFont.truetype("assets/font.ttf", size=30)
    
     draw.text((350, 100), f"WELCOME IN NEW GROUP", fill="red", font=font)
-    draw.text((350, 200), f"Chat: {chat_name}", fill="black", font=font)
-    draw.text((420, 570), f"Id:: {user_id}", fill="blue", font=font)
+    
+    draw.text((500, 500), f"Name: {chat_name}", fill="blue", font=font)
+    draw.text((500, 5300), f"Id: {user_id}", fill="blue", font=font)
     
     background.save(f"downloads/welcome#{user_id}.png")
     return f"downloads/welcome#{user_id}.png"
@@ -197,7 +198,7 @@ def welcomepic(user_id, chat_name, user_photo, chat_photo):
     
     background.save(f"downloads/welcome#{user_id}.png")
     return f"downloads/welcome#{user_id}.png"
-
+"""
 # Example call
 
 
@@ -239,7 +240,7 @@ async def greet_new_members(_, member: ChatMemberUpdated):
             except AttributeError:
                 chat_pic = "VIPMUSIC/assets/upic.png"
             
-            welcomeimg = welcomepic(user_id, chat_name, pic, chat_pic)
+            welcomeimg = welcomepic(user_id, user_name, chat_name, pic, chat_pic)
             reply_markup = InlineKeyboardMarkup(
                 [[InlineKeyboardButton(f"✪ ᴛᴀᴘ ᴛᴏ ᴄʟᴏsᴇ ✪", url=f"https://t.me/ok_win_predictions")]]
             )
