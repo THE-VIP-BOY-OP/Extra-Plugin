@@ -153,27 +153,37 @@ async def greet_new_members(_, member: ChatMemberUpdated):
     try:
         user_id = member.user.id
         chat_id = member.chat.id
-        chat_name = (await app.get_chat(chat_id)).title  # Fetch the chat name correctly
-        chat_username = f"@{message.chat.username}" if message.chat.username else "New Group"
-        user_photo = await app.download_media(member.user.id.photo.big_file_id)
-        chat_photo = await app.download_media(member.chat.photo.big_file_id)
-        count = await app.get_chat_members_count(chat_id)
-        welcomeimg = welcomepic(user_id, chat_username, user_photo, chat_photo)
-        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(f"✪ ᴛᴀᴘ ᴛᴏ ᴄʟᴏsᴇ ✪", url=f"https://t.me/ok_win_predictions")]])
+        chat_name = (await app.get_chat(chat_id)).title
         
+        # Fetch user and chat photos
+        user_photos = await app.get_user_profile_photos(user_id)
+        if user_photos.total_count > 0:
+            user_photo = await app.download_media(user_photos.photos[0][-1].file_id)
+        else:
+            user_photo = "https://envs.sh/SAM.jpg"
+        
+        chat_photo = (await app.get_chat(chat_id)).photo
+        if chat_photo:
+            chat_photo = await app.download_media(chat_photo.big_file_id)
+        else:
+            chat_photo = "https://envs.sh/SAM.jpg"
+        
+        welcomeimg = welcomepic(user_id, chat_name, user_photo, chat_photo)
+        reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(f"✪ ᴛᴀᴘ ᴛᴏ ᴄʟᴏsᴇ ✪", url=f"https://t.me/ok_win_predictions")]])
+
+        # Check if welcome messages are enabled
         A = await wlcm.find_one(chat_id)
         if A:
             return
-
-        user = (member.new_chat_member.user if member.new_chat_member else member.from_user)
+        
         if member.new_chat_member and not member.old_chat_member:
-            welcome_text = f"""**๏ ʜᴇʟʟᴏ ☺️** {user.mention}\n\n**๏ ᴡᴇʟᴄᴏᴍᴇ ɪɴ 🥀** {chat_name}\n\n**๏ ʜᴀᴠᴇ ᴀ ɴɪᴄᴇ ᴅᴀʏ ✨** @{user.username}"""
-     
-            await app.send_photo(member.chat.id, photo=welcomeimg, caption=welcome_text, reply_markup=reply_markup)
-    
+            user = member.new_chat_member.user
+            welcome_text = f"""**๏ ʜᴇʟʟᴏ ☺️** {user.mention}\n\n**๏ ᴡᴇʟᴄᴏᴍᴇ ɪɴ 🥀** {chat_name}\n\n**๏ ʜᴀᴠᴇ ᴀ ɴɪᴄᴇ ᴅᴀʏ ✨** @{user.username if user.username else ''}"""
+            await app.send_photo(chat_id, photo=welcomeimg, caption=welcome_text, reply_markup=reply_markup)
     except Exception as e:
-        print(e)
-        return 
+        LOGGER.exception("Error in greeting new members")
+        return
+
 
 __MODULE__ = "Wᴇᴄᴏᴍᴇ"
 __HELP__ = """
