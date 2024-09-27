@@ -203,9 +203,9 @@ async def greet_new_members(_, member: ChatMemberUpdated):
                 if users_photo:
                     user_photo = users_photo
                 else:
-                    user_photo = "VIPMUSIC/assets/nodp.png"
+                    user_photo = "assets/nodp.png"
             except AttributeError:
-                user_photo = "VIPMUSIC/assets/nodp.png"
+                user_photo = "assets/nodp.png"
                 
             try:
                 groups_photo = await app.download_media(
@@ -214,9 +214,9 @@ async def greet_new_members(_, member: ChatMemberUpdated):
                 if groups_photo:
                     chat_photo = groups_photo
                 else:
-                    chat_photo = "VIPMUSIC/assets/nodp.png"
+                    chat_photo = "assets/nodp.png"
             except AttributeError:
-                chat_photo = "VIPMUSIC/assets/nodp.png"
+                chat_photo = "assets/nodp.png"
             
             welcomeimg = welcomepic(user_id, user_username, user_names, chat_name, user_photo, chat_photo)
             reply_markup = InlineKeyboardMarkup(
