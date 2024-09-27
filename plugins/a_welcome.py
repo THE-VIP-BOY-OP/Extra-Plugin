@@ -210,6 +210,7 @@ async def greet_new_members(_, member: ChatMemberUpdated):
             await asyncio.sleep(3)
             await userbot.send_photo(chat_id=chat_id, photo=welcomeimg, caption=welcome_text)
     except Exception as e:
+        print(f"{e}")
         return
 
 
