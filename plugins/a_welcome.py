@@ -57,42 +57,7 @@ class temp:
     U_NAME = None
     B_NAME = None
 
-from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageChops
 
-def circle(pfp, size=(500, 500), brightness_factor=10):
-    pfp = pfp.resize(size, Image.ANTIALIAS).convert("RGBA")
-    pfp = ImageEnhance.Brightness(pfp).enhance(brightness_factor)
-    bigsize = (pfp.size[0] * 3, pfp.size[1] * 3)
-    mask = Image.new("L", bigsize, 0)
-    draw = ImageDraw.Draw(mask)
-    draw.ellipse((0, 0) + bigsize, fill=255)
-    mask = mask.resize(pfp.size, Image.ANTIALIAS)
-    mask = ImageChops.darker(mask, pfp.split()[-1])
-    pfp.putalpha(mask)
-    return pfp
-
-def welcomepic(user_id, chat_username, user_photo, chat_photo):
-    
-    background = Image.open("assets/wel2.png")  
-    user_img = Image.open(user_photo).convert("RGBA")
-    chat_img = Image.open(chat_photo).convert("RGBA")
-    
-    user_img_circle = circle(user_img, size=(500, 500), brightness_factor=1.2)
-    chat_img_circle = circle(chat_img, size=(500, 500), brightness_factor=1.2)
-    
-    background.paste(user_img_circle, (800, 400), user_img_circle)  
-    background.paste(chat_img_circle, (100, 400), chat_img_circle)  
-    
-    draw = ImageDraw.Draw(background)
-    font = ImageFont.truetype("assets/font.ttf", size=45)
-    
-    draw.text((1000, 1000), f"ID: {user_id}", fill="black", font=font)  
-    draw.text((1200, 1200), f"Welcome In {chat_username}!", fill="black", font=font)  
-    
-    background.save(f"downloads/welcome#{user_id}.png")
-    return f"downloads/welcome#{user_id}.png"
-    
-"""
 def circle(pfp, size=(500, 500), brightness_factor=10):
     pfp = pfp.resize(size, Image.ANTIALIAS).convert("RGBA")
     pfp = ImageEnhance.Brightness(pfp).enhance(brightness_factor)
@@ -120,7 +85,7 @@ def welcomepic(pic, user, chatname, id, uname, brightness_factor=1.3):
     background.save(f"downloads/welcome#{id}.png")
     return f"downloads/welcome#{id}.png"
 
-"""
+
 @app.on_message(filters.command("awelcome") & ~filters.private)
 async def auto_state(_, message):
     user_id = message.from_user.id
@@ -185,17 +150,10 @@ async def auto_state(_, message):
 @app.on_chat_member_updated(filters.group, group=5)
 async def greet_new_members(_, member: ChatMemberUpdated):
     try:
-        user_id = member.user.id
         chat_id = member.chat.id
         chat_name = (await app.get_chat(chat_id)).title  # Fetch the chat name correctly
-        chat_username = f"@{message.chat.username}" if message.chat.username else "New Group"
-        user_photo = await app.download_media(member.user.id.photo.big_file_id)
-        chat_photo = await app.download_media(member.chat.photo.big_file_id)
-        count = await app.get_chat_members_count(chat_id)
-        welcomeimg = welcomepic(user_id, chat_username, user_photo, chat_photo)
-# Fetch the chat name correctly
         userbot = await get_assistant(chat_id)
-        
+        count = await app.get_chat_members_count(chat_id)
         A = await wlcm.find_one(chat_id)
         if A:
             return
@@ -208,9 +166,8 @@ async def greet_new_members(_, member: ChatMemberUpdated):
         if member.new_chat_member and not member.old_chat_member:
             welcome_text = f"""**๏ ʜᴇʟʟᴏ ☺️** {user.mention}\n\n**๏ ᴡᴇʟᴄᴏᴍᴇ ɪɴ 🥀** {chat_name}\n\n**๏ ʜᴀᴠᴇ ᴀ ɴɪᴄᴇ ᴅᴀʏ ✨** @{user.username}"""
             await asyncio.sleep(3)
-            await userbot.send_photo(chat_id=chat_id, photo=welcomeimg, caption=welcome_text)
+            await userbot.send_message(chat_id, text=welcome_text)
     except Exception as e:
-        print(f"{e}")
         return
 
 
@@ -249,5 +206,4 @@ Aᴜᴛᴏᴍᴀᴛɪᴄᴀʏ sᴇɴᴅs ᴀ ᴡᴇᴄᴏᴍᴇ ᴍᴇssᴀɢᴇ
 Iғ ᴀ ᴜsᴇʀ sᴇɴᴅs ᴍᴜᴛɪᴘᴇ ᴄᴏᴍᴍᴀɴᴅs ǫᴜɪᴄᴋʏ:
 Tʜᴇʏ ᴡɪ ʀᴇᴄᴇɪᴠᴇ ᴀ sᴘᴀᴍ ᴡᴀʀɴɪɴɢ.
 """
-
 
