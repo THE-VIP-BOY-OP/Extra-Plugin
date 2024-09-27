@@ -141,7 +141,7 @@ def welcomepic(user_id, user_name, chat_name, user_photo, chat_photo):
     draw = ImageDraw.Draw(background)
     font = ImageFont.truetype("assets/font.ttf", size=30)
    
-    draw.text((400, 1800), f"WELCOME IN NEW GROUP", fill="red", font=font)
+    draw.text((400, 180), f"WELCOME IN NEW GROUP", fill="red", font=font)
     
     draw.text((500, 500), f"Username: {user_name}", fill="blue", font=font)
     draw.text((500, 530), f"User Id: {user_id}", fill="blue", font=font)
