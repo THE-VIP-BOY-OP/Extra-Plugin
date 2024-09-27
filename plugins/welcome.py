@@ -125,7 +125,6 @@ async def auto_state(_, message):
 
 
 
-
 def circle(pfp, size=(80, 80), brightness_factor=10):
     pfp = pfp.resize(size, Image.Resampling.LANCZOS).convert("RGBA")
     pfp = ImageEnhance.Brightness(pfp).enhance(brightness_factor)
@@ -138,21 +137,33 @@ def circle(pfp, size=(80, 80), brightness_factor=10):
     pfp.putalpha(mask)
     
     # Adding tricolour border
-    border_size = 10
-    outline = Image.new("RGBA", (pfp.size[0] + 2*border_size, pfp.size[1] + 2*border_size), (0, 0, 0, 0))
+    border_size_violet = 10  # Thickness of the violet border
+    border_size_blue = 5      # Thickness of the blue border (thinner than violet)
+    
+    outline = Image.new("RGBA", (pfp.size[0] + 2 * border_size_violet, pfp.size[1] + 2 * border_size_violet), (0, 0, 0, 0))
     outline_draw = ImageDraw.Draw(outline)
     
     # Define colors
-    bagni = (255, 184, 77, 255)
-    white = (255, 255, 255, 255)
-    green = (19, 136, 8, 255)
+    violet = (148, 0, 211, 255)  # Violet color
+    blue = (0, 0, 255, 255)      # Blue color
+    green = (19, 136, 8, 255)    # Green color
 
-    # Draw tricolour circles
-    outline_draw.ellipse((0, 0, outline.size[0], outline.size[1]), outline=bagni, width=border_size)
-    outline_draw.ellipse((border_size//2, border_size//2, outline.size[0] - border_size//2, outline.size[1] - border_size//2), outline=white, width=border_size)
-    outline_draw.ellipse((border_size, border_size, outline.size[0] - border_size, outline.size[1] - border_size), outline=green, width=border_size)
+    # Draw violet circle
+    outline_draw.ellipse((0, 0, outline.size[0], outline.size[1]), outline=violet, width=border_size_violet)
 
-    outline.paste(pfp, (border_size, border_size), pfp)
+    # Draw blue circle (thinner than violet)
+    outline_draw.ellipse((border_size_violet - border_size_blue, border_size_violet - border_size_blue,
+                          outline.size[0] - (border_size_violet - border_size_blue),
+                          outline.size[1] - (border_size_violet - border_size_blue)), 
+                          outline=blue, width=border_size_blue)
+
+    # Draw green circle
+    outline_draw.ellipse((border_size_violet, border_size_violet,
+                          outline.size[0] - border_size_violet,
+                          outline.size[1] - border_size_violet), 
+                          outline=green, width=border_size_violet)
+
+    outline.paste(pfp, (border_size_violet, border_size_violet), pfp)
     
     return outline
 
@@ -170,6 +181,7 @@ def welcomepic(user_id, user_username, user_names, chat_name, user_photo, chat_p
     draw = ImageDraw.Draw(background)
     font = ImageFont.truetype("assets/font.ttf", size=32)
 
+    # Text colors
     saffron = (255, 153, 51)  
     white = (255, 255, 255)   
     green = (19, 136, 8)
@@ -180,7 +192,6 @@ def welcomepic(user_id, user_username, user_names, chat_name, user_photo, chat_p
     
     background.save(f"downloads/welcome#{user_id}.png")
     return f"downloads/welcome#{user_id}.png"
-
 
 @app.on_chat_member_updated(filters.group, group=-4)
 async def greet_new_members(_, member: ChatMemberUpdated):
