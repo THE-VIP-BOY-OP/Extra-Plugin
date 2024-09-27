@@ -190,18 +190,18 @@ async def greet_new_members(_, member: ChatMemberUpdated):
 
         if member.new_chat_member and not member.old_chat_member:
             try:
-                pic = await app.download_media(
+                user_photo = await app.download_media(
                     user.photo.big_file_id, file_name=f"pp{user.id}.png"
                 )
             except AttributeError:
-                pic = "VIPMUSIC/assets/upic.png"
+                user_photo = "VIPMUSIC/assets/upic.png"
             
             try:
-                chat_pic = await app.download_media(
+                chat_photo = await app.download_media(
                     member.chat.photo.big_file_id, file_name=f"chatpp{chat_id}.png"
                 )
             except AttributeError:
-                chat_pic = "VIPMUSIC/assets/upic.png"
+                chat_photo = "VIPMUSIC/assets/upic.png"
             
             welcomeimg = welcomepic(user_id, user_username, user_name, chat_name, user_photo, chat_photo)
             reply_markup = InlineKeyboardMarkup(
