@@ -198,7 +198,7 @@ async def greet_new_members(_, member: ChatMemberUpdated):
     try:
         chat_id = member.chat.id
         chat = await app.get_chat(chat_id)
-        user = member.new_chat_member
+        user = member.new_chat_member.user
         user_id = user.id
         user_mention = user.mention
         
@@ -271,7 +271,7 @@ async def greet_new_members(_, member: ChatMemberUpdated):
             await app.send_photo(chat_id, photo=welcomeimg, caption=welcome_text, reply_markup=reply_markup)
 
     except Exception as e:
-        LOGGER.exception(f"Error in greeting new members: {e}")
+        
         return
 
 
