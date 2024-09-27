@@ -156,7 +156,7 @@ async def greet_new_members(_, member: ChatMemberUpdated):
     try:
         chat_id = member.chat.id
         chat = await app.get_chat(chat_id)
-        chat_name = @{chat.username} if chat.username else chat.title
+        chat_name = f"@{chat.username}" if chat.username else chat.title
         if member.new_chat_member and not member.old_chat_member:
             user = member.new_chat_member.user
             user_id = user.id
