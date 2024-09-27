@@ -207,7 +207,7 @@ async def greet_new_members(_, member: ChatMemberUpdated):
             
             welcomeimg = welcomepic(user_id, user_username, user_name, chat_name, user_photo, chat_photo)
             reply_markup = InlineKeyboardMarkup(
-                [[InlineKeyboardButton(f"✪ ᴛᴀᴘ ᴛᴏ ᴄʟᴏsᴇ ✪", url=f"https://t.me/ok_win_predictions")]]
+                [[InlineKeyboardButton(f"{convert_to_small_caps('๏ add me in new group ๏')}", url=f"https://t.me/{app.username}?startgroup=True")]]
             )
 
             if (temp.MELCOW).get(f"welcome-{member.chat.id}") is not None:
