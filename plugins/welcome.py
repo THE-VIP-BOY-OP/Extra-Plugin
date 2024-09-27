@@ -141,8 +141,8 @@ def welcomepic(user_id, user_username, user_names, chat_name, user_photo, chat_p
     user_img = Image.open(user_photo).convert("RGBA")
     chat_img = Image.open(chat_photo).convert("RGBA")
     
-    chat_img_circle = circle(chat_img, size=(220, 220), brightness_factor=1.2)
-    user_img_circle = circle(user_img, size=(212, 212), brightness_factor=1.2)
+    chat_img_circle = circle(chat_img, size=(240, 240), brightness_factor=1.2)
+    user_img_circle = circle(user_img, size=(232, 232), brightness_factor=1.2)
     
     background.paste(chat_img_circle, (270, 260), chat_img_circle)
     background.paste(user_img_circle, (827, 260), user_img_circle)
@@ -154,9 +154,9 @@ def welcomepic(user_id, user_username, user_names, chat_name, user_photo, chat_p
     white = (255, 255, 255)   
     green = (19, 136, 8)
 
-    draw.text((500, 470), f"Name: {user_names}", fill=saffron, font=font)
-    draw.text((500, 500), f"User Id: {user_id}", fill=white, font=font)
-    draw.text((500, 530), f"Username: {user_username}", fill=green, font=font)
+    draw.text((500, 530), f"Name: {user_names}", fill=saffron, font=font)
+    draw.text((500, 560), f"User Id: {user_id}", fill=white, font=font)
+    draw.text((500, 590), f"Username: {user_username}", fill=green, font=font)
     
     background.save(f"downloads/welcome#{user_id}.png")
     return f"downloads/welcome#{user_id}.png"
