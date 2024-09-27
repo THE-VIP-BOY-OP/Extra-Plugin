@@ -52,7 +52,7 @@ class temp:
     B_NAME = None
 
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageChops
-
+"""
 def circle(pfp, size=(500, 500), brightness_factor=10):
     pfp = pfp.resize(size, Image.ANTIALIAS).convert("RGBA")
     pfp = ImageEnhance.Brightness(pfp).enhance(brightness_factor)
@@ -85,7 +85,7 @@ def welcomepic(user_id, chat_username, user_photo, chat_photo):
     
     background.save(f"downloads/welcome#{user_id}.png")
     return f"downloads/welcome#{user_id}.png"
-
+"""
 
 @app.on_message(filters.command("welcome") & ~filters.private)
 async def auto_state(_, message):
@@ -147,35 +147,84 @@ async def auto_state(_, message):
             "**sᴏʀʀʏ ᴏɴʟʏ ᴀᴅᴍɪɴs ᴄᴀɴ ᴇɴᴀʙʟᴇ ᴀssɪsᴛᴀɴᴛ ᴡᴇʟᴄᴏᴍᴇ ɴᴏᴛɪғɪᴄᴀᴛɪᴏɴ!**"
         )
 
+from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageChops
+from pyrogram import filters
+from pyrogram.types import ChatMemberUpdated, InlineKeyboardMarkup, InlineKeyboardButton
+
+
+def circle(pfp, size=(500, 500), brightness_factor=10):
+    pfp = pfp.resize(size, Image.Resampling.LANCZOS).convert("RGBA")
+    pfp = ImageEnhance.Brightness(pfp).enhance(brightness_factor)
+    bigsize = (pfp.size[0] * 3, pfp.size[1] * 3)
+    mask = Image.new("L", bigsize, 0)
+    draw = ImageDraw.Draw(mask)
+    draw.ellipse((0, 0) + bigsize, fill=255)
+    mask = mask.resize(pfp.size, Image.Resampling.LANCZOS)
+    mask = ImageChops.darker(mask, pfp.split()[-1])
+    pfp.putalpha(mask)
+    return pfp
+
+def welcomepic(user_id, chat_username, user_photo, chat_photo):
+    background = Image.open("assets/wel2.png")
+    user_img = Image.open(user_photo).convert("RGBA")
+    chat_img = Image.open(chat_photo).convert("RGBA")
+    
+    user_img_circle = circle(user_img, size=(500, 500), brightness_factor=1.2)
+    chat_img_circle = circle(chat_img, size=(500, 500), brightness_factor=1.2)
+    
+    background.paste(user_img_circle, (800, 400), user_img_circle)
+    background.paste(chat_img_circle, (100, 400), chat_img_circle)
+    
+    draw = ImageDraw.Draw(background)
+    font = ImageFont.truetype("assets/font.ttf", size=45)
+    
+    draw.text((1000, 1000), f"ID: {user_id}", fill="black", font=font)
+    draw.text((1200, 1200), f"Welcome In {chat_username}!", fill="black", font=font)
+    
+    background.save(f"downloads/welcome#{user_id}.png")
+    return f"downloads/welcome#{user_id}.png"
 
 @app.on_chat_member_updated(filters.group, group=-4)
 async def greet_new_members(_, member: ChatMemberUpdated):
     try:
-        # Get the chat information
         chat_id = member.chat.id
         chat_name = (await app.get_chat(chat_id)).title
         
-        # Handle new member joining event
         if member.new_chat_member and not member.old_chat_member:
             user = member.new_chat_member.user
             user_id = user.id
             user_mention = user.mention
-            user_photo = await app.download_media(user_id.photo.big_file_id)
-            chat_photo = await app.download_media(chat_id.photo.big_file_id)
+
+            # Get user profile photo
+            user_photos = await app.get_user_profile_photos(user_id)
+            if user_photos.photos:
+                user_photo = await app.download_media(user_photos.photos[0][-1].file_id)  # Largest available size
+            else:
+                user_photo = "assets/wel2.png"  # Placeholder for no profile picture
+            
+            # Get chat profile photo
+            chat_photo_data = await app.get_chat(chat_id)
+            if chat_photo_data.photo:
+                chat_photo = await app.download_media(chat_photo_data.photo.big_file_id)
+            else:
+                chat_photo = "assets/wel2.png"  # Placeholder for no chat picture
+            
             welcomeimg = welcomepic(user_id, chat_name, user_photo, chat_photo)
-            reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(f"✪ ᴛᴀᴘ ᴛᴏ ᴄʟᴏsᴇ ✪", url=f"https://t.me/ok_win_predictions")]])
+            reply_markup = InlineKeyboardMarkup(
+                [[InlineKeyboardButton(f"✪ ᴛᴀᴘ ᴛᴏ ᴄʟᴏsᴇ ✪", url=f"https://t.me/ok_win_predictions")]]
+            )
 
-            # Check if welcome messages are enabled
             A = await wlcm.find_one(chat_id)
-            if A:
-                return
-
-            # Prepare welcome text and send it
-            welcome_text = f"""**๏ ʜᴇʟʟᴏ ☺️** {user_mention}\n\n**๏ ᴡᴇʟᴄᴏᴍᴇ ɪɴ 🥀** {chat_name}\n\n**๏ ʜᴀᴠᴇ ᴀ ɴɪᴄᴇ ᴅᴀʏ ✨** @{user.username if user.username else ''}"""
-            await app.send_photo(chat_id, photo=welcomeimg, caption=welcome_text, reply_markup=reply_markup)
+            if not A:
+                welcome_text = (
+                    f"**๏ ʜᴇʟʟᴏ ☺️** {user_mention}\n\n"
+                    f"**๏ ᴡᴇʟᴄᴏᴍᴇ ɪɴ 🥀** {chat_name}\n\n"
+                    f"**๏ ʜᴀᴠᴇ ᴀ ɴɪᴄᴇ ᴅᴀʏ ✨** @{user.username if user.username else ''}"
+                )
+                await app.send_photo(chat_id, photo=welcomeimg, caption=welcome_text, reply_markup=reply_markup)
 
     except Exception as e:
-        LOGGER.exception("Error in greeting new members")
+        LOGGER.exception(f"Error in greeting new members: {e}")
         return
 
 __MODULE__ = "Wᴇᴄᴏᴍᴇ"
