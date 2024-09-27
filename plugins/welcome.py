@@ -136,28 +136,23 @@ def circle(pfp, size=(80, 80), brightness_factor=10):
     mask = ImageChops.darker(mask, pfp.split()[-1])
     pfp.putalpha(mask)
     
-    # Adding tricolour border
-    border_size_violet = 5  # Thickness of the violet border
-    border_size_blue = 1      # Thickness of the blue border (thinner than violet)
     
+    border_size_violet = 1 
+    border_size_blue = 4    
     outline = Image.new("RGBA", (pfp.size[0] + 2 * border_size_violet, pfp.size[1] + 2 * border_size_violet), (0, 0, 0, 0))
     outline_draw = ImageDraw.Draw(outline)
     
-    # Define colors
-    violet = (148, 0, 211, 255)  # Violet color
-    blue = (0, 0, 255, 255)      # Blue color
-    green = (19, 136, 8, 255)    # Green color
-
-    # Draw violet circle
+    violet = (148, 0, 211, 255)  
+    blue = (0, 0, 255, 255)      
+    green = (19, 136, 8, 255)    
+    
     outline_draw.ellipse((0, 0, outline.size[0], outline.size[1]), outline=violet, width=border_size_violet)
-
-    # Draw blue circle (thinner than violet)
     outline_draw.ellipse((border_size_violet - border_size_blue, border_size_violet - border_size_blue,
                           outline.size[0] - (border_size_violet - border_size_blue),
                           outline.size[1] - (border_size_violet - border_size_blue)), 
                           outline=blue, width=border_size_blue)
 
-    # Draw green circle
+    
     outline_draw.ellipse((border_size_violet, border_size_violet,
                           outline.size[0] - border_size_violet,
                           outline.size[1] - border_size_violet), 
@@ -181,7 +176,7 @@ def welcomepic(user_id, user_username, user_names, chat_name, user_photo, chat_p
     draw = ImageDraw.Draw(background)
     font = ImageFont.truetype("assets/font.ttf", size=32)
 
-    # Text colors
+  
     saffron = (255, 153, 51)  
     white = (255, 255, 255)   
     green = (19, 136, 8)
