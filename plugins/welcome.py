@@ -130,7 +130,7 @@ def circle(pfp, size=(80, 80), brightness_factor=10):
     pfp.putalpha(mask)
     return pfp
 
-def welcomepic(user_id, chat_username, user_photo, chat_photo):
+def welcomepic(user_id, chat_name, user_photo, chat_photo):
     background = Image.open("assets/wel2.png")
     user_img = Image.open(user_photo).convert("RGBA")
     chat_img = Image.open(chat_photo).convert("RGBA")
@@ -144,9 +144,9 @@ def welcomepic(user_id, chat_username, user_photo, chat_photo):
     draw = ImageDraw.Draw(background)
     font = ImageFont.truetype("assets/font.ttf", size=45)
    
-    draw.text((350, 100), f"ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ ɴᴇᴡ ɢʀᴏᴜᴘ", fill="red", font=font)
-    draw.text((350, 300), f"ᴄʜᴀᴛ: {chat_username}", fill="black", font=font)
-    draw.text((400, 580), f"ɪᴅ: {user_id}", fill="blue", font=font)
+    draw.text((350, 100), f"WELCOME IN NEW GROUP", fill="red", font=font)
+    draw.text((350, 200), f"Chat: {chat_name}", fill="black", font=font)
+    draw.text((420, 570), f"Id:: {user_id}", fill="blue", font=font)
     
     background.save(f"downloads/welcome#{user_id}.png")
     return f"downloads/welcome#{user_id}.png"
@@ -155,13 +155,12 @@ def welcomepic(user_id, chat_username, user_photo, chat_photo):
 async def greet_new_members(_, member: ChatMemberUpdated):
     try:
         chat_id = member.chat.id
-        chat_name = (await app.get_chat(chat_id)).title
-        
+        chat = await app.get_chat(chat_id)
+        chat_name = @{chat.username} if chat.username else chat.title
         if member.new_chat_member and not member.old_chat_member:
             user = member.new_chat_member.user
             user_id = user.id
             user_mention = user.mention
-            
             try:
                 pic = await app.download_media(
                     user.photo.big_file_id, file_name=f"pp{user.id}.png"
