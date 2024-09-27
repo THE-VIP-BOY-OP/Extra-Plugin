@@ -161,12 +161,10 @@ async def greet_new_members(_, member: ChatMemberUpdated):
         user_mention = user.mention
         
         # If chat title is in normal font, convert it to small caps; otherwise, keep the original title
-        if chat.title.islower():
+        if chat.title:
             chat_name = chat.title
         else:
-            chat_name = ''.join(
-                chr(ord(char) + 0x1D00) if char.isalpha() else char for char in chat.title
-            )
+            chat_name = "Anjan Group"
         
         if user.username:
             user_name = f"@{user.username}"
@@ -207,10 +205,10 @@ async def greet_new_members(_, member: ChatMemberUpdated):
             welcome_text = (
                 f"**๏ ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ** {chat_name}\n\n"
                 f"**ɴᴀᴍᴇ :** {user.first_name}\n"
-                f"**ᴜꜱᴇʀ ɪᴅ :** {user_id}\n"
+                f"**ᴜꜱᴇʀ ɪᴅ :** `{user_id}`\n"
                 f"**ᴜꜱᴇʀɴᴀᴍᴇ :** {user_name}\n"
                 f"**ᴍᴇɴᴛɪᴏɴ :** {user_mention}\n"
-                f"**ᴊᴏɪɴᴇᴅ ᴀᴛ :** {joined_time} (IST)"
+                f"**ᴊᴏɪɴᴇᴅ ᴀᴛ :** {joined_time}"
             )
             await app.send_photo(chat_id, photo=welcomeimg, caption=welcome_text, reply_markup=reply_markup)
 
