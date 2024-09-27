@@ -25,6 +25,13 @@ SPAM_WINDOW_SECONDS = 5
 
 LOGGER = getLogger(__name__)
 
+def convert_to_small_caps(text):
+    # Mapping for regular letters to small caps
+    mapping = str.maketrans(
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        "ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘϙʀꜱᴛᴜᴠᴡxʏᴢABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    )
+
 
 class WelDatabase:
     def __init__(self):
