@@ -1,7 +1,7 @@
 import random
-
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.errors import ChatAdminRequired
 
 from config import LOG_GROUP_ID
 from VIPMUSIC import app
@@ -16,7 +16,6 @@ photo = [
 ]
 
 
-
 @app.on_message(filters.new_chat_members, group=-10)
 async def join_watcher(_, message):
     try:
@@ -27,12 +26,10 @@ async def join_watcher(_, message):
             if members.id == app.id:
                 try:
                    invitelink = await app.export_chat_invite_link(message.chat.id)
-                   if invitelink:
-                       link = f"[ɢᴇᴛ ʟɪɴᴋ]({invitelink})"
-                   else:
-                       link = "No Link"
+                   link = f"[ɢᴇᴛ ʟɪɴᴋ]({invitelink})"
                 except ChatAdminRequired:
-                    link = "No link"
+                    link = "No Link"  # Replacing "No link" with "invite"
+                
                 count = await app.get_chat_members_count(chat.id)
                 username = (
                     message.chat.username if message.chat.username else "𝐏ʀɪᴠᴀᴛᴇ 𝐆ʀᴏᴜᴘ"
@@ -42,7 +39,7 @@ async def join_watcher(_, message):
                     f"**📌𝐂ʜᴀᴛ 𝐍ᴀᴍᴇ:** {message.chat.title}\n"
                     f"**🍂𝐂ʜᴀᴛ 𝐈ᴅ:** `{message.chat.id}`\n"
                     f"**🔐𝐂ʜᴀᴛ 𝐔sᴇʀɴᴀᴍᴇ:** @{username}\n"
-                    f"**🖇️ɢʀᴏᴜᴘ ʟɪɴᴋ:** {link}\n"
+                    f"**🖇️𝐆ʀᴏᴜᴘ 𝐋ɪɴᴋ:** {link}\n"
                     f"**📈𝐆ʀᴏᴜᴘ 𝐌ᴇᴍʙᴇʀs:** {count}\n"
                     f"**🤔𝐀ᴅᴅᴇᴅ 𝐁ʏ:** {message.from_user.mention}"
                 )
@@ -66,7 +63,6 @@ async def join_watcher(_, message):
                     await userbot.join_chat(f"{username}")
                     
                 else:
-                    
                     await app.send_photo(
                         LOG_GROUP_ID,
                         photo=random.choice(photo),
@@ -84,15 +80,8 @@ async def join_watcher(_, message):
                     )
                     await add_served_chat(message.chat.id)
                     await userbot.join_chat(f"{username}")
-                    
-                
-                    
-                  
-                
-
     except Exception as e:
         print(f"Error: {e}")
-
 
 
 #==============================================THE END==========================================#
