@@ -130,7 +130,7 @@ def circle(pfp, size=(80, 80), brightness_factor=10):
     pfp.putalpha(mask)
     return pfp
 
-def welcomepic(user_id, user_name, chat_name, user_photo, chat_photo):
+def welcomepic(user_id, user_name, chat_name user_photo, chat_photo):
     background = Image.open("assets/wel2.png")
     user_img = Image.open(user_photo).convert("RGBA")
     chat_img = Image.open(chat_photo).convert("RGBA")
@@ -146,8 +146,8 @@ def welcomepic(user_id, user_name, chat_name, user_photo, chat_photo):
    
     draw.text((350, 100), f"WELCOME IN NEW GROUP", fill="red", font=font)
     
-    draw.text((500, 500), f"Name: {chat_name}", fill="blue", font=font)
-    draw.text((500, 5300), f"Id: {user_id}", fill="blue", font=font)
+    draw.text((500, 500), f"Username: {user_name}", fill="blue", font=font)
+    draw.text((500, 5300), f"User Id: {user_id}", fill="blue", font=font)
     
     background.save(f"downloads/welcome#{user_id}.png")
     return f"downloads/welcome#{user_id}.png"
@@ -216,9 +216,12 @@ async def greet_new_members(_, member: ChatMemberUpdated):
         
         # First priority: member's username
         if user.username:
-            chat_name = f"@{user.username}"
+            user_name = f"@{user.username}"
+
+        else:
+            user_name = "No Username"
         # Second priority: group's username
-        elif chat.username:
+        if chat.username:
             chat_name = f"@{chat.username}"
         # Final fallback: chat title
         else:
