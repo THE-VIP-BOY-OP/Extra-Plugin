@@ -1,4 +1,5 @@
 import asyncio
+import re
 import time
 from logging import getLogger
 from time import time
@@ -135,7 +136,7 @@ def circle(pfp, size=(80, 80), brightness_factor=10):
     pfp.putalpha(mask)
     return pfp
 
-def welcomepic(user_id, user_username, user_name, chat_name, user_photo, chat_photo):
+def welcomepic(user_id, user_username, user_names, chat_name, user_photo, chat_photo):
     background = Image.open("assets/wel2.png")
     user_img = Image.open(user_photo).convert("RGBA")
     chat_img = Image.open(chat_photo).convert("RGBA")
@@ -153,7 +154,7 @@ def welcomepic(user_id, user_username, user_name, chat_name, user_photo, chat_ph
     white = (255, 255, 255)   
     green = (19, 136, 8)
 
-    draw.text((530, 470), f"Name: {user_name}", fill=saffron, font=font)
+    draw.text((530, 470), f"Name: {user_names}", fill=saffron, font=font)
     draw.text((530, 500), f"User Id: {user_id}", fill=white, font=font)
     draw.text((530, 530), f"Username: {user_username}", fill=green, font=font)
     
@@ -171,7 +172,6 @@ async def greet_new_members(_, member: ChatMemberUpdated):
         user_id = user.id
         user_mention = user.mention
         
-        # If chat title is in normal font, convert it to small caps; otherwise, keep the original title
         if chat.title:
             chat_name = chat.title
         else:
@@ -186,6 +186,11 @@ async def greet_new_members(_, member: ChatMemberUpdated):
             user_name = user.first_name
         else:
             user_name = "No Name"
+
+        if user.first_name and re.match("^[A-Za-z0-9 ]+$", user.first_name):
+            user_names = user.first_name
+        else:
+            user_names = "New Member"
         # Convert current UTC time to IST (Indian Standard Time)
         ist = timezone('Asia/Kolkata')
         joined_time = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S')
@@ -205,7 +210,7 @@ async def greet_new_members(_, member: ChatMemberUpdated):
             except AttributeError:
                 chat_photo = "VIPMUSIC/assets/upic.png"
             
-            welcomeimg = welcomepic(user_id, user_username, user_name, chat_name, user_photo, chat_photo)
+            welcomeimg = welcomepic(user_id, user_username, user_names, chat_name, user_photo, chat_photo)
             reply_markup = InlineKeyboardMarkup(
                 [[InlineKeyboardButton(f"{convert_to_small_caps('๏ add me in new group ๏')}", url=f"https://t.me/{app.username}?startgroup=true")]]
             )
