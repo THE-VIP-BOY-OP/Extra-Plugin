@@ -162,17 +162,10 @@ async def greet_new_members(_, member: ChatMemberUpdated):
             user_mention = user.mention
 
             # Fetch user and chat photos
-            user_photos = await app.get_user_profile_photos(user_id)
-            if user_photos.total_count > 0:
-                user_photo = await app.download_media(user_photos.photos[0][-1].file_id)
-            else:
-                user_photo = "assets/default_user.png"
+            user_photo = await app.download_media(user.id.photo.big_file_id)
+            
 
-            chat_photo = (await app.get_chat(chat_id)).photo
-            if chat_photo:
-                chat_photo = await app.download_media(chat_photo.big_file_id)
-            else:
-                chat_photo = "assets/default_chat.png"
+            chat_photo = await app.download_media(member.chat.id.photo.big_file_id)
 
             welcomeimg = welcomepic(user_id, chat_name, user_photo, chat_photo)
             reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(f"✪ ᴛᴀᴘ ᴛᴏ ᴄʟᴏsᴇ ✪", url=f"https://t.me/ok_win_predictions")]])
