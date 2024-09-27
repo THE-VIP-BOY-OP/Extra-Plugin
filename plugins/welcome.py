@@ -129,7 +129,7 @@ def circle(pfp, size=(80, 80), brightness_factor=10):
     mask = ImageChops.darker(mask, pfp.split()[-1])
     pfp.putalpha(mask)
     return pfp
-
+"""
 def welcomepic(user_id, chat_name, user_photo, chat_photo):
     background = Image.open("assets/wel2.png")
     user_img = Image.open(user_photo).convert("RGBA")
@@ -150,17 +150,80 @@ def welcomepic(user_id, chat_name, user_photo, chat_photo):
     
     background.save(f"downloads/welcome#{user_id}.png")
     return f"downloads/welcome#{user_id}.png"
+"""
+
+from PIL import Image, ImageDraw, ImageFont
+
+def circle(image, size, brightness_factor=1.0):
+    # Resize and apply a circular mask to the image
+    image = image.resize(size, Image.ANTIALIAS)
+    mask = Image.new("L", size, 0)
+    draw = ImageDraw.Draw(mask)
+    draw.ellipse((0, 0) + size, fill=255)
+    image.putalpha(mask)
+    
+    # Brightness enhancement (optional)
+    image = ImageEnhance.Brightness(image).enhance(brightness_factor)
+    return image
+
+def welcomepic(user_id, chat_name, user_photo, chat_photo):
+    background = Image.open("assets/wel2.png")
+    user_img = Image.open(user_photo).convert("RGBA")
+    chat_img = Image.open(chat_photo).convert("RGBA")
+    
+    # Circle cropping with size 200x200 for both images
+    user_img_circle = circle(user_img, size=(200, 200), brightness_factor=1.2)
+    chat_img_circle = circle(chat_img, size=(200, 200), brightness_factor=1.2)
+    
+    # Paste chat image into the left circle at the correct position
+    background.paste(chat_img_circle, (100, 130), chat_img_circle)  # Adjusted position
+    
+    # Paste user image into the right circle at the correct position
+    background.paste(user_img_circle, (850, 130), user_img_circle)  # Adjusted position
+    
+    # Draw text for chat_name and user_id
+    draw = ImageDraw.Draw(background)
+    font = ImageFont.truetype("assets/font.ttf", size=45)
+    
+    # Big rectangle: Center the chat_name and use a stylish color (gradient or vibrant color)
+    chat_name_position = (background.width // 2 - draw.textsize(chat_name, font=font)[0] // 2, 400)
+    draw.text(chat_name_position, f"Chat: {chat_name}", fill="#FF69B4", font=font)  # Using a vibrant color (Hot Pink)
+    
+    # Small rectangle: Center the user_id and use a stylish color
+    user_id_text = f"Id: {user_id}"
+    user_id_position = (background.width // 2 - draw.textsize(user_id_text, font=font)[0] // 2, 570)
+    draw.text(user_id_position, user_id_text, fill="#4682B4", font=font)  # Steel Blue color for stylish look
+    
+    
+    background.save(f"downloads/welcome#{user_id}.png")
+    return f"downloads/welcome#{user_id}.png"
+
+# Example call
+
+
 
 @app.on_chat_member_updated(filters.group, group=-4)
 async def greet_new_members(_, member: ChatMemberUpdated):
     try:
         chat_id = member.chat.id
         chat = await app.get_chat(chat_id)
-        chat_name = f"@{chat.username}" if chat.username else chat.title
+        
+        # Prioritize the member's username first, then chat's username, then chat title
+        user = member.new_chat_member.user
+        user_id = user.id
+        user_mention = user.mention
+        
+        # First priority: member's username
+        if user.username:
+            chat_name = f"@{user.username}"
+        # Second priority: group's username
+        elif chat.username:
+            chat_name = f"@{chat.username}"
+        # Final fallback: chat title
+        else:
+            chat_name = chat.title
+        
         if member.new_chat_member and not member.old_chat_member:
-            user = member.new_chat_member.user
-            user_id = user.id
-            user_mention = user.mention
             try:
                 pic = await app.download_media(
                     user.photo.big_file_id, file_name=f"pp{user.id}.png"
@@ -197,7 +260,6 @@ async def greet_new_members(_, member: ChatMemberUpdated):
     except Exception as e:
         LOGGER.exception(f"Error in greeting new members: {e}")
         return
-
 
 __MODULE__ = "Wᴇᴄᴏᴍᴇ"
 __HELP__ = """
