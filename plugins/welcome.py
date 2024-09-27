@@ -151,6 +151,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageChops
 from pyrogram import filters
 from pyrogram.types import ChatMemberUpdated, InlineKeyboardMarkup, InlineKeyboardButton
 
+# Other necessary imports...
 
 def circle(pfp, size=(500, 500), brightness_factor=10):
     pfp = pfp.resize(size, Image.Resampling.LANCZOS).convert("RGBA")
@@ -194,38 +195,44 @@ async def greet_new_members(_, member: ChatMemberUpdated):
             user = member.new_chat_member.user
             user_id = user.id
             user_mention = user.mention
-
-            # Get user profile photo
-            user_photos = await app.get_user_profile_photos(user_id)
-            if user_photos.photos:
-                user_photo = await app.download_media(user_photos.photos[0][-1].file_id)  # Largest available size
-            else:
-                user_photo = "assets/wel2.png"  # Placeholder for no profile picture
+            
+            try:
+                pic = await app.download_media(
+                    user.photo.big_file_id, file_name=f"pp{user.id}.png"
+                )
+            except AttributeError:
+                pic = "VIPMUSIC/assets/upic.png"
             
             # Get chat profile photo
-            chat_photo_data = await app.get_chat(chat_id)
-            if chat_photo_data.photo:
-                chat_photo = await app.download_media(chat_photo_data.photo.big_file_id)
-            else:
-                chat_photo = "assets/wel2.png"  # Placeholder for no chat picture
+            try:
+                chat_pic = await app.download_media(
+                    member.chat.photo.big_file_id, file_name=f"chatpp{chat_id}.png"
+                )
+            except AttributeError:
+                chat_pic = "VIPMUSIC/assets/upic.png"
             
-            welcomeimg = welcomepic(user_id, chat_name, user_photo, chat_photo)
+            welcomeimg = welcomepic(user_id, chat_name, pic, chat_pic)
             reply_markup = InlineKeyboardMarkup(
                 [[InlineKeyboardButton(f"✪ ᴛᴀᴘ ᴛᴏ ᴄʟᴏsᴇ ✪", url=f"https://t.me/ok_win_predictions")]]
             )
 
-            A = await wlcm.find_one(chat_id)
-            if not A:
-                welcome_text = (
-                    f"**๏ ʜᴇʟʟᴏ ☺️** {user_mention}\n\n"
-                    f"**๏ ᴡᴇʟᴄᴏᴍᴇ ɪɴ 🥀** {chat_name}\n\n"
-                    f"**๏ ʜᴀᴠᴇ ᴀ ɴɪᴄᴇ ᴅᴀʏ ✨** @{user.username if user.username else ''}"
-                )
-                await app.send_photo(chat_id, photo=welcomeimg, caption=welcome_text, reply_markup=reply_markup)
+            if (temp.MELCOW).get(f"welcome-{member.chat.id}") is not None:
+                try:
+                    await temp.MELCOW[f"welcome-{member.chat.id}"].delete()
+                except Exception as e:
+                    LOGGER.error(e)
+            
+            welcome_text = (
+                f"**๏ ʜᴇʟʟᴏ ☺️** {user_mention}\n\n"
+                f"**๏ ᴡᴇʟᴄᴏᴍᴇ ɪɴ 🥀** {chat_name}\n\n"
+                f"**๏ ʜᴀᴠᴇ ᴀ ɴɪᴄᴇ ᴅᴀʏ ✨** @{user.username if user.username else ''}"
+            )
+            await app.send_photo(chat_id, photo=welcomeimg, caption=welcome_text, reply_markup=reply_markup)
 
     except Exception as e:
         LOGGER.exception(f"Error in greeting new members: {e}")
         return
+
 
 __MODULE__ = "Wᴇᴄᴏᴍᴇ"
 __HELP__ = """
