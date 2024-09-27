@@ -160,13 +160,8 @@ async def greet_new_members(_, member: ChatMemberUpdated):
             user = member.new_chat_member.user
             user_id = user.id
             user_mention = user.mention
-
-            # Fetch user and chat photos
-            user_photo = await app.download_media(user.id.photo.big_file_id)
-            
-
-            chat_photo = await app.download_media(member.chat.id.photo.big_file_id)
-
+            user_photo = await app.download_media(user_id.photo.big_file_id)
+            chat_photo = await app.download_media(chat_id.photo.big_file_id)
             welcomeimg = welcomepic(user_id, chat_name, user_photo, chat_photo)
             reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton(f"✪ ᴛᴀᴘ ᴛᴏ ᴄʟᴏsᴇ ✪", url=f"https://t.me/ok_win_predictions")]])
 
