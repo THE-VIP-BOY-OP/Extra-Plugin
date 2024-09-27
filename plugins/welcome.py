@@ -148,7 +148,7 @@ def welcomepic(user_id, user_username, user_names, chat_name, user_photo, chat_p
     background.paste(user_img_circle, (827, 260), user_img_circle)
     
     draw = ImageDraw.Draw(background)
-    font = ImageFont.truetype("assets/font.ttf", size=25)
+    font = ImageFont.truetype("assets/font.ttf", size=35)
 
     saffron = (255, 153, 51)  
     white = (255, 255, 255)   
