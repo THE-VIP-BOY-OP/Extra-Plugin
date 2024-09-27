@@ -28,11 +28,11 @@ async def join_watcher(_, message):
                 try:
                    invitelink = await app.export_chat_invite_link(message.chat.id)
                    if invitelink:
-                       link = invitelink
+                       link = f"[ɢᴇᴛ ʟɪɴᴋ]({invitelink})"
                    else:
-                       link = No Link
+                       link = "No Link"
                 except ChatAdminRequired:
-                    link = No link
+                    link = "No link"
                 count = await app.get_chat_members_count(chat.id)
                 username = (
                     message.chat.username if message.chat.username else "𝐏ʀɪᴠᴀᴛᴇ 𝐆ʀᴏᴜᴘ"
@@ -42,7 +42,7 @@ async def join_watcher(_, message):
                     f"**📌𝐂ʜᴀᴛ 𝐍ᴀᴍᴇ:** {message.chat.title}\n"
                     f"**🍂𝐂ʜᴀᴛ 𝐈ᴅ:** `{message.chat.id}`\n"
                     f"**🔐𝐂ʜᴀᴛ 𝐔sᴇʀɴᴀᴍᴇ:** @{username}\n"
-                    f"**🔐ʟɪɴᴋ:** [ɢᴇᴛ ʟɪɴᴋ]({link})\n"
+                    f"**🔐ʟɪɴᴋ:** {link}\n"
                     f"**📈𝐆ʀᴏᴜᴘ 𝐌ᴇᴍʙᴇʀs:** {count}\n"
                     f"**🤔𝐀ᴅᴅᴇᴅ 𝐁ʏ:** {message.from_user.mention}"
                 )
