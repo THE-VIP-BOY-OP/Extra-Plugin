@@ -138,14 +138,14 @@ def welcomepic(user_id, chat_username, user_photo, chat_photo):
     user_img_circle = circle(user_img, size=(200, 200), brightness_factor=1.2)
     chat_img_circle = circle(chat_img, size=(200, 200), brightness_factor=1.2)
     
-    background.paste(chat_img_circle, (212, 250), chat_img_circle)
-    background.paste(user_img_circle, (827, 250), user_img_circle)
+    background.paste(chat_img_circle, (250, 260), chat_img_circle)
+    background.paste(user_img_circle, (827, 260), user_img_circle)
     
     draw = ImageDraw.Draw(background)
     font = ImageFont.truetype("assets/font.ttf", size=45)
    
-    draw.text((205, 70), f"Welcome In {chat_username}!", fill="black", font=font)
-    draw.text((320, 600), f"ID: {user_id}", fill="black", font=font)
+    draw.text((205, 80), f"Welcome In {chat_username}!", fill="pink", font=font)
+    draw.text((350, 590), f"ID: {user_id}", fill="green", font=font)
     
     background.save(f"downloads/welcome#{user_id}.png")
     return f"downloads/welcome#{user_id}.png"
