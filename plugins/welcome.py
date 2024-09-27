@@ -150,9 +150,10 @@ async def auto_state(_, message):
 
 @app.on_chat_member_updated(filters.group, group=-4)
 async def greet_new_members(_, member: ChatMemberUpdated):
+    user_id = member.user.id
+    chat_id = member.chat.id
     try:
-        user_id = member.user.id
-        chat_id = member.chat.id
+        
         chat_name = (await app.get_chat(chat_id)).title
         
         # Fetch user and chat photos
