@@ -135,17 +135,17 @@ def welcomepic(user_id, chat_username, user_photo, chat_photo):
     user_img = Image.open(user_photo).convert("RGBA")
     chat_img = Image.open(chat_photo).convert("RGBA")
     
-    user_img_circle = circle(user_img, size=(260, 260), brightness_factor=1.2)
-    chat_img_circle = circle(chat_img, size=(260, 260), brightness_factor=1.2)
+    user_img_circle = circle(user_img, size=(250, 250), brightness_factor=1.2)
+    chat_img_circle = circle(chat_img, size=(250, 250), brightness_factor=1.2)
     
     background.paste(chat_img_circle, (212, 120), chat_img_circle)
-    background.paste(user_img_circle, (820, 345), user_img_circle)
+    background.paste(user_img_circle, (822, 347), user_img_circle)
     
     draw = ImageDraw.Draw(background)
     font = ImageFont.truetype("assets/font.ttf", size=45)
     
-    draw.text((1000, 1000), f"ID: {user_id}", fill="black", font=font)
-    draw.text((1200, 1200), f"Welcome In {chat_username}!", fill="black", font=font)
+    draw.text((200, 500), f"ID: {user_id}", fill="black", font=font)
+    draw.text((800, 50), f"Welcome In {chat_username}!", fill="black", font=font)
     
     background.save(f"downloads/welcome#{user_id}.png")
     return f"downloads/welcome#{user_id}.png"
