@@ -12,7 +12,8 @@ from VIPMUSIC.utils.database import get_assistant
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageChops
 from pyrogram import filters
 from pyrogram.types import ChatMemberUpdated, InlineKeyboardMarkup, InlineKeyboardButton
-
+from pytz import timezone
+from datetime import datetime
 
 user_last_message_time = {}
 user_command_count = {}
@@ -148,6 +149,8 @@ def welcomepic(user_id, user_name, chat_name, user_photo, chat_photo):
     background.save(f"downloads/welcome#{user_id}.png")
     return f"downloads/welcome#{user_id}.png"
 
+
+
 @app.on_chat_member_updated(filters.group, group=-4)
 async def greet_new_members(_, member: ChatMemberUpdated):
     try:
@@ -157,16 +160,23 @@ async def greet_new_members(_, member: ChatMemberUpdated):
         user_id = user.id
         user_mention = user.mention
         
+        # If chat title is in normal font, convert it to small caps; otherwise, keep the original title
+        if chat.title.islower():
+            chat_name = chat.title
+        else:
+            chat_name = ''.join(
+                chr(ord(char) + 0x1D00) if char.isalpha() else char for char in chat.title
+            )
+        
         if user.username:
             user_name = f"@{user.username}"
         else:
             user_name = "No Username"
-            
-        if chat.username:
-            chat_name = f"@{chat.username}"
-        else:
-            chat_name = chat.title
         
+        # Convert current UTC time to IST (Indian Standard Time)
+        ist = timezone('Asia/Kolkata')
+        joined_time = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S')
+
         if member.new_chat_member and not member.old_chat_member:
             try:
                 pic = await app.download_media(
@@ -193,16 +203,21 @@ async def greet_new_members(_, member: ChatMemberUpdated):
                 except Exception as e:
                     LOGGER.error(e)
             
+            # Modified welcome text
             welcome_text = (
-                f"**๏ ʜᴇʟʟᴏ ☺️** {user_mention}\n\n"
-                f"**๏ ᴡᴇʟᴄᴏᴍᴇ ɪɴ 🥀** {chat_name}\n\n"
-                f"**๏ ʜᴀᴠᴇ ᴀ ɴɪᴄᴇ ᴅᴀʏ ✨** @{user.username if user.username else ''}"
+                f"**๏ ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ** {chat_name}\n\n"
+                f"**ɴᴀᴍᴇ :** {user.first_name}\n"
+                f"**ᴜꜱᴇʀ ɪᴅ :** {user_id}\n"
+                f"**ᴜꜱᴇʀɴᴀᴍᴇ :** {user_name}\n"
+                f"**ᴍᴇɴᴛɪᴏɴ :** {user_mention}\n"
+                f"**ᴊᴏɪɴᴇᴅ ᴀᴛ :** {joined_time} (IST)"
             )
             await app.send_photo(chat_id, photo=welcomeimg, caption=welcome_text, reply_markup=reply_markup)
 
     except Exception as e:
         LOGGER.exception(f"Error in greeting new members: {e}")
         return
+
 
 __MODULE__ = "Wᴇᴄᴏᴍᴇ"
 __HELP__ = """
