@@ -151,6 +151,7 @@ async def auto_state(_, message):
 @app.on_chat_member_updated(filters.group, group=-4)
 async def greet_new_members(_, member: ChatMemberUpdated):
     try:
+        userbot = get_assitant(member.chat.id)
         user_id = member.user.id
         chat_id = member.chat.id
         chat_name = (await app.get_chat(chat_id)).title  # Fetch the chat name correctly
@@ -182,7 +183,7 @@ async def greet_new_members(_, member: ChatMemberUpdated):
         if member.new_chat_member and not member.old_chat_member:
             welcome_text = f"""**๏ ʜᴇʟʟᴏ ☺️** {user.mention}\n\n**๏ ᴡᴇʟᴄᴏᴍᴇ ɪɴ 🥀** {chat_name}\n\n**๏ ʜᴀᴠᴇ ᴀ ɴɪᴄᴇ ᴅᴀʏ ✨** @{user.username}"""
             
-            await app.send_photo(chat_id, photo=welcomeimg, caption=welcome_text, reply_markup=reply_markup)
+            await userbot.send_photo(chat_id, photo=welcomeimg, caption=welcome_text, reply_markup=reply_markup)
     except Exception as e:
         return await app.send_message(chat_id, f"{e}")
 
