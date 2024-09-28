@@ -137,8 +137,8 @@ def circle(pfp, size=(80, 80), brightness_factor=10):
     pfp.putalpha(mask)
     
     
-    border_size_violet = 2
-    border_size_blue = 5   
+    border_size_violet = 5
+    border_size_blue = 3   
     outline = Image.new("RGBA", (pfp.size[0] + 2 * border_size_violet, pfp.size[1] + 2 * border_size_violet), (0, 0, 0, 0))
     outline_draw = ImageDraw.Draw(outline)
     
