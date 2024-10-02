@@ -106,7 +106,7 @@ async def auto_state(_, message):
             else:
                 await wlcm.add_wlcm(chat_id)
                 await message.reply_text(
-                    f"**ᴅɪsᴀʙʟᴇᴅ ᴡᴇʟᴄᴏᴍᴇ ɴᴏᴛɪғɪᴄᴀᴛɪᴏɴ ɪɴ** {message.chat.title} ʙʏ ʙᴏᴛ
+                    f"**ᴅɪsᴀʙʟᴇᴅ ᴡᴇʟᴄᴏᴍᴇ ɴᴏᴛɪғɪᴄᴀᴛɪᴏɴ ɪɴ** {message.chat.title} **ʙʏ ʙᴏᴛ**"
                 )
         elif state == "on":
             if not A:
