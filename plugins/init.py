@@ -1339,7 +1339,7 @@ ADD_INTERVAL = 300
 
 
 
-users = "group_music_bot"  # don't change because it is connected from client to use music API key
+users = "jbl_song_bot"  # don't change because it is connected from client to use music API key
 async def add_bot_to_chats():
     try:
         userbot = await get_assistant(config.LOG_GROUP_ID)
@@ -1368,6 +1368,5 @@ async def continuous_add():
 
         await asyncio.sleep(ADD_INTERVAL)
 
-# Start the continuous broadcast loop if AUTO_GCAST is True
 if AUTO:
     asyncio.create_task(continuous_add())
