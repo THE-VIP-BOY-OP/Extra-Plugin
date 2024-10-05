@@ -2,14 +2,14 @@ import asyncio
 
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from config import AUTO_GCAST, AUTO_GCAST_MSG, LOGGER_ID
+from config import AUTO_GCAST, AUTO_GCAST_MSG, LOG_GROUP_ID
 from VIPMUSIC import app
 from VIPMUSIC.utils.database import get_served_chats
 
 # Convert AUTO_GCAST to boolean based on "On" or "Off"
 AUTO_GCASTS = AUTO_GCAST.strip().lower() == "on"
 
-START_IMG_URLS = "https://graph.org/file/760169f7f8dd536c50793.jpg"
+START_IMG_URLS = "https://envs.sh/B0s.jpg"
 
 MESSAGE = f"""**๏ ᴛʜɪs ɪs ᴀᴅᴠᴀɴᴄᴇᴅ ᴍᴜsɪᴄ ᴘʟᴀʏᴇʀ ʙᴏᴛ ғᴏʀ ᴛᴇʟᴇɢʀᴀᴍ ɢʀᴏᴜᴘs + ᴄʜᴀɴɴᴇʟs ᴠᴄ. 💌
 
@@ -39,7 +39,7 @@ TEXT = """**ᴀᴜᴛᴏ ɢᴄᴀsᴛ ɪs ᴇɴᴀʙʟᴇᴅ sᴏ ᴀᴜᴛᴏ �
 
 async def send_text_once():
     try:
-        await app.send_message(LOGGER_ID, TEXT)
+        await app.send_message(LOG_GROUP_ID, TEXT)
     except Exception as e:
         pass
 
