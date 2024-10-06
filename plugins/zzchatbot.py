@@ -10,10 +10,11 @@ from VIPMUSIC import app
 
 # MongoDB connection
 chatdb = MongoClient(MONGO_URL)
-status_db = chatdb["ChatBotStatusDb"]  # New collection for storing chatbot status
+status_db = chatdb["ChatBotStatusDb"]["StatusCollection"]  # Make sure to reference a collection
 chatai = chatdb["Word"]["WordDb"]  # Existing collection for replies
 
-# Inline keyboard for enabling/disabling chatbot
+
+
 CHATBOT_ON = [
     [
         InlineKeyboardButton(text="ᴇɴᴀʙʟᴇ", callback_data="enable_chatbot"),
@@ -58,7 +59,7 @@ async def chatbot_response(client: Client, message: Message):
     if message.text and message.text.startswith(("/", "!", "?", "@")):
         return
 
-    # Check chatbot status
+    # Check chatbot status (Ensure status_db is a collection, not a database)
     chat_status = status_db.find_one({"chat_id": message.chat.id})
     if chat_status and chat_status.get("status") == "disabled":
         return  # Do not respond if the chatbot is disabled
@@ -83,6 +84,7 @@ async def chatbot_response(client: Client, message: Message):
             await message.reply_text(reply_data['text'])
     else:
         await message.reply_text("I don't have a reply for this message yet!")
+
 
 async def save_reply(original_message: Message, reply_message: Message):
     if reply_message.sticker:
