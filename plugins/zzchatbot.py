@@ -55,28 +55,30 @@ async def callback_handler(client: Client, callback_query: CallbackQuery):
 
 @app.on_message((filters.text | filters.sticker | filters.photo | filters.video) & filters.group)
 async def chatbot_response(client: Client, message: Message):
-    # Check if the message is a command
+    # Check if the message is a command and ignore it
     if message.text and message.text.startswith(("/", "!", "?", "@")):
         return
 
-    # Check if the message is a reply and if it's replying to the bot's message
+    # Check if the message is a reply to the bot's message
     if not message.reply_to_message or not message.reply_to_message.from_user.is_bot:
-        return  # Do not reply if the message is not a reply to the bot
+        return  # Ignore the message if it's not a reply to the bot
 
-    # Check chatbot status (Ensure status_db is a collection, not a database)
+    # Check chatbot status (Make sure status_db references the correct collection)
     chat_status = status_db.find_one({"chat_id": message.chat.id})
     if chat_status and chat_status.get("status") == "disabled":
-        return  # Do not respond if the chatbot is disabled
+        return  # Ignore if the chatbot is disabled for the current chat
 
+    # Indicate that the bot is typing a reply
     await client.send_chat_action(message.chat.id, ChatAction.TYPING)
 
+    # Save the reply in the database
     if message.reply_to_message:
-        # Save the reply in the database
         await save_reply(message.reply_to_message, message)
 
     # Get a reply from the database
     reply_data = await get_reply(message.text)
 
+    # Respond based on the retrieved reply data
     if reply_data:
         if reply_data['check'] == 'sticker':
             await message.reply_sticker(reply_data['text'])
@@ -87,7 +89,7 @@ async def chatbot_response(client: Client, message: Message):
         else:
             await message.reply_text(reply_data['text'])
     else:
-        await message.reply_text("I don't have a reply for this message yet!")
+        await message.reply_text("what??")
 
 
 async def save_reply(original_message: Message, reply_message: Message):
