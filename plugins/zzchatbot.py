@@ -3,7 +3,7 @@ from pymongo import MongoClient
 from pyrogram import Client, filters
 from pyrogram.enums import ChatAction
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, Message
-from config import MONGO_URL
+from config import MONGO_DB_URI as MONGO_URL
 
 # MongoDB connection
 chatdb = MongoClient(MONGO_URL)
