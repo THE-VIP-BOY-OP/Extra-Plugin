@@ -3,7 +3,7 @@ from pyrogram.types import CallbackQuery, InlineKeyboardMarkup
 
 import config
 from VIPMUSIC import app as nexichat
-
+from pymongo import MongoClient
 VIPdb = MongoClient(config.MONGO_DB_URI)
 VIP = VIPdb["VIPDb"]["VIP"]
 
