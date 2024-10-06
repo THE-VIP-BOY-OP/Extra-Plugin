@@ -1,125 +1,136 @@
 import random
+from pymongo import MongoClient
 from pyrogram import Client, filters
-from motor.motor_asyncio import AsyncIOMotorClient
+from pyrogram.enums import ChatAction
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, Message
+from config import MONGO_URL
 
-# MongoDB connection setup (refer to your MongoDB setup code)
-from VIPMUSIC.core.mongo import mongodb, pymongodb
+# MongoDB connection
+chatdb = MongoClient(MONGO_URL)
+status_db = chatdb["ChatBotStatusDb"]  # New collection for storing chatbot status
+chatai = chatdb["Word"]["WordDb"]  # Existing collection for replies
 
-# Collections to store messages, replies, and group settings
-messages_collection = mongodb.message
-group_settings_collection = mongodb.group_settings
+# Inline keyboard for enabling/disabling chatbot
+CHATBOT_ON = [
+    [
+        InlineKeyboardButton(text="ᴇɴᴀʙʟᴇ", callback_data="enable_chatbot"),
+        InlineKeyboardButton(text="ᴅɪsᴀʙʟᴇ", callback_data="disable_chatbot"),
+    ],
+]
 
-# Initialize bot
-from VIPMUSIC import app 
+@app.on_message(filters.command("chatbot") & filters.group)
+async def chaton(client: Client, message: Message):
+    await message.reply_text(
+        f"ᴄʜᴀᴛ: {message.chat.title}\n**ᴄʜᴏᴏsᴇ ᴀɴ ᴏᴘᴛɪᴏɴ ᴛᴏ ᴇɴᴀʙʟᴇ/ᴅɪsᴀʙʟᴇ ᴄʜᴀᴛʙᴏᴛ.**",
+        reply_markup=InlineKeyboardMarkup(CHATBOT_ON),
+    )
 
-# Save a message and its replies (supporting text, stickers, photos, and videos)
-async def save_reply(original_message, reply_message):
-    message_id = original_message.message_id
-    user_id = original_message.from_user.id
+# Callback query handler for enabling/disabling the chatbot
+@app.on_callback_query(filters.regex("enable_chatbot|disable_chatbot"))
+async def callback_handler(client: Client, callback_query: CallbackQuery):
+    chat_id = callback_query.message.chat.id
+    action = callback_query.data
 
-    # Determine the type of message to save
-    if reply_message.text:
-        reply_data = {"type": "text", "content": reply_message.text}
-    elif reply_message.sticker:
-        reply_data = {"type": "sticker", "content": reply_message.sticker.file_id}
-    elif reply_message.photo:
-        reply_data = {"type": "photo", "content": reply_message.photo.file_id}
-    elif reply_message.video:
-        reply_data = {"type": "video", "content": reply_message.video.file_id}
-
-    # Check if the message already exists
-    message_data = await messages_collection.find_one({"message_id": message_id})
-
-    if message_data:
-        # Add the new reply to the existing message
-        await messages_collection.update_one(
-            {"message_id": message_id},
-            {"$push": {"replies": reply_data}}
+    if action == "enable_chatbot":
+        # Save status to the database
+        status_db.update_one(
+            {"chat_id": chat_id},
+            {"$set": {"status": "enabled"}},
+            upsert=True
         )
-    else:
-        # Save the original message and the reply
-        await messages_collection.insert_one({
-            "message_id": message_id,
-            "user_id": user_id,
-            "message_text": original_message.text,
-            "replies": [reply_data]
-        })
+        await callback_query.answer("Chatbot has been enabled!")
+    elif action == "disable_chatbot":
+        # Save status to the database
+        status_db.update_one(
+            {"chat_id": chat_id},
+            {"$set": {"status": "disabled"}},
+            upsert=True
+        )
+        await callback_query.answer("Chatbot has been disabled!")
 
-# Retrieve a random reply (supports text, stickers, photos, and videos)
-async def get_reply(message):
-    message_data = await messages_collection.find_one({"message_text": message.text})
+    # Optionally, you can edit the message to reflect the status change
+    await callback_query.message.edit_text(
+        f"ᴄʜᴀᴛ: {callback_query.message.chat.title}\n**ᴄʜᴀᴛʙᴏᴛ ʜᴀs ʙᴇᴇɴ {'ᴇɴᴀʙʟᴇᴅ' if action == 'enable_chatbot' else 'ᴅɪsᴀʙʟᴇᴅ'}.**"
+    )
 
-    if message_data and message_data["replies"]:
-        # Return a random reply from the saved replies
-        return random.choice(message_data["replies"])
+# Message handler for text, sticker, photo, and video messages
+@app.on_message((filters.text | filters.sticker | filters.photo | filters.video) & filters.group)
+async def chatbot_response(client: Client, message: Message):
+    # Ignore bot commands
+    if message.text.startswith(("!", "/", "?", "@", "#")):
+        return
 
-    # If no specific replies found, return a random reply from any message
-    random_reply = await messages_collection.aggregate([{"$sample": {"size": 1}}]).to_list(length=1)
-    if random_reply:
-        return random.choice(random_reply[0]["replies"])
+    # Check chatbot status
+    chat_status = status_db.find_one({"chat_id": message.chat.id})
+    if chat_status and chat_status.get("status") == "disabled":
+        return  # Do not respond if the chatbot is disabled
 
-    return None
+    await client.send_chat_action(message.chat.id, ChatAction.TYPING)
 
-# Check if the chatbot is enabled in the group
-async def is_chatbot_enabled(group_id):
-    group_status = await group_settings_collection.find_one({"group_id": group_id})
-    return group_status is None or group_status.get("enabled", True)
-
-# Send the appropriate reply based on its type
-async def send_reply(client, message, reply_data):
-    if reply_data["type"] == "text":
-        await message.reply_text(reply_data["content"])
-    elif reply_data["type"] == "sticker":
-        await message.reply_sticker(reply_data["content"])
-    elif reply_data["type"] == "photo":
-        await message.reply_photo(reply_data["content"])
-    elif reply_data["type"] == "video":
-        await message.reply_video(reply_data["content"])
-
-# Listener for group messages (supports text, stickers, photos, and videos)
-@app.on_message(filters.group & (filters.text | filters.sticker | filters.photo | filters.video))
-async def handle_message(client, message):
-    # Check if the chatbot is enabled for this group
-    if not await is_chatbot_enabled(message.chat.id):
-        return  # Do nothing if chatbot is disabled in this group
-
-    # Check if it's a reply to another message
     if message.reply_to_message:
+        # Save the reply in the database
         await save_reply(message.reply_to_message, message)
 
-    # Try to find a reply from the database
-    reply = await get_reply(message)
+    # Get a reply from the database
+    reply_data = await get_reply(message.text)
 
-    # If a reply is found, send it
-    if reply:
-        await send_reply(client, message, reply)
+    if reply_data:
+        if reply_data['check'] == 'sticker':
+            await message.reply_sticker(reply_data['text'])
+        elif reply_data['check'] == 'photo':
+            await message.reply_photo(reply_data['text'])
+        elif reply_data['check'] == 'video':
+            await message.reply_video(reply_data['text'])
+        else:
+            await message.reply_text(reply_data['text'])
     else:
         await message.reply_text("I don't have a reply for this message yet!")
 
-@app.on_message(filters.command("chatbot", prefixes="/") & filters.group)
-async def toggle_chatbot(client, message):
-    group_id = message.chat.id
-
-    # Check if the second argument is 'on' or 'off'
-    if len(message.command) < 2:
-        await message.reply_text("Please specify 'on' or 'off'. Usage: /chatbot [on|off]")
-        return
-
-    state = message.command[1].lower()
-
-    if state == "on":
-        await group_settings_collection.update_one(
-            {"group_id": group_id},
-            {"$set": {"enabled": True}},
-            upsert=True
+# Function to save a reply in the database
+async def save_reply(original_message: Message, reply_message: Message):
+    if reply_message.sticker:
+        is_chat = chatai.find_one(
+            {
+                "word": original_message.text,
+                "text": reply_message.sticker.file_id,
+                "check": "sticker",
+                "id": reply_message.sticker.file_unique_id,
+            }
         )
-        await message.reply_text("Chatbot is now ON in this group!")
-    elif state == "off":
-        await group_settings_collection.update_one(
-            {"group_id": group_id},
-            {"$set": {"enabled": False}},
-            upsert=True
+        if not is_chat:
+            chatai.insert_one(
+                {
+                    "word": original_message.text,
+                    "text": reply_message.sticker.file_id,
+                    "check": "sticker",
+                    "id": reply_message.sticker.file_unique_id,
+                }
+            )
+    elif reply_message.text:
+        is_chat = chatai.find_one(
+            {"word": original_message.text, "text": reply_message.text}
         )
-        await message.reply_text("Chatbot is now OFF in this group!")
-    else:
-        await message.reply_text("Invalid argument. Please use '/chatbot on' or '/chatbot off'.")
+        if not is_chat:
+            chatai.insert_one(
+                {
+                    "word": original_message.text,
+                    "text": reply_message.text,
+                    "check": "none",
+                }
+            )
+
+# Function to retrieve a reply from the database
+async def get_reply(word: str):
+    is_chat = chatai.find({"word": word})
+    k = chatai.find_one({"word": word})
+
+    # If no exact match is found, return random replies
+    if not k:
+        is_chat = chatai.find()
+    
+    K = [x["text"] for x in is_chat]
+
+    if K:
+        hey = random.choice(K)
+        return chatai.find_one({"text": hey})
+    return None
