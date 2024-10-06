@@ -1,6 +1,15 @@
 from pyrogram.enums import ChatMemberStatus as CMS
 from pyrogram.types import CallbackQuery, InlineKeyboardMarkup
-
+import random
+from Abg.chat_status import adminsOnly
+from VIPMUSIC.utils.database import add_served_chat as add_served_chats
+from VIPMUSIC.utils.database import add_served_user as add_served_users
+from pymongo import MongoClient
+from pyrogram import Client, filters
+from pyrogram.enums import ChatAction
+from pyrogram.types import InlineKeyboardMarkup, Message
+from config import OWNER_ID as OWNER
+from config import MONGO_DB_URI as MONGO_URL
 import config
 from VIPMUSIC import app as nexichat
 from pymongo import MongoClient
@@ -51,16 +60,7 @@ async def cb_handler(_, query: CallbackQuery):
 
 
 
-import random
-from Abg.chat_status import adminsOnly
-from VIPMUSIC.utils.database import add_served_chat as add_served_chats
-from VIPMUSIC.utils.database import add_served_user as add_served_users
-from pymongo import MongoClient
-from pyrogram import Client, filters
-from pyrogram.enums import ChatAction
-from pyrogram.types import InlineKeyboardMarkup, Message
-from config import OWNER_ID as OWNER
-from config import MONGO_DB_URI as MONGO_URL
+
 
 def is_admins(func: Callable) -> Callable:
     async def non_admin(c: nexichat, m: Message):
