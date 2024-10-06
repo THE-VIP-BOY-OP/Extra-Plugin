@@ -43,24 +43,28 @@ async def chatbot_response(client: Client, message: Message):
     chat_status = status_db.find_one({"chat_id": message.chat.id})
     if chat_status and chat_status.get("status") == "disabled":
         return
-    if message.text and message.text.startswith(("/", "!", "?", "@")):
-        return
+
+    # Bot will respond only if the message is a reply to one of the bot's own messages
+    if message.reply_to_message and message.reply_to_message.from_user.is_bot:
+        await client.send_chat_action(message.chat.id, ChatAction.TYPING)
+        reply_data = await get_reply(message.text)
+        if reply_data:
+            if reply_data['check'] == 'sticker':
+                await message.reply_sticker(reply_data['text'])
+            elif reply_data['check'] == 'photo':
+                await message.reply_photo(reply_data['text'])
+            elif reply_data['check'] == 'video':
+                await message.reply_video(reply_data['text'])
+            elif reply_data['check'] == 'audio':
+                await message.reply_audio(reply_data['text'])
+            else:
+                await message.reply_text(reply_data['text'])
+        else:
+            await message.reply_text("I don't know how to respond yet.")
+
+    # Save the conversation regardless of the bot replying or not
     if message.reply_to_message:
         await save_reply(message.reply_to_message, message)
-    reply_data = await get_reply(message.text)
-    if reply_data:
-        if reply_data['check'] == 'sticker':
-            await message.reply_sticker(reply_data['text'])
-        elif reply_data['check'] == 'photo':
-            await message.reply_photo(reply_data['text'])
-        elif reply_data['check'] == 'video':
-            await message.reply_video(reply_data['text'])
-        elif reply_data['check'] == 'audio':
-            await message.reply_audio(reply_data['text'])
-        else:
-            await message.reply_text(reply_data['text'])
-    else:
-        await message.reply_text("**What dear??**")
 
 async def save_reply(original_message: Message, reply_message: Message):
     if reply_message.sticker:
