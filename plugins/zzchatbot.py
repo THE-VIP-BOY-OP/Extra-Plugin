@@ -4,7 +4,7 @@ from pyrogram import Client, filters
 from pyrogram.enums import ChatAction
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, Message
 from config import MONGO_DB_URI as MONGO_URL
-
+from VIPMUSIC import app
 # MongoDB connection
 chatdb = MongoClient(MONGO_URL)
 status_db = chatdb["ChatBotStatusDb"]  # New collection for storing chatbot status
