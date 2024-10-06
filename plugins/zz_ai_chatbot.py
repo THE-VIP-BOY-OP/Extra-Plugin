@@ -1,6 +1,7 @@
 from pyrogram.enums import ChatMemberStatus as CMS
 from pyrogram.types import CallbackQuery, InlineKeyboardMarkup
 import random
+import logging
 from Abg.chat_status import adminsOnly
 from VIPMUSIC.utils.database import add_served_chat as add_served_chats
 from VIPMUSIC.utils.database import add_served_user as add_served_users
@@ -13,9 +14,12 @@ from config import MONGO_DB_URI as MONGO_URL
 import config
 from VIPMUSIC import app as nexichat
 from pymongo import MongoClient
+
+# Set up logging for debugging
+logging.basicConfig(level=logging.DEBUG)
+
 VIPdb = MongoClient(config.MONGO_DB_URI)
 VIP = VIPdb["VIPDb"]["VIP"]
-
 
 @nexichat.on_callback_query()
 async def cb_handler(_, query: CallbackQuery):
@@ -58,10 +62,6 @@ async def cb_handler(_, query: CallbackQuery):
             if is_VIP:
                 await query.edit_message_text("**ᴄʜᴀᴛ-ʙᴏᴛ ᴀʟʀᴇᴀᴅʏ ᴅɪsᴀʙʟᴇᴅ.**")
 
-
-
-
-
 def is_admins(func: Callable) -> Callable:
     async def non_admin(c: nexichat, m: Message):
         if m.from_user.id == OWNER:
@@ -81,7 +81,6 @@ CHATBOT_ON = [
     ],
 ]
 
-
 @nexichat.on_cmd("chatbot", group_only=True)
 @adminsOnly("can_delete_messages")
 async def chaton_(_, m: Message):
@@ -96,24 +95,21 @@ async def chaton_(_, m: Message):
     (filters.text | filters.sticker | filters.group) & ~filters.private & ~filters.bot, group=4
 )
 async def chatbot_text(client: Client, message: Message):
-    try:
-        if (
-            message.text.startswith("!")
-            or message.text.startswith("/")
-            or message.text.startswith("?")
-            or message.text.startswith("@")
-            or message.text.startswith("#")
-        ):
-            return
-    except Exception:
-        pass
+    # Log received messages for debugging
+    logging.debug(f"Received message: {message.text if message.text else 'sticker'} from {message.from_user.username}")
 
-    chatdb = MongoClient(MONGO_URL)
-    chatai = chatdb["Word"]["WordDb"]
+    # Prevent the bot from replying to its own messages
+    if message.from_user.is_bot:
+        logging.debug("Ignoring bot's own message.")
+        return
 
     # Only trigger bot reply if bot's message is being replied to or its username is mentioned
     if not message.reply_to_message and client.username.lower() not in message.text.lower():
+        logging.debug("No reply to bot or mention of bot's username. Ignoring message.")
         return
+
+    chatdb = MongoClient(MONGO_URL)
+    chatai = chatdb["Word"]["WordDb"]
 
     if not message.reply_to_message:
         VIPdb = MongoClient(MONGO_URL)
@@ -125,9 +121,8 @@ async def chatbot_text(client: Client, message: Message):
             is_chat = chatai.find({"word": message.text})
             k = chatai.find_one({"word": message.text})
 
-            # Modification: If no saved reply is found, send a random reply
+            # If no saved reply is found, send a random reply
             if not k:
-                # Fetch all random replies if no exact match is found
                 is_chat = chatai.find()
             for x in is_chat:
                 K.append(x["text"])
@@ -137,7 +132,7 @@ async def chatbot_text(client: Client, message: Message):
             Yo = is_text["check"]
             if Yo == "sticker":
                 await message.reply_sticker(f"{hey}")
-            if not Yo == "sticker":
+            else:
                 await message.reply_text(f"{hey}")
 
     if message.reply_to_message:
@@ -151,9 +146,7 @@ async def chatbot_text(client: Client, message: Message):
                 is_chat = chatai.find({"word": message.text})
                 k = chatai.find_one({"word": message.text})
 
-                # Modification: If no saved reply is found, send a random reply
                 if not k:
-                    # Fetch all random replies if no exact match is found
                     is_chat = chatai.find()
                 for x in is_chat:
                     K.append(x["text"])
@@ -163,10 +156,11 @@ async def chatbot_text(client: Client, message: Message):
                 Yo = is_text["check"]
                 if Yo == "sticker":
                     await message.reply_sticker(f"{hey}")
-                if not Yo == "sticker":
+                else:
                     await message.reply_text(f"{hey}")
+        
+        # Save replies between users
         if not message.reply_to_message.from_user.id == client.id:
-            # Save replies between users
             if message.sticker:
                 is_chat = chatai.find_one(
                     {
@@ -195,7 +189,6 @@ async def chatbot_text(client: Client, message: Message):
                             "check": "none",
                         }
                     )
-
 
 @nexichat.on_message(
     (filters.sticker | filters.group | filters.text) & ~filters.private & ~filters.bot, group=4
