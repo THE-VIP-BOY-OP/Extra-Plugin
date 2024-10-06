@@ -100,3 +100,16 @@ async def get_reply(word: str):
         random_reply = random.choice(is_chat)
         return random_reply
     return None
+
+
+
+__MODULE__ = "ᴄʜᴀᴛʙᴏᴛ"
+__HELP__ = """
+ʜᴇʏ ᴛʜɪs ɪs ᴄʜᴀᴛʙᴏᴛ.
+
+ Usᴇ ɪɴ Gʀᴏᴜᴘ:-
+/chatbot On
+/chatbot Off
+
+ᴍᴀᴅᴇ ʙʏ: @THE_VIP_BOY
+"""
