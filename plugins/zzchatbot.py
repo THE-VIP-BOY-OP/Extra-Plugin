@@ -6,8 +6,8 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from VIPMUSIC.core.mongo import mongodb, pymongodb
 
 # Collections to store messages, replies, and group settings
-messages_collection = pymongodb["messages"]
-group_settings_collection = pymongodb["group_settings"]
+messages_collection = mongodb.message
+group_settings_collection = mongodb.group_settings
 
 # Initialize bot
 from VIPMUSIC import app 
