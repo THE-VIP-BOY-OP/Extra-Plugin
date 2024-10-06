@@ -6,6 +6,7 @@ from pymongo import MongoClient
 from pyrogram import Client, filters
 from pyrogram.enums import ChatAction
 from pyrogram.types import InlineKeyboardMarkup, Message
+from pyrogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 
 from config import MONGO_DB_URI as MONGO_URL
 from VIPMUSIC import app as nexichat
