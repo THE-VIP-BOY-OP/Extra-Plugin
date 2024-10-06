@@ -54,18 +54,22 @@ async def callback_handler(client: Client, callback_query: CallbackQuery):
 
 @app.on_message((filters.text | filters.sticker | filters.photo | filters.video) & filters.group)
 async def chatbot_response(client: Client, message: Message):
-    if filters.command(message):
+    # Check if the message is a command
+    if message.text and message.text.startswith(("/", "!", "?", "@")):
         return
 
+    # Check chatbot status
     chat_status = status_db.find_one({"chat_id": message.chat.id})
     if chat_status and chat_status.get("status") == "disabled":
-        return
+        return  # Do not respond if the chatbot is disabled
 
     await client.send_chat_action(message.chat.id, ChatAction.TYPING)
 
     if message.reply_to_message:
+        # Save the reply in the database
         await save_reply(message.reply_to_message, message)
 
+    # Get a reply from the database
     reply_data = await get_reply(message.text)
 
     if reply_data:
