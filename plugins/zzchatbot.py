@@ -44,8 +44,8 @@ async def chatbot_response(client: Client, message: Message):
     if chat_status and chat_status.get("status") == "disabled":
         return
 
-    # Bot will respond only if the message is a reply to one of the bot's own messages
-    if message.reply_to_message and message.reply_to_message.from_user.is_bot:
+    
+    if message.reply_to_message and message.reply_to_message.from_user.id == client.me.id:
         await client.send_chat_action(message.chat.id, ChatAction.TYPING)
         reply_data = await get_reply(message.text)
         if reply_data:
