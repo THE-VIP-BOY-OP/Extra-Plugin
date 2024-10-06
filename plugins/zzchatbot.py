@@ -59,6 +59,10 @@ async def chatbot_response(client: Client, message: Message):
     if message.text and message.text.startswith(("/", "!", "?", "@")):
         return
 
+    # Check if the message is a reply and if it's replying to the bot's message
+    if not message.reply_to_message or not message.reply_to_message.from_user.is_bot:
+        return  # Do not reply if the message is not a reply to the bot
+
     # Check chatbot status (Ensure status_db is a collection, not a database)
     chat_status = status_db.find_one({"chat_id": message.chat.id})
     if chat_status and chat_status.get("status") == "disabled":
