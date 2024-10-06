@@ -3,7 +3,7 @@ from pyrogram import Client, filters
 from motor.motor_asyncio import AsyncIOMotorClient
 
 # MongoDB connection setup (refer to your MongoDB setup code)
-from mongodb import mongodb, pymongodb
+from VIPMUSIC.core.mongo import mongodb, pymongodb
 
 # Collections to store messages, replies, and group settings
 messages_collection = pymongodb["messages"]
