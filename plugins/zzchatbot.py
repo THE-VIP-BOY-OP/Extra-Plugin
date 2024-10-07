@@ -38,11 +38,15 @@ async def callback_handler(client: Client, callback_query: CallbackQuery):
         f"ᴄʜᴀᴛ: {callback_query.message.chat.title}\n**ᴄʜᴀᴛʙᴏᴛ ʜᴀs ʙᴇᴇɴ {'ᴇɴᴀʙʟᴇᴅ' if action == 'enable_chatbot' else 'ᴅɪsᴀʙʟᴇᴅ'}.**"
     )
 
-@app.on_message((filters.text | filters.sticker | filters.photo | filters.video | filters.audio) & filters.group)
+@app.on_message((filters.text | filters.sticker | filters.photo | filters.video | filters.audio))
 async def chatbot_response(client: Client, message: Message):
     chat_status = status_db.find_one({"chat_id": message.chat.id})
     if chat_status and chat_status.get("status") == "disabled":
         return
+
+    if message.text:
+        if any(message.text.startswith(prefix) for prefix in ["!", "/", ".", "?", "@", "#"]):
+            return
 
     
     if message.reply_to_message and message.reply_to_message.from_user.id == client.me.id:
