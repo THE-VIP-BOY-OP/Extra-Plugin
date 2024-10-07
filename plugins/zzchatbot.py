@@ -18,7 +18,7 @@ CHATBOT_ON = [
     ],
 ]
 
-@app.on_message(filters.command("chatbot") & filters.group)
+@app.on_message(filters.command("chatbot"))
 async def chaton(client: Client, message: Message):
     await message.reply_text(
         f"ᴄʜᴀᴛ: {message.chat.title}\n**ᴄʜᴏᴏsᴇ ᴀɴ ᴏᴘᴛɪᴏɴ ᴛᴏ ᴇɴᴀʙʟᴇ/ᴅɪsᴀʙʟᴇ ᴄʜᴀᴛʙᴏᴛ.**",
