@@ -16,6 +16,6 @@ async def translate(client, message):
 
     try:
         translated = GoogleTranslator(source='auto', target=target_language).translate(text_to_translate)
-        await message.reply_text(f"Anuvad: {translated}\nBhasha: {target_language}")
+        await message.reply_text(f"Text: {translated}\nLang: {target_language}")
     except Exception as e:
         await message.reply_text(f"Anuvad karne mein samasya hui: {str(e)}")
