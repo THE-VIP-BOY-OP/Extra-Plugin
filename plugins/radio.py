@@ -29,6 +29,7 @@ RADIO_STATION = {
     "sᴀɴsᴋᴀʀ ᴛᴠ": "https://d26idhjf0y1p2g.cloudfront.net/out/v1/cd66dd25b9774cb29943bab54bbf3e2f/index.m3u8",
     "ᴢᴇᴇ ɴᴇᴡs": "https://www.youtube.com/live/TPcmrPrygDc?si=hiHBkIidgurQAd1P",
     "𝟿xᴍ ᴍᴜsɪᴄ": "https://d2q8p4pe5spbak.cloudfront.net/bpk-tv/9XM/9XM.isml/index.m3u8",
+    "ɴᴇᴡs ʙɪʜᴀʀ ᴊʜᴀʀᴋʜᴀɴᴅ": "https://ythls.armelin.one/channel/UC531MlZA5LUbeGwEN_zcppw.m3u8",
 }
 
 
