@@ -293,12 +293,14 @@ async def cb_handler(_, query: CallbackQuery):
 
 
 __MODULE__ = "ᴄʜᴀᴛʙᴏᴛ"
-__HELP__ = """
-ʜᴇʏ ᴛʜɪs ɪs ᴄʜᴀᴛʙᴏᴛ.
+__HELP__ = f"""**
+๏ ʜᴇʀᴇ ᴀʀᴇ ᴛʜᴇ ᴄᴏᴍᴍᴀɴᴅs ғᴏʀ {nexichat.mention}:
 
- Usᴇ ɪɴ Gʀᴏᴜᴘ:-
-/chatbot On
-/chatbot Off
-
-ᴍᴀᴅᴇ ʙʏ: @THE_VIP_BOY
+➻ /chatbot - ᴏᴘᴇɴs ᴏᴘᴛɪᴏns ᴛᴏ ᴇɴᴀʙʟᴇ ᴏʀ ᴅɪsᴀʙʟᴇ ᴛʜᴇ ᴄʜᴀᴛʙᴏᴛ.
+──────────────
+➻ /chatbotlang, /chatbotlanguage, /setchatbotlang - ᴏᴘᴇɴs ᴀ ᴍᴇɴᴜ ᴛᴏ sᴇʟᴇᴄᴛ ᴛʜᴇ ᴄʜᴀᴛ ʟᴀɴɢᴜᴀɢᴇ.  
+──────────────
+➻ /resetlang, /nolang - ʀᴇsᴇᴛs ᴛʜᴇ ʙᴏᴛ's ʟᴀɴɢᴜᴀɢᴇ ᴛᴏ ᴍɪxᴇᴅ ʟᴀɴɢᴜᴀɢᴇ.
+──────────────
+📡 ᴍᴀᴅᴇ ʙʏ ➪ [ᴠɪᴘ ✯ ʙᴏʏ](https://t.me/the_vip_boy) 💞**
 """
