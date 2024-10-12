@@ -152,7 +152,7 @@ async def chatbot_response(client: Client, message: Message):
         if any(message.text.startswith(prefix) for prefix in ["!", "/", ".", "?", "@", "#"]):
             return
 
-    if (message.reply_to_message and message.reply_to_message.from_user.id == client.me.id):
+    if (message.reply_to_message and message.reply_to_message.from_user.id == nexichat.id):
         await client.send_chat_action(message.chat.id, ChatAction.TYPING)
 
         reply_data = await get_reply(message.text if message.text else "")
