@@ -56,7 +56,7 @@ SHAYRI = [
 ]
 
 # Command
-SHAYRI_COMMAND = ["gf", "bf", "shayri", "sari", "shari", "love"]
+SHAYRI_COMMAND = ["gf", "bf", "shayri", "sari", "shari"]
 
 
 @app.on_message(filters.command(SHAYRI_COMMAND) & filters.group)
