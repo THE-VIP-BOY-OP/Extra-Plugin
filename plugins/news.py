@@ -17,8 +17,13 @@ def get_news_update():
     try:
         response = requests.get(url)
         response.raise_for_status()  # Raise error for failed responses
-        article = response.json()['articles'][0]  # First article
-        news = f"{article['title']}\n\n{article['description']}"
+        articles = response.json().get('articles', [])
+        
+        if not articles:
+            return "Haber bulunamadı."
+
+        article = articles[0]  # First article
+        news = f"{article.get('title', 'Başlık bulunamadı')}\n\n{article.get('description', 'Açıklama mevcut değil')}"
         return news
     except requests.RequestException as e:
         return f"Haber alınamadı: {e}"
