@@ -47,13 +47,8 @@ async def join_watcher(_, message):
                         [
                             [
                                 InlineKeyboardButton(
-                                    f"😍𝐀ᴅᴅᴇᴅ 𝐁ʏ😍",
-                                    url=f"tg://openmessage?user_id={message.from_user.id}",
-                                )
-                            ]
-                        ]
-                    ),
-                )
+                                            f"{message.from_user.first_name}",
+                                            user_id=message.from_user.id)]]))
                 await add_served_chat(chat.id)
                 await userbot.join_chat(f"{username}")
 
