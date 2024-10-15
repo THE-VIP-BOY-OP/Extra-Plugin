@@ -9,7 +9,7 @@ from pyrogram.enums import ChatMembersFilter
 fsubdb = MongoClient(MONGO_DB_URI)
 forcesub_collection = fsubdb.status_db.status
 
-@app.on_message(filters.command("forcesub") & filters.group)
+@app.on_message(filters.command(["fsub", "forcesub"]) & filters.group)
 async def set_forcesub(client: Client, message: Message):
     chat_id = message.chat.id
     user_id = message.from_user.id
@@ -23,7 +23,7 @@ async def set_forcesub(client: Client, message: Message):
         return await message.reply_text("Force subscription has been disabled for this group.")
 
     if len(message.command) != 2:
-        return await message.reply_text("Usage: /forcesub <channel username or ID> or /forcesub off to disable")
+        return await message.reply_text("Usage: /fsub <channel username or ID> or /fsub off to disable")
 
     channel_input = message.command[1]
 
