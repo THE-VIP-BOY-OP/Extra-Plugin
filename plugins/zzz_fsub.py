@@ -62,7 +62,7 @@ async def check_forcesub(client: Client, message: Message):
 
     forcesub_data = forcesub_collection.find_one({"chat_id": chat_id})
     if not forcesub_data:
-        return True
+        return
 
     channel_id = forcesub_data["channel_id"]
     channel_username = forcesub_data["channel_username"]
