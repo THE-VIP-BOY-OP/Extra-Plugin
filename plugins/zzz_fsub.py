@@ -90,6 +90,8 @@ async def check_forcesub(client: Client, message: Message):
     except ChatAdminRequired:
         forcesub_collection.delete_one({"chat_id": chat_id})
         return await message.reply_text("I'm not an admin in this channel. Please make me an admin first.")
+    except Exception as e:
+        await message.reply_text("I'm not an admin in this channel. Please make me an admin first with (invite new member admin power)")
         
 
 @app.on_message(filters.group)
