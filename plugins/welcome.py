@@ -113,13 +113,13 @@ welcomedb = MongoClient(MONGO_DB_URI)
 status_db = welcomedb.welcome_status_db.status
 
 async def get_welcome_status(chat_id):
-    status = await status_db.find_one({"chat_id": chat_id})
+    status = status_db.find_one({"chat_id": chat_id})
     if status:
         return status.get("welcome", "on")
     return "on"
 
 async def set_welcome_status(chat_id, state):
-    await status_db.update_one(
+    status_db.update_one(
         {"chat_id": chat_id},
         {"$set": {"welcome": state}},
         upsert=True
