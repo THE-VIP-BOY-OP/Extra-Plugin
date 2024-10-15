@@ -108,7 +108,6 @@ async def check_forcesub(client: Client, message: Message):
             caption=(f"**👋 ʜᴇʟʟᴏ {message.from_user.mention}, ʏᴏᴜ ɴᴇᴇᴅ ᴛᴏ ᴊᴏɪɴ ᴛʜᴇ [ᴄʜᴀɴɴᴇʟ]({channel_url}) "
                      "ᴛᴏ sᴇɴᴅ ᴍᴇssᴀɢᴇs ɪɴ ᴛʜɪs ɢʀᴏᴜᴘ.**"),
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("๏ ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ ๏", url=channel_url)]]),
-            disable_web_page_preview=True
         )
     except ChatAdminRequired:
         forcesub_collection.delete_one({"chat_id": chat_id})
