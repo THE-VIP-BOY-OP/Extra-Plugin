@@ -52,7 +52,8 @@ async def set_forcesub(client: Client, message: Message):
         await message.reply_text(f"Force subscription set to {channel_input} for this group.")
 
     except Exception as e:
-        await message.reply_text(f"Error: {str(e)}")
+        await message.reply_text("I'm not an admin in this channel. Please make me an admin first.")
+
 
 
 async def check_forcesub(client: Client, message: Message):
