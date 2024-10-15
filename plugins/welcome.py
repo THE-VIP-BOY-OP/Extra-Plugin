@@ -15,6 +15,8 @@ from pyrogram import filters
 from pyrogram.types import ChatMemberUpdated, InlineKeyboardMarkup, InlineKeyboardButton
 from pytz import timezone
 from datetime import datetime
+from pymongo import MongoClient
+from config import MONGO_DB_URI
 
 user_last_message_time = {}
 user_command_count = {}
@@ -35,25 +37,6 @@ def convert_to_small_caps(text):
     return text.translate(mapping)
 
 
-class WelDatabase:
-    def __init__(self):
-        self.data = {}
-
-    async def find_one(self, chat_id):
-        return chat_id in self.data
-
-    async def add_wlcm(self, chat_id):
-        if chat_id not in self.data:
-            self.data[chat_id] = {"state": "on"}  # Default state is "on"
-
-    async def rm_wlcm(self, chat_id):
-        if chat_id in self.data:
-            del self.data[chat_id]
-
-
-wlcm = WelDatabase()
-
-
 class temp:
     ME = None
     CURRENT = 2
@@ -63,19 +46,36 @@ class temp:
     B_NAME = None
 
 
+
+
+# MongoDB connection
+client = MongoClient(MONGO_DB_URI)
+db = client["WelcomeDb"]
+wlcm = db["welcome_status"]  
+
+async def get_welcome_status(chat_id):
+    status = await wlcm.find_one({"chat_id": chat_id})
+    if status:
+        return status.get("welcome", "on")  
+    return "on"
+
+async def set_welcome_status(chat_id, state):
+    await wlcm.update_one(
+        {"chat_id": chat_id},
+        {"$set": {"welcome": state}},
+        upsert=True
+    )
+
 @app.on_message(filters.command("welcome") & ~filters.private)
 async def auto_state(_, message):
     user_id = message.from_user.id
     current_time = time()
-    # Update the last message timestamp for the user
+   
     last_message_time = user_last_message_time.get(user_id, 0)
-
     if current_time - last_message_time < SPAM_WINDOW_SECONDS:
-        # If less than the spam window time has passed since the last message
         user_last_message_time[user_id] = current_time
         user_command_count[user_id] = user_command_count.get(user_id, 0) + 1
         if user_command_count[user_id] > SPAM_THRESHOLD:
-            # Block the user if they exceed the threshold
             hu = await message.reply_text(
                 f"**{message.from_user.mention} ᴘʟᴇᴀsᴇ ᴅᴏɴᴛ ᴅᴏ sᴘᴀᴍ, ᴀɴᴅ ᴛʀʏ ᴀɢᴀɪɴ ᴀғᴛᴇʀ 5 sᴇᴄ**"
             )
@@ -83,46 +83,35 @@ async def auto_state(_, message):
             await hu.delete()
             return
     else:
-        # If more than the spam window time has passed, reset the command count and update the message timestamp
         user_command_count[user_id] = 1
         user_last_message_time[user_id] = current_time
 
     usage = "**ᴜsᴀɢᴇ:**\n**⦿ /welcome [on|off]**"
     if len(message.command) == 1:
         return await message.reply_text(usage)
+
     chat_id = message.chat.id
     user = await app.get_chat_member(message.chat.id, message.from_user.id)
-    if user.status in (
-        enums.ChatMemberStatus.ADMINISTRATOR,
-        enums.ChatMemberStatus.OWNER,
-    ):
-        A = await wlcm.find_one(chat_id)
+    if user.status in (enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER):
         state = message.text.split(None, 1)[1].strip().lower()
+        current_status = await get_welcome_status(chat_id)
+        
         if state == "off":
-            if A:
-                await message.reply_text(
-                    "**ᴀssɪsᴛᴀɴᴛ ᴡᴇʟᴄᴏᴍᴇ ɴᴏᴛɪғɪᴄᴀᴛɪᴏɴ ᴀʟʀᴇᴀᴅʏ ᴅɪsᴀʙʟᴇᴅ !**"
-                )
+            if current_status == "off":
+                await message.reply_text("** ᴡᴇʟᴄᴏᴍᴇ ɴᴏᴛɪғɪᴄᴀᴛɪᴏɴ ᴀʟʀᴇᴀᴅʏ ᴅɪsᴀʙʟᴇᴅ!**")
             else:
-                await wlcm.add_wlcm(chat_id)
-                await message.reply_text(
-                    f"**ᴅɪsᴀʙʟᴇᴅ ᴡᴇʟᴄᴏᴍᴇ ɴᴏᴛɪғɪᴄᴀᴛɪᴏɴ ɪɴ** {message.chat.title} **ʙʏ ʙᴏᴛ**"
-                )
+                await set_welcome_status(chat_id, "off")
+                await message.reply_text(f"**ᴅɪsᴀʙʟᴇᴅ ᴡᴇʟᴄᴏᴍᴇ ɴᴏᴛɪғɪᴄᴀᴛɪᴏɴ ɪɴ** {message.chat.title} **ʙʏ ʙᴏᴛ**")
         elif state == "on":
-            if not A:
-                await message.reply_text("**ᴇɴᴀʙʟᴇᴅ ʙᴏᴛ ᴡᴇʟᴄᴏᴍᴇ ɴᴏᴛɪғɪᴄᴀᴛɪᴏɴ.**")
+            if current_status == "on":
+                await message.reply_text("**ᴇɴᴀʙʟᴇᴅ ʙᴏᴛ ᴡᴇʟᴄᴏᴍᴇ ɴᴏᴛɪғɪᴄᴀᴛɪᴏɴ ᴀʟʀᴇᴀᴅʏ!**")
             else:
-                await wlcm.rm_wlcm(chat_id)
-                await message.reply_text(
-                    f"**ᴇɴᴀʙʟᴇᴅ ʙᴏᴛ ᴡᴇʟᴄᴏᴍᴇ ɴᴏᴛɪғɪᴄᴀᴛɪᴏɴ ɪɴ ** {message.chat.title}"
-                )
+                await set_welcome_status(chat_id, "on")
+                await message.reply_text(f"**ᴇɴᴀʙʟᴇᴅ ʙᴏᴛ ᴡᴇʟᴄᴏᴍᴇ ɴᴏᴛɪғɪᴄᴀᴛɪᴏɴ ɪɴ** {message.chat.title}")
         else:
             await message.reply_text(usage)
     else:
-        await message.reply(
-            "**sᴏʀʀʏ ᴏɴʟʏ ᴀᴅᴍɪɴs ᴄᴀɴ ᴇɴᴀʙʟᴇ ʙᴏᴛ ᴡᴇʟᴄᴏᴍᴇ ɴᴏᴛɪғɪᴄᴀᴛɪᴏɴ!**"
-        )
-
+        await message.reply("**sᴏʀʀʏ ᴏɴʟʏ ᴀᴅᴍɪɴs ᴄᴀɴ ᴇɴᴀʙʟᴇ ʙᴏᴛ ᴡᴇʟᴄᴏᴍᴇ ɴᴏᴛɪғɪᴄᴀᴛɪᴏɴ!**")
 
 
 def circle(pfp, size=(80, 80), brightness_factor=10):
@@ -188,35 +177,27 @@ def welcomepic(user_id, user_username, user_names, chat_name, user_photo, chat_p
     background.save(f"downloads/welcome#{user_id}.png")
     return f"downloads/welcome#{user_id}.png"
 
+
+
 @app.on_chat_member_updated(filters.group, group=-4)
 async def greet_new_members(_, member: ChatMemberUpdated):
     try:
         chat_id = member.chat.id
+
+        welcome_status = await get_welcome_status(chat_id)
+        if welcome_status == "off":
+            return  
+        
         chat = await app.get_chat(chat_id)
         user = member.new_chat_member.user
         user_id = user.id
         user_mention = user.mention
-        
-        if chat.title:
-            chat_name = chat.title
-        else:
-            chat_name = "Anjan Group"
-        
-        if user.username:
-            user_username = f"@{user.username}"
-        else:
-            user_username = "No Username"
 
-        if user.first_name:
-            user_name = user.first_name
-        else:
-            user_name = "No Name"
-
-        if user.first_name and re.match("^[A-Za-z0-9 ]+$", user.first_name):
-            user_names = user.first_name
-        else:
-            user_names = "New Member"
-        # Convert current UTC time to IST (Indian Standard Time)
+        chat_name = chat.title if chat.title else "Anjan Group"
+        user_username = f"@{user.username}" if user.username else "No Username"
+        user_name = user.first_name if user.first_name else "No Name"
+        user_names = user.first_name if user.first_name and re.match("^[A-Za-z0-9 ]+$", user.first_name) else "New Member"
+       
         ist = timezone('Asia/Kolkata')
         joined_time = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S')
 
@@ -225,21 +206,15 @@ async def greet_new_members(_, member: ChatMemberUpdated):
                 users_photo = await app.download_media(
                     user.photo.big_file_id, file_name=f"pp{user.id}.png"
                 )
-                if users_photo:
-                    user_photo = users_photo
-                else:
-                    user_photo = "assets/nodp.png"
+                user_photo = users_photo if users_photo else "assets/nodp.png"
             except AttributeError:
                 user_photo = "assets/nodp.png"
-                
+            
             try:
                 groups_photo = await app.download_media(
                     member.chat.photo.big_file_id, file_name=f"chatpp{chat_id}.png"
                 )
-                if groups_photo:
-                    chat_photo = groups_photo
-                else:
-                    chat_photo = "assets/nodp.png"
+                chat_photo = groups_photo if groups_photo else "assets/nodp.png"
             except AttributeError:
                 chat_photo = "assets/nodp.png"
             
@@ -253,10 +228,9 @@ async def greet_new_members(_, member: ChatMemberUpdated):
                     await temp.MELCOW[f"welcome-{member.chat.id}"].delete()
                 except Exception as e:
                     LOGGER.error(e)
-            
-            # Modified welcome text
+
             welcome_text = (
-                f"**{convert_to_small_caps('ᴡᴇʟᴄᴍ ᴛᴏ')}** {convert_to_small_caps(chat_name)}\n\n"
+                f"**{convert_to_small_caps('ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ')}** {convert_to_small_caps(chat_name)}\n\n"
                 f"**{convert_to_small_caps('ɴᴀᴍᴇ')} :** {convert_to_small_caps(user.first_name)}\n"
                 f"**{convert_to_small_caps('ᴜꜱᴇʀ ɪᴅ')} :** `{user_id}`\n"
                 f"**{convert_to_small_caps('ᴜꜱᴇʀɴᴀᴍᴇ')} :** [{convert_to_small_caps(user_username)}](tg://openmessage?user_id={user_id})\n"
@@ -266,7 +240,7 @@ async def greet_new_members(_, member: ChatMemberUpdated):
             await app.send_photo(chat_id, photo=welcomeimg, caption=welcome_text, reply_markup=reply_markup)
 
     except Exception as e:
-        
+        LOGGER.error(e)
         return
 
 
