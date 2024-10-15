@@ -97,3 +97,10 @@ async def check_forcesub(client: Client, message: Message):
 async def enforce_forcesub(client: Client, message: Message):
     if not await check_forcesub(client, message):
         return
+
+
+__MODULE__ = "ғsᴜʙ"
+__HELP__ = """
+/fsub <ᴄʜᴀɴɴᴇʟ ᴜsᴇʀɴᴀᴍᴇ ᴏʀ ɪᴅ> - sᴇᴛ ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏɴ ғᴏʀ ᴛʜɪs ɢʀᴏᴜᴘ.
+/fsub off - ᴅɪsᴀʙʟᴇ ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏɴ ғᴏʀ ᴛʜɪs ɢʀᴏᴜᴘ.
+"""
