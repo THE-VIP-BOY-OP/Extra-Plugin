@@ -109,19 +109,17 @@ def welcomepic(user_id, user_username, user_names, chat_name, user_photo, chat_p
     background.save(f"downloads/welcome#{user_id}.png")
     return f"downloads/welcome#{user_id}.png"
 
-# MongoDB connection
-client = MongoClient(MONGO_DB_URI)
-db = client["WelcomeDb"]
-wlcm = db["welcome_status"]  
+welcomedb = MongoClient(MONGO_DB_URI)
+status_db = welcomedb.welcome_status_db.status
 
 async def get_welcome_status(chat_id):
-    status = await wlcm.find_one({"chat_id": chat_id})
+    status = await status_db.find_one({"chat_id": chat_id})
     if status:
-        return status.get("welcome", "on")  
+        return status.get("welcome", "on")
     return "on"
 
 async def set_welcome_status(chat_id, state):
-    await wlcm.update_one(
+    await status_db.update_one(
         {"chat_id": chat_id},
         {"$set": {"welcome": state}},
         upsert=True
@@ -131,7 +129,7 @@ async def set_welcome_status(chat_id, state):
 async def auto_state(_, message):
     user_id = message.from_user.id
     current_time = time()
-   
+
     last_message_time = user_last_message_time.get(user_id, 0)
     if current_time - last_message_time < SPAM_WINDOW_SECONDS:
         user_last_message_time[user_id] = current_time
@@ -156,7 +154,7 @@ async def auto_state(_, message):
     if user.status in (enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER):
         state = message.text.split(None, 1)[1].strip().lower()
         current_status = await get_welcome_status(chat_id)
-        
+
         if state == "off":
             if current_status == "off":
                 await message.reply_text("** ᴡᴇʟᴄᴏᴍᴇ ɴᴏᴛɪғɪᴄᴀᴛɪᴏɴ ᴀʟʀᴇᴀᴅʏ ᴅɪsᴀʙʟᴇᴅ!**")
@@ -174,8 +172,6 @@ async def auto_state(_, message):
     else:
         await message.reply("**sᴏʀʀʏ ᴏɴʟʏ ᴀᴅᴍɪɴs ᴄᴀɴ ᴇɴᴀʙʟᴇ ʙᴏᴛ ᴡᴇʟᴄᴏᴍᴇ ɴᴏᴛɪғɪᴄᴀᴛɪᴏɴ!**")
 
-
-
 @app.on_chat_member_updated(filters.group, group=-4)
 async def greet_new_members(_, member: ChatMemberUpdated):
     try:
@@ -183,8 +179,8 @@ async def greet_new_members(_, member: ChatMemberUpdated):
 
         welcome_status = await get_welcome_status(chat_id)
         if welcome_status == "off":
-            return  
-        
+            return
+
         chat = await app.get_chat(chat_id)
         user = member.new_chat_member.user
         user_id = user.id
@@ -239,7 +235,6 @@ async def greet_new_members(_, member: ChatMemberUpdated):
     except Exception as e:
         LOGGER.error(e)
         return
-
 
 __MODULE__ = "Wᴇᴄᴏᴍᴇ"
 __HELP__ = """
