@@ -46,7 +46,68 @@ class temp:
     B_NAME = None
 
 
+def circle(pfp, size=(80, 80), brightness_factor=10):
+    pfp = pfp.resize(size, Image.Resampling.LANCZOS).convert("RGBA")
+    pfp = ImageEnhance.Brightness(pfp).enhance(brightness_factor)
+    bigsize = (pfp.size[0] * 3, pfp.size[1] * 3)
+    mask = Image.new("L", bigsize, 0)
+    draw = ImageDraw.Draw(mask)
+    draw.ellipse((0, 0) + bigsize, fill=255)
+    mask = mask.resize(pfp.size, Image.Resampling.LANCZOS)
+    mask = ImageChops.darker(mask, pfp.split()[-1])
+    pfp.putalpha(mask)
+    
+    
+    border_size_violet = 5
+    border_size_blue = 3   
+    outline = Image.new("RGBA", (pfp.size[0] + 2 * border_size_violet, pfp.size[1] + 2 * border_size_violet), (0, 0, 0, 0))
+    outline_draw = ImageDraw.Draw(outline)
+    
+    violet = (148, 0, 211, 255)  
+    blue = (0, 0, 255, 255)      
+    green = (19, 136, 8, 255)    
+    
+    outline_draw.ellipse((0, 0, outline.size[0], outline.size[1]), outline=violet, width=border_size_violet)
+    outline_draw.ellipse((border_size_violet - border_size_blue, border_size_violet - border_size_blue,
+                          outline.size[0] - (border_size_violet - border_size_blue),
+                          outline.size[1] - (border_size_violet - border_size_blue)), 
+                          outline=blue, width=border_size_blue)
 
+    
+    outline_draw.ellipse((border_size_violet, border_size_violet,
+                          outline.size[0] - border_size_violet,
+                          outline.size[1] - border_size_violet), 
+                          outline=green, width=border_size_violet)
+
+    outline.paste(pfp, (border_size_violet, border_size_violet), pfp)
+    
+    return outline
+
+def welcomepic(user_id, user_username, user_names, chat_name, user_photo, chat_photo):
+    background = Image.open("assets/wel2.png")
+    user_img = Image.open(user_photo).convert("RGBA")
+    chat_img = Image.open(chat_photo).convert("RGBA")
+    
+    chat_img_circle = circle(chat_img, size=(240, 240), brightness_factor=1.2)
+    user_img_circle = circle(user_img, size=(232, 232), brightness_factor=1.2)
+    
+    background.paste(chat_img_circle, (270, 260), chat_img_circle)
+    background.paste(user_img_circle, (827, 260), user_img_circle)
+    
+    draw = ImageDraw.Draw(background)
+    font = ImageFont.truetype("assets/font.ttf", size=32)
+
+  
+    saffron = (255, 153, 51)  
+    white = (255, 255, 255)   
+    green = (19, 136, 8)
+
+    draw.text((510, 517), f"Name:  {user_names}", fill=saffron, font=font)
+    draw.text((510, 547), f"User Id:  {user_id}", fill=white, font=font)
+    draw.text((510, 580), f"Username:  {user_username}", fill=green, font=font)
+    
+    background.save(f"downloads/welcome#{user_id}.png")
+    return f"downloads/welcome#{user_id}.png"
 
 # MongoDB connection
 client = MongoClient(MONGO_DB_URI)
@@ -112,70 +173,6 @@ async def auto_state(_, message):
             await message.reply_text(usage)
     else:
         await message.reply("**sᴏʀʀʏ ᴏɴʟʏ ᴀᴅᴍɪɴs ᴄᴀɴ ᴇɴᴀʙʟᴇ ʙᴏᴛ ᴡᴇʟᴄᴏᴍᴇ ɴᴏᴛɪғɪᴄᴀᴛɪᴏɴ!**")
-
-
-def circle(pfp, size=(80, 80), brightness_factor=10):
-    pfp = pfp.resize(size, Image.Resampling.LANCZOS).convert("RGBA")
-    pfp = ImageEnhance.Brightness(pfp).enhance(brightness_factor)
-    bigsize = (pfp.size[0] * 3, pfp.size[1] * 3)
-    mask = Image.new("L", bigsize, 0)
-    draw = ImageDraw.Draw(mask)
-    draw.ellipse((0, 0) + bigsize, fill=255)
-    mask = mask.resize(pfp.size, Image.Resampling.LANCZOS)
-    mask = ImageChops.darker(mask, pfp.split()[-1])
-    pfp.putalpha(mask)
-    
-    
-    border_size_violet = 5
-    border_size_blue = 3   
-    outline = Image.new("RGBA", (pfp.size[0] + 2 * border_size_violet, pfp.size[1] + 2 * border_size_violet), (0, 0, 0, 0))
-    outline_draw = ImageDraw.Draw(outline)
-    
-    violet = (148, 0, 211, 255)  
-    blue = (0, 0, 255, 255)      
-    green = (19, 136, 8, 255)    
-    
-    outline_draw.ellipse((0, 0, outline.size[0], outline.size[1]), outline=violet, width=border_size_violet)
-    outline_draw.ellipse((border_size_violet - border_size_blue, border_size_violet - border_size_blue,
-                          outline.size[0] - (border_size_violet - border_size_blue),
-                          outline.size[1] - (border_size_violet - border_size_blue)), 
-                          outline=blue, width=border_size_blue)
-
-    
-    outline_draw.ellipse((border_size_violet, border_size_violet,
-                          outline.size[0] - border_size_violet,
-                          outline.size[1] - border_size_violet), 
-                          outline=green, width=border_size_violet)
-
-    outline.paste(pfp, (border_size_violet, border_size_violet), pfp)
-    
-    return outline
-
-def welcomepic(user_id, user_username, user_names, chat_name, user_photo, chat_photo):
-    background = Image.open("assets/wel2.png")
-    user_img = Image.open(user_photo).convert("RGBA")
-    chat_img = Image.open(chat_photo).convert("RGBA")
-    
-    chat_img_circle = circle(chat_img, size=(240, 240), brightness_factor=1.2)
-    user_img_circle = circle(user_img, size=(232, 232), brightness_factor=1.2)
-    
-    background.paste(chat_img_circle, (270, 260), chat_img_circle)
-    background.paste(user_img_circle, (827, 260), user_img_circle)
-    
-    draw = ImageDraw.Draw(background)
-    font = ImageFont.truetype("assets/font.ttf", size=32)
-
-  
-    saffron = (255, 153, 51)  
-    white = (255, 255, 255)   
-    green = (19, 136, 8)
-
-    draw.text((510, 517), f"Name:  {user_names}", fill=saffron, font=font)
-    draw.text((510, 547), f"User Id:  {user_id}", fill=white, font=font)
-    draw.text((510, 580), f"Username:  {user_username}", fill=green, font=font)
-    
-    background.save(f"downloads/welcome#{user_id}.png")
-    return f"downloads/welcome#{user_id}.png"
 
 
 
