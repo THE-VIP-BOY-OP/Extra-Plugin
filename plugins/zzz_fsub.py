@@ -8,11 +8,8 @@ from pyrogram import filters
 from pyrogram.enums import ChatMembersFilter
 
 # Connect to MongoDB
-client = MongoClient(MONGO_DB_URI)
-db = client["forcesub_db"]
-forcesub_collection = db["forcesub"]
-
-from pyrogram.enums import ChatMembersFilter  # Ensure this is imported if it's not already
+fsubdb = MongoClient(MONGO_DB_URI)
+forcesub_collection = fsubdb.status_db.status
 
 @app.on_message(filters.command("forcesub") & filters.group)
 async def set_forcesub(client: Client, message: Message):
@@ -26,7 +23,7 @@ async def set_forcesub(client: Client, message: Message):
 
     # Handle disabling forcesub with "off" or "disable"
     if len(message.command) == 2 and message.command[1].lower() in ["off", "disable"]:
-        forcesub_collection.delete_one({"chat_id": chat_id})
+        forcesub_collection.delete_one({"chat_id": chat_id})  # Remove from DB
         return await message.reply_text("Force subscription has been disabled for this group.")
 
     # Ensure a channel username or ID is provided for enabling forcesub
@@ -51,15 +48,17 @@ async def set_forcesub(client: Client, message: Message):
 
         # Save the forcesub data in the database
         forcesub_collection.update_one(
-            {"chat_id": chat_id},
-            {"$set": {"channel": channel}},
-            upsert=True
+            {"chat_id": chat_id},   # Filter
+            {"$set": {"channel": channel}},  # Data to set
+            upsert=True  # Insert if doesn't exist
         )
 
         await message.reply_text(f"Force subscription set to {channel} for this group.")
 
     except Exception as e:
-        await message.reply_text(f"Error: {str(e)}")        
+        await message.reply_text(f"Error: {str(e)}")
+
+
 # Function to check if a user has joined the forcesub channel
 async def check_forcesub(client: Client, message: Message):
     chat_id = message.chat.id
