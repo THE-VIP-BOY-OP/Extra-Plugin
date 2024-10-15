@@ -12,7 +12,8 @@ client = MongoClient(MONGO_DB_URI)
 db = client["forcesub_db"]
 forcesub_collection = db["forcesub"]
 
-# Command for group owners and sudoers to set the forcesub channel
+from pyrogram.enums import ChatMembersFilter  # Ensure this is imported if it's not already
+
 @app.on_message(filters.command("forcesub") & filters.group)
 async def set_forcesub(client: Client, message: Message):
     chat_id = message.chat.id
@@ -40,7 +41,7 @@ async def set_forcesub(client: Client, message: Message):
         bot_is_admin = False
 
         # Loop through channel administrators to check if the bot is an admin
-        async for admin in app.get_chat_members(channel, filter="administrators"):
+        async for admin in app.get_chat_members(channel, filter=ChatMembersFilter.ADMINISTRATORS):
             if admin.user.id == bot_id:
                 bot_is_admin = True
                 break
@@ -58,8 +59,7 @@ async def set_forcesub(client: Client, message: Message):
         await message.reply_text(f"Force subscription set to {channel} for this group.")
 
     except Exception as e:
-        await message.reply_text(f"Error: {str(e)}")
-        
+        await message.reply_text(f"Error: {str(e)}")        
 # Function to check if a user has joined the forcesub channel
 async def check_forcesub(client: Client, message: Message):
     chat_id = message.chat.id
