@@ -5,6 +5,12 @@ from VIPMUSIC import app
 from VIPMUSIC.misc import SUDOERS
 from config import MONGO_DB_URI
 from pyrogram.enums import ChatMembersFilter
+from pyrogram.errors import (
+    ChatAdminRequired,
+    InviteRequestSent,
+    UserAlreadyParticipant,
+    UserNotParticipant,
+)
 
 fsubdb = MongoClient(MONGO_DB_URI)
 forcesub_collection = fsubdb.status_db.status
@@ -71,21 +77,17 @@ async def check_forcesub(client: Client, message: Message):
         user_member = await app.get_chat_member(channel_id, user_id)
         if user_member:
             return
+    except UserNotParticipant:
+        await message.delete()
+        if channel_username:
+            channel_url = f"https://t.me/{channel_username}"
         else:
-            await message.delete()
-
-            if channel_username:
-                channel_url = f"https://t.me/{channel_username}"
-            else:
-                invite_link = await app.export_chat_invite_link(channel_id)
-                channel_url = invite_link
-            await message.reply_text(
-                f"Hello {message.from_user.mention}, you need to join the [channel]({channel_url}) to send messages in this group.",
-                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Join Channel", url=channel_url)]
-                ]),
-                disable_web_page_preview=True
-            )
-    except:
+            invite_link = await app.export_chat_invite_link(channel_id)
+            channel_url = invite_link
+        await message.reply_text(f"Hello {message.from_user.mention}, you need to join the [channel]({channel_url}) to send messages in this group.",
+                                 reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Join Channel", url=channel_url)]]),
+                                 disable_web_page_preview=True)
+    except ChatAdminRequired:
         forcesub_collection.delete_one({"chat_id": chat_id})
         return await message.reply_text("I'm not an admin in this channel. Please make me an admin first.")
         
