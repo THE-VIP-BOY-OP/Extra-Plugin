@@ -4,6 +4,8 @@ from pymongo import MongoClient
 from VIPMUSIC import app
 from VIPMUSIC.misc import SUDOERS
 from config import MONGO_DB_URI
+from pyrogram import filters
+from pyrogram.enums import ChatMembersFilter
 
 # Connect to MongoDB
 client = MongoClient(MONGO_DB_URI)
@@ -34,9 +36,16 @@ async def set_forcesub(client: Client, message: Message):
 
     try:
         # Check if the bot is an admin in the provided channel
-        bot_id = app.id
-        bot_member = await client.get_chat_member(channel, bot_id)
-        if bot_member.status != "administrator":
+        bot_id = (await client.get_me()).id
+        bot_is_admin = False
+
+        # Loop through channel administrators to check if the bot is an admin
+        async for admin in app.get_chat_members(channel, filter="administrators"):
+            if admin.user.id == bot_id:
+                bot_is_admin = True
+                break
+
+        if not bot_is_admin:
             return await message.reply_text("I'm not an admin in this channel. Please make me an admin first.")
 
         # Save the forcesub data in the database
@@ -50,7 +59,7 @@ async def set_forcesub(client: Client, message: Message):
 
     except Exception as e:
         await message.reply_text(f"Error: {str(e)}")
-
+        
 # Function to check if a user has joined the forcesub channel
 async def check_forcesub(client: Client, message: Message):
     chat_id = message.chat.id
