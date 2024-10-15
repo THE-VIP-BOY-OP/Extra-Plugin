@@ -69,28 +69,26 @@ async def check_forcesub(client: Client, message: Message):
 
     try:
         user_member = await app.get_chat_member(channel_id, user_id)
-        if user_member.status in ["member", "administrator", "creator"]:
-            return True
+        if user_member:
+            return
         else:
-            raise Exception
+            await message.delete()
 
+            if channel_username:
+                channel_url = f"https://t.me/{channel_username}"
+            else:
+                invite_link = await app.export_chat_invite_link(channel_id)
+                channel_url = invite_link
+            await message.reply_text(
+                f"Hello {message.from_user.mention}, you need to join the [channel]({channel_url}) to send messages in this group.",
+                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Join Channel", url=channel_url)]
+                ]),
+                disable_web_page_preview=True
+            )
     except:
-        await message.delete()
-
-        if channel_username:
-            channel_url = f"https://t.me/{channel_username}"
-        else:
-            invite_link = await app.export_chat_invite_link(channel_id)
-            channel_url = invite_link
-
-        await message.reply_text(
-            f"Hello {message.from_user.mention}, you need to join the channel to send messages in this group.",
-            reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("Join Channel", url=channel_url)]
-            ]),
-            disable_web_page_preview=True
-        )
-        return False
+        forcesub_collection.delete_one({"chat_id": chat_id})
+        return await message.reply_text("I'm not an admin in this channel. Please make me an admin first.")
+        
 
 @app.on_message(filters.group)
 async def enforce_forcesub(client: Client, message: Message):
