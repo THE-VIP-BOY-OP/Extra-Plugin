@@ -37,7 +37,7 @@ async def set_forcesub(client: Client, message: Message):
         channel_info = await client.get_chat(channel_input)
         channel_id = channel_info.id
         channel_title = channel_info.title
-        channel_link = f"@{channel_info.username}" if channel_info.username else f"[ʟɪɴᴋ]({(await client.export_chat_invite_link(channel_input)).invite_link})"
+        channel_link = f"@{channel_info.username}" if channel_info.username else f"[ʟɪɴᴋ]({(await app.export_chat_invite_link(channel_id)).invite_link})"
         channel_members_count = channel_info.members_count
 
         bot_id = (await client.get_me()).id
