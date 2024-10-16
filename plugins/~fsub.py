@@ -1,5 +1,5 @@
 from pyrogram import Client, filters
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pymongo import MongoClient
 from VIPMUSIC import app
 from VIPMUSIC.misc import SUDOERS
@@ -36,7 +36,9 @@ async def set_forcesub(client: Client, message: Message):
     try:
         channel_info = await client.get_chat(channel_input)
         channel_id = channel_info.id
-        channel_username = channel_info.username
+        channel_title = channel_info.title
+        channel_username = f"@{channel_info.username}" if channel_info.username else await client.export_chat_invite_link(channel_input)
+        channel_members_count = channel_info.members_count
 
         bot_id = (await client.get_me()).id
         bot_is_admin = False
@@ -64,22 +66,38 @@ async def set_forcesub(client: Client, message: Message):
             upsert=True
         )
 
+        set_by_user = f"@{message.from_user.username}" if message.from_user.username else message.from_user.first_name
+
         await message.reply_photo(
             photo="https://envs.sh/Tn_.jpg",
-            caption=f"**🎉 ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏɴ sᴇᴛ ᴛᴏ [{channel_input}](https://t.me/{channel_username}) ғᴏʀ ᴛʜɪs ɢʀᴏᴜᴘ.**",
+            caption=(
+                f"**🎉 ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏɴ sᴇᴛ ᴛᴏ [{channel_title}]({channel_username}) ғᴏʀ ᴛʜɪs ɢʀᴏᴜᴘ.**\n\n"
+                f"**📊 ᴍᴇᴍʙᴇʀs:** `{channel_members_count}`\n"
+                f"**🆔 ᴄʜᴀɴɴᴇʟ ɪᴅ:** `{channel_id}`\n"
+                f"**👤 sᴇᴛ ʙʏ:** {set_by_user}"
+            ),
+            reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton("๏ ᴄʟᴏsᴇ ๏", callback_data="close_force_sub")]]
+            )
         )
 
     except Exception as e:
         await message.reply_photo(
             photo="https://envs.sh/TnZ.jpg",
             caption=("**🚫 I'ᴍ ɴᴏᴛ ᴀɴ ᴀᴅᴍɪɴ ɪɴ ᴛʜɪs ᴄʜᴀɴɴᴇʟ.**\n\n"
-                         "**➲ ᴘʟᴇᴀsᴇ ᴍᴀᴋᴇ ᴍᴇ ᴀɴ ᴀᴅᴍɪɴ ᴡɪᴛʜ:**\n\n"
-                         "**➥ Iɴᴠɪᴛᴇ Nᴇᴡ Mᴇᴍʙᴇʀs**\n\n"
-                         "🛠️ **Tʜᴇɴ ᴜsᴇ /ғsᴜʙ <ᴄʜᴀɴɴᴇʟ ᴜsᴇʀɴᴀᴍᴇ> ᴛᴏ sᴇᴛ ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏɴ.**"),
+                     "**➲ ᴘʟᴇᴀsᴇ ᴍᴀᴋᴇ ᴍᴇ ᴀɴ ᴀᴅᴍɪɴ ᴡɪᴛʜ:**\n\n"
+                     "**➥ Iɴᴠɪᴛᴇ Nᴇᴡ Mᴇᴍʙᴇʀs**\n\n"
+                     "🛠️ **Tʜᴇɴ ᴜsᴇ /ғsᴜʙ <ᴄʜᴀɴɴᴇʟ ᴜsᴇʀɴᴀᴍᴇ> ᴛᴏ sᴇᴛ ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏɴ.**"),
             reply_markup=InlineKeyboardMarkup(
                 [[InlineKeyboardButton("๏ ᴀᴅᴅ ᴍᴇ ɪɴ ᴄʜᴀɴɴᴇʟ ๏", url=f"https://t.me/{app.username}?startchannel=s&admin=invite_users+manage_video_chats")]]
             )
         )
+
+# Callback handler for the close button
+@app.on_callback_query(filters.regex("close_force_sub"))
+async def close_force_sub(client: Client, callback_query: CallbackQuery):
+    await callback_query.message.delete()
+    await callback_query.answer("Closed.")
 
 async def check_forcesub(client: Client, message: Message):
     chat_id = message.chat.id
@@ -105,8 +123,7 @@ async def check_forcesub(client: Client, message: Message):
             channel_url = invite_link
         await message.reply_photo(
             photo="https://envs.sh/Tn_.jpg",
-            caption=(f"**👋 ʜᴇʟʟᴏ {message.from_user.mention}, ʏᴏᴜ ɴᴇᴇᴅ ᴛᴏ ᴊᴏɪɴ ᴛʜᴇ [ᴄʜᴀɴɴᴇʟ]({channel_url}) "
-                     "ᴛᴏ sᴇɴᴅ ᴍᴇssᴀɢᴇs ɪɴ ᴛʜɪs ɢʀᴏᴜᴘ.**"),
+            caption=(f"**👋 ʜᴇʟʟᴏ {message.from_user.mention},**\n\n**ʏᴏᴜ ɴᴇᴇᴅ ᴛᴏ ᴊᴏɪɴ ᴛʜᴇ [ᴄʜᴀɴɴᴇʟ]({channel_url}) ᴛᴏ sᴇɴᴅ ᴍᴇssᴀɢᴇs ɪɴ ᴛʜɪs ɢʀᴏᴜᴘ.**"),
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("๏ ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ ๏", url=channel_url)]]),
         )
     except ChatAdminRequired:
