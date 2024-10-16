@@ -37,7 +37,7 @@ async def set_forcesub(client: Client, message: Message):
         channel_info = await client.get_chat(channel_input)
         channel_id = channel_info.id
         channel_title = channel_info.title
-        channel_username = f"@{channel_info.username}" if channel_info.username else await client.export_chat_invite_link(channel_input)
+        channel_username = f"@{channel_info.username}" if channel_info.username else await client.export_chat_invite_link(channel_input) or "ɴᴏ ʟɪɴᴋ"
         channel_members_count = channel_info.members_count
 
         bot_id = (await client.get_me()).id
@@ -71,9 +71,9 @@ async def set_forcesub(client: Client, message: Message):
         await message.reply_photo(
             photo="https://envs.sh/Tn_.jpg",
             caption=(
-                f"**🎉 ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏɴ sᴇᴛ ᴛᴏ [{channel_title}]({channel_username}) ғᴏʀ ᴛʜɪs ɢʀᴏᴜᴘ.**\n\n"
-                f"**📊 ᴍᴇᴍʙᴇʀs:** `{channel_members_count}`\n"
+                f"**🎉 ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏɴ sᴇᴛ ᴛᴏ** [{channel_title}]({channel_username}) **ғᴏʀ ᴛʜɪs ɢʀᴏᴜᴘ.**\n\n"
                 f"**🆔 ᴄʜᴀɴɴᴇʟ ɪᴅ:** `{channel_id}`\n"
+                f"**📊 ᴍᴇᴍʙᴇʀ ᴄᴏᴜɴᴛ:** {channel_members_count}\n"
                 f"**👤 sᴇᴛ ʙʏ:** {set_by_user}"
             ),
             reply_markup=InlineKeyboardMarkup(
@@ -93,11 +93,11 @@ async def set_forcesub(client: Client, message: Message):
             )
         )
 
-# Callback handler for the close button
 @app.on_callback_query(filters.regex("close_force_sub"))
 async def close_force_sub(client: Client, callback_query: CallbackQuery):
+    await callback_query.answer("ᴄʟᴏsᴇᴅ!")
     await callback_query.message.delete()
-    await callback_query.answer("Closed.")
+    
 
 async def check_forcesub(client: Client, message: Message):
     chat_id = message.chat.id
