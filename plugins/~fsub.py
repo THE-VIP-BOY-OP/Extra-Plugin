@@ -49,9 +49,9 @@ async def set_forcesub(client: Client, message: Message):
         if not bot_is_admin:
             return await message.reply_photo(
                 photo="https://envs.sh/TnZ.jpg",
-                caption=("**🚫 I'ᴍ ɴᴏᴛ ᴀɴ ᴀᴅᴍɪɴ ɪɴ ᴛʜɪs ᴄʜᴀɴɴᴇʟ.**\n"
-                         "⚙️ **ᴘʟᴇᴀsᴇ ᴍᴀᴋᴇ ᴍᴇ ᴀɴ ᴀᴅᴍɪɴ ᴡɪᴛʜ:**\n"
-                         "   ➡️  **Iɴᴠɪᴛᴇ Nᴇᴡ Mᴇᴍʙᴇʀs**\n"
+                caption=("**🚫 I'ᴍ ɴᴏᴛ ᴀɴ ᴀᴅᴍɪɴ ɪɴ ᴛʜɪs ᴄʜᴀɴɴᴇʟ.**\n\n"
+                         "**➲ ᴘʟᴇᴀsᴇ ᴍᴀᴋᴇ ᴍᴇ ᴀɴ ᴀᴅᴍɪɴ ᴡɪᴛʜ:**\n\n"
+                         "**➥ Iɴᴠɪᴛᴇ Nᴇᴡ Mᴇᴍʙᴇʀs**\n\n"
                          "🛠️ **Tʜᴇɴ ᴜsᴇ /ғsᴜʙ <ᴄʜᴀɴɴᴇʟ ᴜsᴇʀɴᴀᴍᴇ> ᴛᴏ sᴇᴛ ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏɴ.**"),
                 reply_markup=InlineKeyboardMarkup(
                     [[InlineKeyboardButton("๏ ᴀᴅᴅ ᴍᴇ ɪɴ ᴄʜᴀɴɴᴇʟ ๏", url=f"https://t.me/{app.username}?startchannel=s&admin=invite_users+manage_video_chats")]]
@@ -72,12 +72,12 @@ async def set_forcesub(client: Client, message: Message):
     except Exception as e:
         await message.reply_photo(
             photo="https://envs.sh/TnZ.jpg",
-            caption=("**🚫 I'ᴍ ɴᴏᴛ ᴀɴ ᴀᴅᴍɪɴ ɪɴ ᴛʜɪs ᴄʜᴀɴɴᴇʟ.**\n"
-                     "⚙️ **ᴘʟᴇᴀsᴇ ᴍᴀᴋᴇ ᴍᴇ ᴀɴ ᴀᴅᴍɪɴ ᴡɪᴛʜ:**\n"
-                     "   ➡️  **Iɴᴠɪᴛᴇ Nᴇᴡ Mᴇᴍʙᴇʀs**\n"
-                     "🛠️ **Tʜᴇɴ ᴜsᴇ /ғsᴜʙ <ᴄʜᴀɴɴᴇʟ ᴜsᴇʀɴᴀᴍᴇ> ᴛᴏ sᴇᴛ ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏɴ.**"),
+            caption=("**🚫 I'ᴍ ɴᴏᴛ ᴀɴ ᴀᴅᴍɪɴ ɪɴ ᴛʜɪs ᴄʜᴀɴɴᴇʟ.**\n\n"
+                         "**➲ ᴘʟᴇᴀsᴇ ᴍᴀᴋᴇ ᴍᴇ ᴀɴ ᴀᴅᴍɪɴ ᴡɪᴛʜ:**\n\n"
+                         "**➥ Iɴᴠɪᴛᴇ Nᴇᴡ Mᴇᴍʙᴇʀs**\n\n"
+                         "🛠️ **Tʜᴇɴ ᴜsᴇ /ғsᴜʙ <ᴄʜᴀɴɴᴇʟ ᴜsᴇʀɴᴀᴍᴇ> ᴛᴏ sᴇᴛ ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏɴ.**"),
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton(" Aᴅᴅ Mᴇ ɪɴ Cʜᴀɴɴᴇʟ", url=f"https://t.me/{app.username}?startchannel=s&admin=invite_users+manage_video_chats")]]
+                [[InlineKeyboardButton("๏ ᴀᴅᴅ ᴍᴇ ɪɴ ᴄʜᴀɴɴᴇʟ ๏", url=f"https://t.me/{app.username}?startchannel=s&admin=invite_users+manage_video_chats")]]
             )
         )
 
