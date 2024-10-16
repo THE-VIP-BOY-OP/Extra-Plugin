@@ -2,6 +2,7 @@ from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pymongo import MongoClient
 from VIPMUSIC import app
+import asyncio
 from VIPMUSIC.misc import SUDOERS
 from config import MONGO_DB_URI
 from pyrogram.enums import ChatMembersFilter
@@ -50,6 +51,7 @@ async def set_forcesub(client: Client, message: Message):
                 break
 
         if not bot_is_admin:
+            await asyncio.sleep(1)
             return await message.reply_photo(
                 photo="https://envs.sh/TnZ.jpg",
                 caption=("**🚫 I'ᴍ ɴᴏᴛ ᴀɴ ᴀᴅᴍɪɴ ɪɴ ᴛʜɪs ᴄʜᴀɴɴᴇʟ.**\n\n"
@@ -60,6 +62,7 @@ async def set_forcesub(client: Client, message: Message):
                     [[InlineKeyboardButton("๏ ᴀᴅᴅ ᴍᴇ ɪɴ ᴄʜᴀɴɴᴇʟ ๏", url=f"https://t.me/{app.username}?startchannel=s&admin=invite_users+manage_video_chats")]]
                 )
             )
+            
 
         forcesub_collection.update_one(
             {"chat_id": chat_id},
@@ -82,6 +85,7 @@ async def set_forcesub(client: Client, message: Message):
                 [[InlineKeyboardButton("๏ ᴄʟᴏsᴇ ๏", callback_data="close_force_sub")]]
             )
         )
+        await asyncio.sleep(1)
 
     except Exception as e:
         await message.reply_photo(
@@ -94,6 +98,7 @@ async def set_forcesub(client: Client, message: Message):
                 [[InlineKeyboardButton("๏ ᴀᴅᴅ ᴍᴇ ɪɴ ᴄʜᴀɴɴᴇʟ ๏", url=f"https://t.me/{app.username}?startchannel=s&admin=invite_users+manage_video_chats")]]
             )
         )
+        await asyncio.sleep(1)
 
 @app.on_callback_query(filters.regex("close_force_sub"))
 async def close_force_sub(client: Client, callback_query: CallbackQuery):
@@ -128,6 +133,7 @@ async def check_forcesub(client: Client, message: Message):
             caption=(f"**👋 ʜᴇʟʟᴏ {message.from_user.mention},**\n\n**ʏᴏᴜ ɴᴇᴇᴅ ᴛᴏ ᴊᴏɪɴ ᴛʜᴇ [ᴄʜᴀɴɴᴇʟ]({channel_url}) ᴛᴏ sᴇɴᴅ ᴍᴇssᴀɢᴇs ɪɴ ᴛʜɪs ɢʀᴏᴜᴘ.**"),
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("๏ ᴊᴏɪɴ ᴄʜᴀɴɴᴇʟ ๏", url=channel_url)]]),
         )
+        await asyncio.sleep(1)
     except ChatAdminRequired:
         forcesub_collection.delete_one({"chat_id": chat_id})
         return await message.reply_text("**🚫 I'ᴍ ɴᴏ ʟᴏɴɢᴇʀ ᴀɴ ᴀᴅᴍɪɴ ɪɴ ᴛʜᴇ ғᴏʀᴄᴇᴅ sᴜʙsᴄʀɪᴘᴛɪᴏɴ ᴄʜᴀɴɴᴇʟ. ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏɴ ʜᴀs ʙᴇᴇɴ ᴅɪsᴀʙʟᴇᴅ.**")
