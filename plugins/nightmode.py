@@ -8,7 +8,7 @@ from pyrogram.types import (
 )
 
 from VIPMUSIC import app
-from VIPMUSIC.mongo.nightmodedb import (
+from VIPMUSIC.utils.nightmodedb import (
     get_nightchats,
     nightdb,
     nightmode_off,
