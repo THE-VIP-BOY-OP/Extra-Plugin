@@ -16,8 +16,8 @@ random_photo = [
     "https://telegra.ph/file/2973150dd62fd27a3a6ba.jpg",
 ]
 
-bg_path = "VIPMUSIC/assets/userinfo.png"
-font_path = "VIPMUSIC/assets/hiroko.ttf"
+bg_path = "assets/userinfo.png"
+font_path = "assets/hiroko.ttf"
 
 get_font = lambda font_size, font_path: ImageFont.truetype(font_path, font_size)
 
@@ -78,14 +78,13 @@ async def member_has_left(client: app, member: ChatMemberUpdated):
 
         caption = f"**#New_Member_Left**\n\n**๏** {user.mention} **ʜᴀs ʟᴇғᴛ ᴛʜɪs ɢʀᴏᴜᴘ**\n**๏ sᴇᴇ ʏᴏᴜ sᴏᴏɴ ᴀɢᴀɪɴ..!**"
         button_text = "๏ ᴠɪᴇᴡ ᴜsᴇʀ ๏"
-        deep_link = f"tg://openmessage?user_id={user.id}"
 
         message = await client.send_photo(
             chat_id=member.chat.id,
             photo=welcome_photo,
             caption=caption,
             reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton(button_text, url=deep_link)]]
+                [[InlineKeyboardButton(button_text, user_id=user.id)]]
             ),
         )
 
