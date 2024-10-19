@@ -1,6 +1,6 @@
 from VIPMUSIC import app
-from pyrogram import filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
+from pyrogram import filters, Client
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, ChatPrivileges
 from VIPMUSIC.misc import SUDOERS
 from pyrogram.errors import UserNotParticipant
 from utils.permissions import adminsOnly, member_permissions
@@ -32,8 +32,9 @@ async def purge_user_func(_, message: Message):
             await app.promote_chat_member(
                 chat_id=message.chat.id,
                 user_id=userbot.id,
-                can_delete_messages=True,
-            )
+                privileges=ChatPrivileges(
+                    can_manage_chat=True))
+            
             ok = await message.reply_text("Userbot has been promoted to admin with delete messages permission.")
             await ok.delete()
         except Exception as e:
