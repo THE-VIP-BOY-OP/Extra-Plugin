@@ -15,10 +15,6 @@ async def is_admin_or_sudo(client, chat_id, user_id):
     except Exception:
         return False
 
-from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-
-# Function to delete messages
 async def delete_messages(client, message, target=None, chat_id=None):
     try:
         deleted_count = 0
@@ -39,11 +35,16 @@ async def delete_messages(client, message, target=None, chat_id=None):
                 await client.delete_messages(chat_id, message_ids)
                 deleted_count += len(message_ids)
 
-            await message.edit(f"๏ ᴅᴇʟᴇᴛᴇᴅ {deleted_count} ᴍᴇssᴀɢᴇs ғʀᴏᴍ {target.mention}")
+                # Add a small delay to avoid hitting API limits
+                await asyncio.sleep(0.5)
+
+            mention = target.mention or f"User ID: {user_id}"
+            await message.edit(f"๏ ᴅᴇʟᴇᴛᴇᴅ {deleted_count} ᴍᴇssᴀɢᴇs ғʀᴏᴍ {mention}")
         else:
             await message.edit("๏ ᴇʀʀᴏʀ: No target user provided.")
     except Exception as e:
         await message.edit(f"๏ ᴇʀʀᴏʀ: {str(e)}")
+
 
 # Command handler to trigger the delete action
 @app.on_message(filters.command(["deleteallmsg", "delallmsg", "deleteallmessage", "delallmessage"]) & filters.group)
@@ -68,20 +69,12 @@ async def delete_all_messages(client, message):
             await message.reply_text("๏ ᴜsᴇʀ ɴᴏᴛ ғᴏᴜɴᴅ.")
             return
 
-        # Confirm deletion with buttons
+        # Proceed with deleting the messages
         chat_id = message.chat.id
-        keyboard = InlineKeyboardMarkup(
-            [
-                [InlineKeyboardButton("ᴄᴏɴғɪʀᴍ ᴅᴇʟᴇᴛɪᴏɴ", callback_data=f"confirm_delete_user:{chat_id}:{target.id}")],
-                [InlineKeyboardButton("ᴄᴀɴᴄᴇʟ", callback_data="cancel_delete")]
-            ]
-        )
-        await message.reply_text(f"๏ ᴀʀᴇ ʏᴏᴜ sᴜʀᴇ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴀʟʟ ᴍᴇssᴀɢᴇs ғʀᴏᴍ {target.mention}?", reply_markup=keyboard)
-
+        
+        await delete_messages(client, message, target=target, chat_id=chat_id)
     except Exception as e:
         await message.reply_text(f"๏ ᴇʀʀᴏʀ: {str(e)}")
-
-# Callback query handler to process button click
 @app.on_callback_query(filters.regex(r"confirm_delete_user:(\d+):(\d+)"))
 async def confirm_delete_user(client, callback_query):
     try:
