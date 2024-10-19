@@ -8,7 +8,7 @@ async def is_admin_or_sudo(client, chat_id, user_id):
     if user_id in SUDOERS:
         return True
     try:
-        member = await client.get_chat_member(chat_id, user_id)
+        member = await app.get_chat_member(chat_id, user_id)
         return member.status in ["administrator", "creator"]
     except UserNotParticipant:
         return False
@@ -48,9 +48,9 @@ async def delete_all_messages(client, message):
             user_input = message.command[1]
             try:
                 if user_input.isdigit():
-                    target = await client.get_users(int(user_input))
+                    target = await app.get_users(int(user_input))
                 else:
-                    target = await client.get_users(user_input)
+                    target = await app.get_users(user_input)
             except Exception as e:
                 await message.reply_text(f"๏ ᴇʀʀᴏʀ: {str(e)}")
                 return
@@ -90,7 +90,7 @@ async def delete_all_group_messages(client, message):
             if group_input.isdigit():
                 chat_id = int(group_input)
             else:
-                chat = await client.get_chat(group_input)
+                chat = await app.get_chat(group_input)
                 chat_id = chat.id
         except Exception as e:
             await message.reply_text(f"๏ ᴇʀʀᴏʀ: {str(e)}")
