@@ -1,6 +1,6 @@
 from VIPMUSIC import app
 from pyrogram import filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, Callbackquery
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from VIPMUSIC.misc import SUDOERS
 from pyrogram.errors import UserNotParticipant
 
