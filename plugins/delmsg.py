@@ -15,33 +15,37 @@ async def is_admin_or_sudo(client, chat_id, user_id):
     except Exception:
         return False
 
-async def delete_messages(client, message, target=None, chat_id=None):
+async def delete_messages_range(client, message, chat_id, repliedmsg_id, purge_to):
     try:
+        message_ids = []
         deleted_count = 0
-        if target:
-            user_id = target.id
-            last_message_id = 0  # Track the last message fetched
-            
-            while True:
-                message_ids = []
-                async for msg in client.search_messages(chat_id, from_user=user_id, limit=100, offset_id=last_message_id):
-                    message_ids.append(msg.message_id)
-                    last_message_id = msg.message_id
 
-                if not message_ids:
-                    break  # No more messages found
+        # Iterate over the range from replied message to purge_to message
+        for message_id in range(repliedmsg_id, purge_to):
+            message_ids.append(message_id)
 
-                # Now delete all the messages collected
-                await client.delete_messages(chat_id, message_ids)
+            # Max message deletion limit is 100
+            if len(message_ids) == 100:
+                await client.delete_messages(
+                    chat_id=chat_id,
+                    message_ids=message_ids,
+                    revoke=True  # Deletes for both sides
+                )
                 deleted_count += len(message_ids)
 
-                # Add a small delay to avoid hitting API limits
-                await asyncio.sleep(0.5)
+                # Clear the list and continue to delete the next batch
+                message_ids = []
 
-            mention = target.mention or f"User ID: {user_id}"
-            await message.edit(f"๏ ᴅᴇʟᴇᴛᴇᴅ {deleted_count} ᴍᴇssᴀɢᴇs ғʀᴏᴍ {mention}")
-        else:
-            await message.edit("๏ ᴇʀʀᴏʀ: No target user provided.")
+        # Delete any remaining messages that are less than 100
+        if message_ids:
+            await client.delete_messages(
+                chat_id=chat_id,
+                message_ids=message_ids,
+                revoke=True
+            )
+            deleted_count += len(message_ids)
+
+        await message.edit(f"๏ ᴅᴇʟᴇᴛᴇᴅ {deleted_count} ᴍᴇssᴀɢᴇs.")
     except Exception as e:
         await message.edit(f"๏ ᴇʀʀᴏʀ: {str(e)}")
 
@@ -55,45 +59,26 @@ async def delete_all_messages(client, message):
             await message.reply_text("๏ ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴀᴜᴛʜᴏʀɪᴢᴇᴅ ᴛᴏ ᴘᴇʀғᴏʀᴍ ᴛʜɪs ᴄᴏᴍᴍᴀɴᴅ.")
             return
 
-        # Get target user from replied message or user ID
-        target = message.reply_to_message.from_user if message.reply_to_message else None
-        if not target and len(message.command) > 1:
-            user_input = message.command[1]
-            try:
-                target = await client.get_users(int(user_input) if user_input.isdigit() else user_input)
-            except Exception as e:
-                await message.reply_text(f"๏ ᴇʀʀᴏʀ: {str(e)}")
-                return
-
-        if not target:
-            await message.reply_text("๏ ᴜsᴇʀ ɴᴏᴛ ғᴏᴜɴᴅ.")
+        # Ensure the command is used as a reply to a message to start from
+        if not message.reply_to_message:
+            await message.reply_text("๏ ʀᴇᴘʟʏ ᴛᴏ ᴀ ᴍᴇssᴀɢᴇ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴍᴇssᴀɢᴇs ғʀᴏᴍ.")
             return
 
-        # Proceed with deleting the messages
+        # Check if a range is provided in the command
+        if len(message.command) < 2:
+            await message.reply_text("๏ ᴘʀᴏᴠɪᴅᴇ ᴛʜᴇ ᴇɴᴅ ᴍᴇssᴀɢᴇ ɪᴅ.")
+            return
+
+        purge_to = int(message.command[1])
+        repliedmsg_id = message.reply_to_message.id
         chat_id = message.chat.id
-        
-        await delete_messages(client, message, target=target, chat_id=chat_id)
+
+        # Delete messages in the given range
+        await delete_messages_range(client, message, chat_id, repliedmsg_id, purge_to)
+
     except Exception as e:
         await message.reply_text(f"๏ ᴇʀʀᴏʀ: {str(e)}")
-@app.on_callback_query(filters.regex(r"confirm_delete_user:(\d+):(\d+)"))
-async def confirm_delete_user(client, callback_query):
-    try:
-        chat_id, user_id = map(int, callback_query.data.split(":")[1:])
-        target = await client.get_users(user_id)
 
-        # Notify that the process has started
-        await callback_query.message.edit_text(f"๏ sᴛᴀʀᴛɪɴɢ ᴅᴇʟᴇᴛɪᴏɴ ᴏғ {target.mention}'s ᴍᴇssᴀɢᴇs...")
-
-        # Call the function to delete messages
-        await delete_messages(client, callback_query.message, target=target, chat_id=chat_id)
-
-    except Exception as e:
-        await callback_query.message.edit_text(f"๏ ᴇʀʀᴏʀ: {str(e)}")
-
-# Callback query handler for cancel
-@app.on_callback_query(filters.regex("cancel_delete"))
-async def cancel_delete(client, callback_query):
-    await callback_query.message.edit_text("๏ ᴅᴇʟᴇᴛɪᴏɴ ᴄᴀɴᴄᴇʟᴇᴅ.")
 
 @app.on_message(filters.command(["deleteallgroup", "deleteallgroupmsg", "delallgroupmessage", "cleangroupmsg"]) & filters.group)
 async def delete_all_group_messages(client, message):
