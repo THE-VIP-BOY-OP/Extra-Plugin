@@ -5,6 +5,7 @@ from VIPMUSIC.misc import SUDOERS
 from pyrogram.errors import UserNotParticipant
 from utils.permissions import adminsOnly, member_permissions
 from config import BANNED_USERS
+from VIPMUSIC.utils.database import get_assistant
 
 async def is_admin_or_sudo(client, chat_id, user_id):
     if user_id in SUDOERS:
@@ -20,46 +21,74 @@ async def is_admin_or_sudo(client, chat_id, user_id):
 @app.on_message(filters.command("purgeuser") & ~filters.private)
 @adminsOnly("can_delete_messages")
 async def purge_user_func(_, message: Message):
-    # Get the user from reply, mention, or username/ID
-    if message.reply_to_message:
-        user = message.reply_to_message.from_user.id
-    else:
-        if len(message.command) < 2:
-            return await message.reply_text("Please reply to a user or provide a username/user ID.")
+    try:
+        # Step 1: Userbot ko Admin banana
+        userbot = await get_assistant(message.chat.id)
+        if not userbot:
+            return await message.reply_text("Userbot assistant not found or unable to promote.")
 
-        user_input = message.command[1]
-        if user_input.isdigit():  # If input is a user ID
-            user = int(user_input)
-        else:  # Otherwise, treat as username
-            try:
-                user = (await app.get_users(user_input)).id
-            except Exception as e:
-                return await message.reply_text(f"Error: {str(e)}")
-    
-    # Get chat ID and collect message IDs for the specific user
-    chat_id = message.chat.id
-    message_ids = []
-    
-    async for msg in app.search_messages(chat_id, from_user=user):
-        message_ids.append(msg.id)
-        
-        if len(message_ids) == 100:
-            await app.delete_messages(
-                chat_id=chat_id,
-                message_ids=message_ids,
-                revoke=True,
+        try:
+            # Admin privileges dena, specifically 'delete_messages' permission
+            await app.promote_chat_member(
+                chat_id=message.chat.id,
+                user_id=userbot.id,
+                can_delete_messages=True,
             )
-            message_ids = []
+            ok = await message.reply_text("Userbot has been promoted to admin with delete messages permission.")
+            await ok.delete()
+        except Exception as e:
+            return await message.reply_text(f"Failed to promote userbot: {str(e)}")
+        
+        # Step 2: User identify karna (reply se, mention se, ya userID se)
+        if message.reply_to_message:
+            user = message.reply_to_message.from_user.id
+        else:
+            if len(message.command) < 2:
+                return await message.reply_text("Please reply to a user or provide a username/user ID.")
 
-    # Delete any remaining messages
-    if len(message_ids) > 0:
-        await app.delete_messages(
-            chat_id=chat_id,
-            message_ids=message_ids,
-            revoke=True,
-        )
+            user_input = message.command[1]
+            if user_input.isdigit():  # User ID diya gaya hai
+                user = int(user_input)
+            else:  # Username diya gaya hai
+                try:
+                    user = (await app.get_users(user_input)).id
+                except Exception as e:
+                    return await message.reply_text(f"Error: {str(e)}")
 
-    await message.reply_text(f"All messages from user {user} have been deleted.")
+        # Step 3: Specific user ke messages ko delete karna
+        chat_id = message.chat.id
+        message_ids = []
+
+        async for msg in userbot.search_messages(chat_id, from_user=user):
+            message_ids.append(msg.id)
+
+            if len(message_ids) == 100:
+                try:
+                    # Userbot delete karega
+                    await userbot.delete_messages(
+                        chat_id=chat_id,
+                        message_ids=message_ids,
+                        revoke=True,  # For both sides
+                    )
+                except Exception as e:
+                    return await message.reply_text(f"Failed to delete messages: {str(e)}")
+                message_ids = []
+
+        # Agar kuch messages bache hain to unko bhi delete karein
+        if len(message_ids) > 0:
+            try:
+                await userbot.delete_messages(
+                    chat_id=chat_id,
+                    message_ids=message_ids,
+                    revoke=True,
+                )
+            except Exception as e:
+                return await message.reply_text(f"Failed to delete remaining messages: {str(e)}")
+
+        await message.reply_text(f"All messages from user {user} have been deleted.")
+    
+    except Exception as e:
+        await message.reply_text(f"An unexpected error occurred: {str(e)}")
 @app.on_message(filters.command(["deleteallgroup", "deleteallgroupmsg", "delallgroupmessage", "cleangroupmsg"]) & filters.group)
 async def delete_all_group_messages(client, message):
     try:
