@@ -20,17 +20,27 @@ async def delete_messages(client, message, target=None, chat_id=None):
         deleted_count = 0
         if target:
             user_id = target.id
-            async for msg in app.search_messages(chat_id, from_user=user_id):
-                await client.delete_messages(chat_id, msg.message_id)
-                deleted_count += 1
+            last_message_id = 0  # To keep track of the last message fetched
+            while True:
+                message_ids = []
+                async for msg in app.search_messages(chat_id, from_user=user_id, limit=150, offset_id=last_message_id):
+                    message_ids.append(msg.message_id)
+                    last_message_id = msg.message_id
+
+                if not message_ids:
+                    break  # If no more messages are found, break the loop
+
+                # Now delete all the messages collected
+                for msg_id in message_ids:
+                    await client.delete_messages(chat_id, msg_id)
+                    deleted_count += 1
+
             await message.edit(f"๏ ᴅᴇʟᴇᴛᴇᴅ {deleted_count} ᴍᴇssᴀɢᴇs ғʀᴏᴍ {target.mention}")
         else:
-            async for msg in app.search_messages(chat_id):
-                await client.delete_messages(chat_id, msg.message_id)
-                deleted_count += 1
-            await message.edit(f"๏ ᴅᴇʟᴇᴛᴇᴅ {deleted_count} ᴍᴇssᴀɢᴇs ғʀᴏᴍ ɢʀᴏᴜᴘ")
+            await message.edit("๏ ᴇʀʀᴏʀ: No target user provided.")
     except Exception as e:
         await message.edit(f"๏ ᴇʀʀᴏʀ: {str(e)}")
+
 
 @app.on_message(filters.command(["deleteallmsg", "delallmsg", "deleteallmessage", "delallmessage"]) & filters.group)
 async def delete_all_messages(client, message):
@@ -71,6 +81,15 @@ async def delete_all_messages(client, message):
     except Exception as e:
         await message.reply_text(f"๏ ᴇʀʀᴏʀ: {str(e)}")
 
+
+@app.on_callback_query(filters.regex(r"confirm_delete_user:(.+):(.+)"))
+async def confirm_delete_user_callback(client, callback_query):
+    try:
+        chat_id, user_id = map(int, callback_query.data.split(":")[1:])
+        target = await client.get_users(user_id)
+        await delete_messages(client, callback_query.message, target=target, chat_id=chat_id)
+    except Exception as e:
+        await callback_query.message.edit(f"๏ ᴇʀʀᴏʀ: {str(e)}")
 
 
 
