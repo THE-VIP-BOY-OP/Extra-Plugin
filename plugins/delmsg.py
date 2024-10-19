@@ -32,7 +32,7 @@ async def delete_messages(client, message, target=None, chat_id=None):
     except Exception as e:
         await message.edit(f"๏ ᴇʀʀᴏʀ: {str(e)}")
 
-@app.on_message(filters.command("deleteall") & filters.group)
+@app.on_message(filters.command(["deleteallmsg", "delallmsg", "deleteallmessage", "delallmessage"]) & filters.group)
 async def delete_all_messages(client, message):
     try:
         if not await is_admin_or_sudo(client, message.chat.id, message.from_user.id):
@@ -74,7 +74,7 @@ async def delete_all_messages(client, message):
 
 
 
-@app.on_message(filters.command("deleteallgroup") & filters.group)
+@app.on_message(filters.command(["deleteallgroup", "deleteallgroupmsg", "delallgroupmessage", "cleangroupmsg"]) & filters.group)
 async def delete_all_group_messages(client, message):
     try:
         if not await is_admin_or_sudo(client, message.chat.id, message.from_user.id):
