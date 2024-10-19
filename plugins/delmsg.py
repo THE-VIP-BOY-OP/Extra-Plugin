@@ -3,6 +3,8 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from VIPMUSIC.misc import SUDOERS
 from pyrogram.errors import UserNotParticipant
+from utils.permissions import adminsOnly, member_permissions
+from config import BANNED_USERS
 
 async def is_admin_or_sudo(client, chat_id, user_id):
     if user_id in SUDOERS:
@@ -15,71 +17,49 @@ async def is_admin_or_sudo(client, chat_id, user_id):
     except Exception:
         return False
 
-async def delete_messages_range(client, message, chat_id, repliedmsg_id, purge_to):
-    try:
-        message_ids = []
-        deleted_count = 0
+@app.on_message(filters.command("purgeuser") & ~filters.private)
+@adminsOnly("can_delete_messages")
+async def purge_user_func(_, message: Message):
+    # Get the user from reply, mention, or username/ID
+    if message.reply_to_message:
+        user = message.reply_to_message.from_user.id
+    else:
+        if len(message.command) < 2:
+            return await message.reply_text("Please reply to a user or provide a username/user ID.")
 
-        # Iterate over the range from replied message to purge_to message
-        for message_id in range(repliedmsg_id, purge_to):
-            message_ids.append(message_id)
-
-            # Max message deletion limit is 100
-            if len(message_ids) == 100:
-                await client.delete_messages(
-                    chat_id=chat_id,
-                    message_ids=message_ids,
-                    revoke=True  # Deletes for both sides
-                )
-                deleted_count += len(message_ids)
-
-                # Clear the list and continue to delete the next batch
-                message_ids = []
-
-        # Delete any remaining messages that are less than 100
-        if message_ids:
-            await client.delete_messages(
+        user_input = message.command[1]
+        if user_input.isdigit():  # If input is a user ID
+            user = int(user_input)
+        else:  # Otherwise, treat as username
+            try:
+                user = (await app.get_users(user_input)).id
+            except Exception as e:
+                return await message.reply_text(f"Error: {str(e)}")
+    
+    # Get chat ID and collect message IDs for the specific user
+    chat_id = message.chat.id
+    message_ids = []
+    
+    async for msg in app.search_messages(chat_id, from_user=user):
+        message_ids.append(msg.id)
+        
+        if len(message_ids) == 100:
+            await app.delete_messages(
                 chat_id=chat_id,
                 message_ids=message_ids,
-                revoke=True
+                revoke=True,
             )
-            deleted_count += len(message_ids)
+            message_ids = []
 
-        await message.edit(f"๏ ᴅᴇʟᴇᴛᴇᴅ {deleted_count} ᴍᴇssᴀɢᴇs.")
-    except Exception as e:
-        await message.edit(f"๏ ᴇʀʀᴏʀ: {str(e)}")
+    # Delete any remaining messages
+    if len(message_ids) > 0:
+        await app.delete_messages(
+            chat_id=chat_id,
+            message_ids=message_ids,
+            revoke=True,
+        )
 
-
-# Command handler to trigger the delete action
-@app.on_message(filters.command(["deleteallmsg", "delallmsg", "deleteallmessage", "delallmessage"]) & filters.group)
-async def delete_all_messages(client, message):
-    try:
-        # Check if user is admin or sudo
-        if not await is_admin_or_sudo(client, message.chat.id, message.from_user.id):
-            await message.reply_text("๏ ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴀᴜᴛʜᴏʀɪᴢᴇᴅ ᴛᴏ ᴘᴇʀғᴏʀᴍ ᴛʜɪs ᴄᴏᴍᴍᴀɴᴅ.")
-            return
-
-        # Ensure the command is used as a reply to a message to start from
-        if not message.reply_to_message:
-            await message.reply_text("๏ ʀᴇᴘʟʏ ᴛᴏ ᴀ ᴍᴇssᴀɢᴇ ᴛᴏ ᴅᴇʟᴇᴛᴇ ᴍᴇssᴀɢᴇs ғʀᴏᴍ.")
-            return
-
-        # Check if a range is provided in the command
-        if len(message.command) < 2:
-            await message.reply_text("๏ ᴘʀᴏᴠɪᴅᴇ ᴛʜᴇ ᴇɴᴅ ᴍᴇssᴀɢᴇ ɪᴅ.")
-            return
-
-        purge_to = int(message.command[1])
-        repliedmsg_id = message.reply_to_message.id
-        chat_id = message.chat.id
-
-        # Delete messages in the given range
-        await delete_messages_range(client, message, chat_id, repliedmsg_id, purge_to)
-
-    except Exception as e:
-        await message.reply_text(f"๏ ᴇʀʀᴏʀ: {str(e)}")
-
-
+    await message.reply_text(f"All messages from user {user} have been deleted.")
 @app.on_message(filters.command(["deleteallgroup", "deleteallgroupmsg", "delallgroupmessage", "cleangroupmsg"]) & filters.group)
 async def delete_all_group_messages(client, message):
     try:
