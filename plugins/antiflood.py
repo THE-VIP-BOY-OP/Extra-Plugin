@@ -22,10 +22,16 @@ def update_chat_flood_settings(chat_id, update_data):
     antiflood_collection.update_one({"chat_id": chat_id}, {"$set": update_data}, upsert=True)
 
 async def check_admin_rights(client, message: Message):
-    member = await client.get_chat_member(message.chat.id, message.from_user.id)
-    if member.status != "administrator":
+    member = await app.get_chat_member(message.chat.id, message.from_user.id)
+    
+    if member.status not in ["administrator", "creator"]:
         await message.reply("You don't have the required permissions to use this command!")
         return False
+    
+    if member.status == "administrator" and not member.can_change_info:
+        await message.reply("You don't have the 'can_change_info' permission to use this command!")
+        return False
+    
     return True
 
 @app.on_message(filters.command("flood"))
@@ -124,12 +130,13 @@ async def set_flood_clear(client, message: Message):
     await message.reply(f"Delete flood messages set to {delete_flood}.")
 
 flood_count = {}
-
 @app.on_message(filters.group)
 async def flood_detector(client, message: Message):
     chat_id = message.chat.id
     user_id = message.from_user.id
-    settings = get_chat_flood_settings(chat_id)
+    
+    # Make sure to await the async function
+    settings = await get_chat_flood_settings(chat_id)
     
     if settings['flood_limit'] == 0:
         return
