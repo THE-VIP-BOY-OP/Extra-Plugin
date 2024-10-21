@@ -139,7 +139,7 @@ async def check_forcesub(client: Client, message: Message):
         return await message.reply_text("**🚫 I'ᴍ ɴᴏ ʟᴏɴɢᴇʀ ᴀɴ ᴀᴅᴍɪɴ ɪɴ ᴛʜᴇ ғᴏʀᴄᴇᴅ sᴜʙsᴄʀɪᴘᴛɪᴏɴ ᴄʜᴀɴɴᴇʟ. ғᴏʀᴄᴇ sᴜʙsᴄʀɪᴘᴛɪᴏɴ ʜᴀs ʙᴇᴇɴ ᴅɪsᴀʙʟᴇᴅ.**")
 
 
-@app.on_message(filters.group)
+@app.on_message(filters.group, group=30)
 async def enforce_forcesub(client: Client, message: Message):
     if not await check_forcesub(client, message):
         return
