@@ -143,7 +143,7 @@ async def flood_detector(client, message: Message):
     # Make sure to await the async function
     settings = await get_chat_flood_settings(chat_id)
     
-    if settings['flood_limit'] == 0:
+    if settings['flood_limit'] == 0 or not settings:
         return
     
     if chat_id not in flood_count:
