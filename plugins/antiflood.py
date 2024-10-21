@@ -4,7 +4,7 @@ from pyrogram import filters
 from pyrogram.types import Message
 from datetime import timedelta, datetime
 
-antiflood_collection = mongodb['antiflood_settings']
+antiflood_collection = mongodb.antiflood_settings
 DEFAULT_FLOOD_ACTION = "mute"
 
 def get_chat_flood_settings(chat_id):
@@ -23,7 +23,7 @@ def update_chat_flood_settings(chat_id, update_data):
 
 async def check_admin_rights(client, message: Message):
     member = await client.get_chat_member(message.chat.id, message.from_user.id)
-    if member.status != "administrator" or not member.can_change_info:
+    if member.status != "administrator":
         await message.reply("You don't have the required permissions to use this command!")
         return False
     return True
