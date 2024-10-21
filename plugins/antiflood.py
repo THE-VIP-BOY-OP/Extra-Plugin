@@ -5,6 +5,7 @@ from pyrogram.types import Message
 from datetime import timedelta, datetime
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import UserNotParticipant
+from pyrogram.types import ChatPermissions
 
 antiflood_collection = mongodb.antiflood_settings
 DEFAULT_FLOOD_ACTION = "mute"
@@ -166,6 +167,8 @@ async def flood_detector(client, message: Message):
         if settings['delete_flood']:
             await message.delete()
 
+
+
 async def take_flood_action(client, message, action):
     user_id = message.from_user.id
     chat_id = message.chat.id
@@ -173,13 +176,13 @@ async def take_flood_action(client, message, action):
     if action == "ban":
         await client.kick_chat_member(chat_id, user_id)
     elif action == "mute":
-        await client.restrict_chat_member(chat_id, user_id, permissions=[])
+        await client.restrict_chat_member(chat_id, user_id, permissions=ChatPermissions(can_send_messages=False))
     elif action == "kick":
         await client.kick_chat_member(chat_id, user_id)
         await client.unban_chat_member(chat_id, user_id)
     elif action == "tban":
         await client.kick_chat_member(chat_id, user_id, until_date=datetime.now() + timedelta(days=3))
     elif action == "tmute":
-        await client.restrict_chat_member(chat_id, user_id, permissions=[], until_date=datetime.now() + timedelta(days=3))
+        await client.restrict_chat_member(chat_id, user_id, permissions=ChatPermissions(can_send_messages=False), until_date=datetime.now() + timedelta(days=3))
 
     await message.reply(f"User {message.from_user.first_name} was {action}ed for flooding.")
