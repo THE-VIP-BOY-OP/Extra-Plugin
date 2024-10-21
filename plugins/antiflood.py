@@ -16,11 +16,18 @@ async def get_chat_flood_settings(chat_id):
     if not settings:
         return {
             "flood_limit": 0,
-            "flood_timer": 0,
+            "flood_timer": 0,  # Ensure default flood_timer is 0
             "flood_action": DEFAULT_FLOOD_ACTION,
             "delete_flood": False
         }
-    return settings
+    
+    # Ensure all keys have default values even if missing in the database
+    return {
+        "flood_limit": settings.get("flood_limit", 0),
+        "flood_timer": settings.get("flood_timer", 0),  # Default to 0 if not set
+        "flood_action": settings.get("flood_action", DEFAULT_FLOOD_ACTION),
+        "delete_flood": settings.get("delete_flood", False)
+    }
 
 # Function to update flood settings for a chat
 def update_chat_flood_settings(chat_id, update_data):
@@ -145,18 +152,20 @@ async def flood_detector(client, message: Message):
     chat_id = message.chat.id
     user_id = message.from_user.id
     
-    settings = await get_chat_flood_settings(chat_id)     
+    settings = await get_chat_flood_settings(chat_id)
+
     if settings['flood_limit'] == 0:
         return
-    
- 
     
     if chat_id not in flood_count:
         flood_count[chat_id] = {}
     
     user_flood_data = flood_count[chat_id].get(user_id, {"count": 0, "first_message_time": datetime.now()})
+
+    # Ensure flood_timer is set and avoid KeyError
+    flood_timer = settings.get('flood_timer', 0)
     
-    if (datetime.now() - user_flood_data['first_message_time']).seconds > settings['flood_timer']:
+    if (datetime.now() - user_flood_data['first_message_time']).seconds > flood_timer:
         user_flood_data = {"count": 1, "first_message_time": datetime.now()}
     else:
         user_flood_data['count'] += 1
@@ -169,7 +178,6 @@ async def flood_detector(client, message: Message):
         
         if settings['delete_flood']:
             await message.delete()
-
 # Function to handle flood actions
 async def take_flood_action(client, message, action):
     user_id = message.from_user.id
