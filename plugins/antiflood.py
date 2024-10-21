@@ -26,7 +26,7 @@ def update_chat_flood_settings(chat_id, update_data):
 async def check_admin_rights(client, message: Message):
     is_admin = False
     try:
-        participant = await client.get_chat_member(chat_id, message.from_user.id)
+        participant = await client.get_chat_member(message.chat.id, message.from_user.id)
     except UserNotParticipant:
         is_admin = False
     else:
