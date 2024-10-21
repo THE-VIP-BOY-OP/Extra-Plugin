@@ -3,6 +3,7 @@ from VIPMUSIC.core.mongo import mongodb
 from pyrogram import filters
 from pyrogram.types import Message
 from datetime import timedelta, datetime
+from pyrogram.enums import ChatMemberStatus, ChatType
 
 antiflood_collection = mongodb.antiflood_settings
 DEFAULT_FLOOD_ACTION = "mute"
@@ -22,22 +23,25 @@ def update_chat_flood_settings(chat_id, update_data):
     antiflood_collection.update_one({"chat_id": chat_id}, {"$set": update_data}, upsert=True)
 
 async def check_admin_rights(client, message: Message):
-    member = await app.get_chat_member(message.chat.id, message.from_user.id)
-    
-    if member.status not in ["administrator", "creator"]:
-        await message.reply("You don't have the required permissions to use this command!")
-        return
-    
-    if member.status == "administrator" and not member.can_change_info:
-        await message.reply("You don't have the 'can_change_info' permission to use this command!")
-        return
+    is_admin = False
+    try:
+        participant = await client.get_chat_member(chat_id, message.from_user.id)
+    except UserNotParticipant:
+        is_admin = False
+    else:
+        if participant.status in (
+            ChatMemberStatus.ADMINISTRATOR,
+            ChatMemberStatus.OWNER,
+        ):
+            is_admin = True
+    if not is_admin:
+        return await message.reply("**You are not admin baby**")
     
     
 
 @app.on_message(filters.command("flood"))
 async def get_flood_settings(client, message: Message):
-    await check_admin_rights(client, message):
-     
+    await check_admin_rights(client, message)
     chat_id = message.chat.id
     settings = get_chat_flood_settings(chat_id)
     await message.reply(
