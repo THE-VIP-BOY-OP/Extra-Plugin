@@ -4,6 +4,7 @@ from pyrogram import filters
 from pyrogram.types import Message
 from datetime import timedelta, datetime
 from pyrogram.enums import ChatMemberStatus, ChatType
+from pyrogram.errors import UserNotParticipant
 
 antiflood_collection = mongodb.antiflood_settings
 DEFAULT_FLOOD_ACTION = "mute"
