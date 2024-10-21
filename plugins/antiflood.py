@@ -11,8 +11,8 @@ antiflood_collection = mongodb.antiflood_settings
 DEFAULT_FLOOD_ACTION = "mute"
 
 # Function to fetch flood settings for a chat
-def get_chat_flood_settings(chat_id):
-    settings = antiflood_collection.find_one({"chat_id": chat_id})
+async def get_chat_flood_settings(chat_id):
+    settings = await antiflood_collection.find_one({"chat_id": chat_id})
     if not settings:
         return {
             "flood_limit": 0,
@@ -43,7 +43,7 @@ async def get_flood_settings(client, message: Message):
     if not await check_admin_rights(client, message):
         return
     chat_id = message.chat.id
-    settings = get_chat_flood_settings(chat_id)
+    settings = await get_chat_flood_settings(chat_id)
     await message.reply(
         f"Flood Limit: {settings['flood_limit']}\n"
         f"Flood Timer: {settings['flood_timer']} seconds\n"
@@ -145,10 +145,11 @@ async def flood_detector(client, message: Message):
     chat_id = message.chat.id
     user_id = message.from_user.id
     
-    settings = get_chat_flood_settings(chat_id)
-    
+    settings = await get_chat_flood_settings(chat_id)     
     if settings['flood_limit'] == 0:
         return
+    
+ 
     
     if chat_id not in flood_count:
         flood_count[chat_id] = {}
