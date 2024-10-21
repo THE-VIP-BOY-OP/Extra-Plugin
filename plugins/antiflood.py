@@ -8,7 +8,7 @@ from pyrogram.errors import UserNotParticipant
 from pyrogram.types import ChatPermissions
 
 antiflood_collection = mongodb.antiflood_settings
-DEFAULT_FLOOD_ACTION = "mute"
+DEFAULT_FLOOD_ACTION = "tmute"
 
 async def get_chat_flood_settings(chat_id):
     settings = await antiflood_collection.find_one({"chat_id": chat_id})
@@ -181,8 +181,45 @@ async def take_flood_action(client, message, action):
         await client.kick_chat_member(chat_id, user_id)
         await client.unban_chat_member(chat_id, user_id)
     elif action == "tban":
-        await client.kick_chat_member(chat_id, user_id, until_date=datetime.now() + timedelta(days=3))
+        await client.kick_chat_member(chat_id, user_id, until_date=datetime.now() + timedelta(minutes=1))
     elif action == "tmute":
         await client.restrict_chat_member(chat_id, user_id, permissions=ChatPermissions(can_send_messages=False), until_date=datetime.now() + timedelta(days=3))
 
     await message.reply(f"User {message.from_user.first_name} was {action}ed for flooding.")
+
+
+
+__MODULE__ = "ᴀɴᴛɪғʟᴏᴏᴅ"
+__HELP__ = f"Antiflood
+
+You know how sometimes, people join, send 100 messages, and ruin your chat? With antiflood, that happens no more!
+
+Antiflood allows you to take action on users that send more than x messages in a row. Actions are: ban/mute/kick/tban/tmute
+
+Admin commands:
+- /flood: Get the current antiflood settings
+- /setflood <number/off/no>: Set the number of consecutive messages to trigger antiflood. Set to '0', 'off', or 'no' to disable.
+- /setfloodtimer <count> <duration>: Set the number of messages and time required for timed antiflood to take action on a user. Set to just 'off' or 'no' to disable.
+- /floodmode <action type>: Choose which action to take on a user who has been flooding. Possible actions: ban/mute/kick/tban/tmute
+- /clearflood <yes/no/on/off>: Whether to delete the messages that triggered the flood.
+
+Examples:
+- Set antiflood to trigger after 7 messages:
+-> /setflood 7
+
+- Disable antiflood:
+-> /setflood off
+
+- Set timed antiflood to trigger after 10 messages in 30 seconds:
+-> /setfloodtimer 10 30s
+
+- Disabled timed antiflood:
+-> /setfloodtimer off
+
+- Set the antiflood action to mute:
+-> /floodmode mute
+
+- Set the antiflood action to a 3 day ban:
+-> /floodmode tban 3d"
+
+
