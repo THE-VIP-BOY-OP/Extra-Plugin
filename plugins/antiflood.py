@@ -192,10 +192,6 @@ async def take_flood_action(client, message, action):
 __MODULE__ = "ᴀɴᴛɪғʟᴏᴏᴅ"
 __HELP__ = """**Antiflood
 
-You know how sometimes, people join, send 100 messages, and ruin your chat? With antiflood, that happens no more!
-
-Antiflood allows you to take action on users that send more than x messages in a row. Actions are: ban/mute/kick/tban/tmute
-
 Admin commands:
 - /flood: Get the current antiflood settings
 - /setflood <number/off/no>: Set the number of consecutive messages to trigger antiflood. Set to '0', 'off', or 'no' to disable.
@@ -218,8 +214,6 @@ Examples:
 
 - Set the antiflood action to mute:
 -> /floodmode mute
-
-- Set the antiflood action to a 3 day ban:
--> /floodmode tban 3d**"""
+**"""
 
 
