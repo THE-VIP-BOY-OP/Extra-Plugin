@@ -190,7 +190,7 @@ async def take_flood_action(client, message, action):
 
 
 __MODULE__ = "ᴀɴᴛɪғʟᴏᴏᴅ"
-__HELP__ = f"Antiflood
+__HELP__ = """**Antiflood
 
 You know how sometimes, people join, send 100 messages, and ruin your chat? With antiflood, that happens no more!
 
@@ -220,6 +220,6 @@ Examples:
 -> /floodmode mute
 
 - Set the antiflood action to a 3 day ban:
--> /floodmode tban 3d"
+-> /floodmode tban 3d**"""
 
 
