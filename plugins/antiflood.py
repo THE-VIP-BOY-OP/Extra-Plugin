@@ -235,7 +235,8 @@ async def take_flood_action(client, message, action):
 @app.on_callback_query()
 async def callback_handler(client, callback_query):
     data = callback_query.data
-    if not await check_callback_admin(client, callback_query):
+    is_admin = await check_callback_admin(client, callback_query)
+    if not is_admin:
         return 
     if data.startswith("unban:"):
         user_id = int(data.split(":")[1])
