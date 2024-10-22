@@ -214,7 +214,7 @@ async def take_flood_action(client, message, action):
             return 
     elif action == "tmute":
         try:
-            until_date = datetime.now() + timedelta(days=3)
+            until_date = datetime.now() + timedelta(minutes=1)
             await client.restrict_chat_member(chat_id, user_id, permissions=ChatPermissions(can_send_messages=False), until_date=until_date)
             buttons = InlineKeyboardMarkup(
                 [[InlineKeyboardButton("Unmute", callback_data=f"unmute:{user_id}")]]
