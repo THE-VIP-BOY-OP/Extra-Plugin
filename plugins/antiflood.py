@@ -39,7 +39,7 @@ async def check_admin_rights(client, message: Message):
     await message.reply("**You are not an admin.**")
     return False
 
-async def check_callback_admin(client, message: Message):
+async def check_callback_admin(client, callback_query):
     try:
         participant = await client.get_chat_member(callback_query.message.chat.id, callback_query.message.from_user.id)
         if participant.status in (ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER):
@@ -235,7 +235,7 @@ async def take_flood_action(client, message, action):
 @app.on_callback_query()
 async def callback_handler(client, callback_query):
     data = callback_query.data
-    if not await check_admin_rights(client, message):
+    if not await check_callback_admin(client, message):
         return 
     if data.startswith("unban:"):
         user_id = int(data.split(":")[1])
