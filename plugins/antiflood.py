@@ -4,7 +4,7 @@ from pyrogram import filters
 from pyrogram.types import Message
 from datetime import timedelta, datetime
 from pyrogram.enums import ChatMemberStatus
-from pyrogram.errors import UserNotParticipant
+from pyrogram.errors import UserNotParticipant, UserAdminInvalid
 from pyrogram.types import ChatPermissions
 
 antiflood_collection = mongodb.antiflood_settings
@@ -174,20 +174,35 @@ async def take_flood_action(client, message, action):
     chat_id = message.chat.id
     
     if action == "ban":
-        await client.kick_chat_member(chat_id, user_id)
+        try:
+            await client.ban_chat_member(chat_id, user_id)
+        except UserAdminInvalid:
+            return 
     elif action == "mute":
-        await client.restrict_chat_member(chat_id, user_id, permissions=ChatPermissions(can_send_messages=False))
+        try:
+            await client.restrict_chat_member(chat_id, user_id, permissions=ChatPermissions(can_send_messages=False))
+        except UserAdminInvalid:
+            return 
     elif action == "kick":
-        await client.kick_chat_member(chat_id, user_id)
-        await client.unban_chat_member(chat_id, user_id)
+        try:
+            await client.kick_chat_member(chat_id, user_id)
+            await client.unban_chat_member(chat_id, user_id)
+        except UserAdminInvalid:
+            return 
     elif action == "tban":
-        await client.kick_chat_member(chat_id, user_id, until_date=datetime.now() + timedelta(minutes=1))
+        try:
+            until_date = datetime.now() + timedelta(minutes=1)
+            await client.ban_chat_member(chat_id, user_id, until_date=until_date)
+        except UserAdminInvalid:
+            return 
     elif action == "tmute":
-        await client.restrict_chat_member(chat_id, user_id, permissions=ChatPermissions(can_send_messages=False), until_date=datetime.now() + timedelta(days=3))
-
-    await message.reply(f"User {message.from_user.first_name} was {action}ed for flooding.")
-
-
+        try:
+            until_date = datetime.now() + timedelta(days=3)
+            await client.restrict_chat_member(chat_id, user_id, permissions=ChatPermissions(can_send_messages=False), until_date=until_date)
+        except UserAdminInvalid:
+            return
+            
+    await message.reply(f"**User {message.from_user.first_name} was {action}ed for flooding.**")
 
 __MODULE__ = "ᴀɴᴛɪғʟᴏᴏᴅ"
 __HELP__ = """**Antiflood
