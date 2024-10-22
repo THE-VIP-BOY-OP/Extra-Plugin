@@ -234,7 +234,7 @@ from pyrogram.errors import UserNotParticipant, UserAdminInvalid
 async def callback_handler(client: Client, callback_query: CallbackQuery):
     chat_id = callback_query.message.chat.id
     try:
-        permissions = await member_permissions(chat_id, from_user.id)
+        permissions = await member_permissions(chat_id, callback_query.from_user.id)
         permission = "can_restrict_members"
         if permission not in permissions:
             return await callback_query.answer(
