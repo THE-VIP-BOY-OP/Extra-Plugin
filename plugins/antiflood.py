@@ -39,6 +39,16 @@ async def check_admin_rights(client, message: Message):
     await message.reply("**You are not an admin.**")
     return False
 
+async def check_callback_admin(client, message: Message):
+    try:
+        participant = await client.get_chat_member(callback_query.message.chat.id, callback_query.message.from_user.id)
+        if participant.status in (ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER):
+            return True
+    except UserNotParticipant:
+        pass
+    await callback_query.answer("You are not an admin.", show_alert=True)
+    return False
+
 @app.on_message(filters.command("flood"))
 async def get_flood_settings(client, message: Message):
     if not await check_admin_rights(client, message):
@@ -225,58 +235,26 @@ async def take_flood_action(client, message, action):
 @app.on_callback_query()
 async def callback_handler(client, callback_query):
     data = callback_query.data
+    if not await check_admin_rights(client, message):
+        return 
     if data.startswith("unban:"):
         user_id = int(data.split(":")[1])
         try:
             await client.unban_chat_member(callback_query.message.chat.id, user_id)
-            await callback_query.answer("User unbanned!")
+            await callback_query.answer("User unbanned!", show_alert=True)
+            await callback_query.message.delete()
         except UserAdminInvalid:
             await callback_query.answer("Failed to unban user, maybe they are an admin.", show_alert=True)
     elif data.startswith("unmute:"):
         user_id = int(data.split(":")[1])
         try:
             await client.restrict_chat_member(callback_query.message.chat.id, user_id, permissions=ChatPermissions(can_send_messages=True))
-            await callback_query.answer("User unmuted!")
+            await callback_query.answer("User unmuted!", show_alert=True)
+            await callback_query.message.delete()
         except UserAdminInvalid:
             await callback_query.answer("Failed to unmute user, maybe they are an admin.", show_alert=True)
 
 
-"""
-async def take_flood_action(client, message, action):
-    user_id = message.from_user.id
-    chat_id = message.chat.id
-    
-    if action == "ban":
-        try:
-            await client.ban_chat_member(chat_id, user_id)
-        except UserAdminInvalid:
-            return 
-    elif action == "mute":
-        try:
-            await client.restrict_chat_member(chat_id, user_id, permissions=ChatPermissions(can_send_messages=False))
-        except UserAdminInvalid:
-            return 
-    elif action == "kick":
-        try:
-            await client.kick_chat_member(chat_id, user_id)
-            await client.unban_chat_member(chat_id, user_id)
-        except UserAdminInvalid:
-            return 
-    elif action == "tban":
-        try:
-            until_date = datetime.now() + timedelta(minutes=1)
-            await client.ban_chat_member(chat_id, user_id, until_date=until_date)
-        except UserAdminInvalid:
-            return 
-    elif action == "tmute":
-        try:
-            until_date = datetime.now() + timedelta(days=3)
-            await client.restrict_chat_member(chat_id, user_id, permissions=ChatPermissions(can_send_messages=False), until_date=until_date)
-        except UserAdminInvalid:
-            return
-            
-    await message.reply(f"**User {message.from_user.first_name} was {action}ed for flooding.**")
-"""
 __MODULE__ = "ᴀɴᴛɪғʟᴏᴏᴅ"
 __HELP__ = """**Antiflood
 
