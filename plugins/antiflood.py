@@ -223,48 +223,43 @@ async def take_flood_action(client, message, action):
 
     await message.reply(f"**User {user_first_name} was {action}ed for flooding.**", reply_markup=buttons)
 
+
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.types import ChatPermissions
-
-async def check_callback_admin(client, callback_query):
-    try:
-        participant = await client.get_chat_member(callback_query.message.chat.id, callback_query.message.from_user.id)
-        return participant.status in (ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER)
-    except UserNotParticipant:
-        await callback_query.answer("You are not a participant in this chat.", show_alert=True)
-    return False
-
-
-async def handle_action(client, callback_query, user_id, action):
-    try:
-        chat_id = callback_query.message.chat.id
-
-        if action == "unban":
-            await client.unban_chat_member(chat_id, user_id)
-            await callback_query.answer("User unbanned!", show_alert=True)
-        elif action == "unmute":
-            await client.restrict_chat_member(chat_id, user_id, permissions=ChatPermissions(can_send_messages=True))
-            await callback_query.answer("User unmuted!", show_alert=True)
-
-        await callback_query.message.delete()
-    except UserAdminInvalid:
-        await callback_query.answer(f"Failed to {action} user, maybe they are an admin.", show_alert=True)
-
+from pyrogram.errors import UserNotParticipant, UserAdminInvalid
 
 @app.on_callback_query()
 async def callback_handler(client, callback_query):
-    is_admin = await check_callback_admin(client, callback_query)
-    if not is_admin:
-        await callback_query.answer("Only admins can perform this action.", show_alert=True)
+    try:
+        participant = await client.get_chat_member(callback_query.message.chat.id, callback_query.message.from_user.id)
+        if participant.status not in (ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER):
+            await callback_query.answer("Only admins can perform this action.", show_alert=True)
+            return
+    except UserNotParticipant:
+        await callback_query.answer("You are not a participant in this chat.", show_alert=True)
         return
 
     data = callback_query.data
+    chat_id = callback_query.message.chat.id
+    
     if data.startswith("unban:"):
         user_id = int(data.split(":")[1])
-        await handle_action(client, callback_query, user_id, "unban")
+        try:
+            await client.unban_chat_member(chat_id, user_id)
+            await callback_query.answer("User unbanned!", show_alert=True)
+            await callback_query.message.delete()
+        except UserAdminInvalid:
+            await callback_query.answer("Failed to unban user, maybe they are an admin.", show_alert=True)
+            
     elif data.startswith("unmute:"):
         user_id = int(data.split(":")[1])
-        await handle_action(client, callback_query, user_id, "unmute")
+        try:
+            await client.restrict_chat_member(chat_id, user_id, permissions=ChatPermissions(can_send_messages=True))
+            await callback_query.answer("User unmuted!", show_alert=True)
+            await callback_query.message.delete()
+        except UserAdminInvalid:
+            await callback_query.answer("Failed to unmute user, maybe they are an admin.", show_alert=True)
+
 
 __MODULE__ = "ᴀɴᴛɪғʟᴏᴏᴅ"
 __HELP__ = """**Antiflood
