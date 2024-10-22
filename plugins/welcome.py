@@ -233,7 +233,7 @@ async def greet_new_members(_, member: ChatMemberUpdated):
             await app.send_photo(chat_id, photo=welcomeimg, caption=welcome_text, reply_markup=reply_markup)
 
     except Exception as e:
-        LOGGER.error(e)
+        
         return
 
 __MODULE__ = "Wᴇᴄᴏᴍᴇ"
