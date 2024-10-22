@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from pyrogram.types import ChatPermissions, InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import UserAdminInvalid
 from pyrogram.enums import ChatMemberStatus
+from utils.permissions import adminsOnly, member_permissions
 
 antiflood_collection = mongodb.antiflood_settings
 DEFAULT_FLOOD_ACTION = "tmute"
