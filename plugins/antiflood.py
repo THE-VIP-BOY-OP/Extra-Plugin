@@ -222,7 +222,7 @@ async def take_flood_action(client, message, action):
 
     await message.reply(f"**User {user_first_name} was {action}ed for flooding.**", reply_markup=buttons)
 
-@client.on_callback_query()
+@app.on_callback_query()
 async def callback_handler(client, callback_query):
     data = callback_query.data
     if data.startswith("unban:"):
