@@ -2,10 +2,10 @@ from VIPMUSIC import app
 from VIPMUSIC.core.mongo import mongodb
 from pyrogram import filters
 from pyrogram.types import Message
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
+from pyrogram.types import ChatPermissions, InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.errors import UserAdminInvalid
 from pyrogram.enums import ChatMemberStatus
-from pyrogram.errors import UserNotParticipant, UserAdminInvalid
-from pyrogram.types import ChatPermissions
 
 antiflood_collection = mongodb.antiflood_settings
 DEFAULT_FLOOD_ACTION = "tmute"
@@ -168,7 +168,80 @@ async def flood_detector(client, message: Message):
             await message.delete()
 
 
+async def take_flood_action(client, message, action):
+    user_id = message.from_user.id
+    chat_id = message.chat.id
+    user_first_name = message.from_user.first_name
+    user_username = message.from_user.username
+    
+    buttons = None  
+    
+    if action == "ban":
+        try:
+            await client.ban_chat_member(chat_id, user_id)
+            buttons = InlineKeyboardMarkup(
+                [[InlineKeyboardButton("Unban", callback_data=f"unban:{user_id}")]]
+            )
+        except UserAdminInvalid:
+            return 
+    elif action == "mute":
+        try:
+            await client.restrict_chat_member(chat_id, user_id, permissions=ChatPermissions(can_send_messages=False))
+            buttons = InlineKeyboardMarkup(
+                [[InlineKeyboardButton("Unmute", callback_data=f"unmute:{user_id}")]]
+            )
+        except UserAdminInvalid:
+            return 
+    elif action == "kick":
+        try:
+            await client.kick_chat_member(chat_id, user_id)
+            await client.unban_chat_member(chat_id, user_id)
+            buttons = InlineKeyboardMarkup(
+                [[InlineKeyboardButton("View Profile", url=f"tg://user?id={user_id}")]]
+            )
+        except UserAdminInvalid:
+            return 
+    elif action == "tban":
+        try:
+            until_date = datetime.now() + timedelta(minutes=1)
+            await client.ban_chat_member(chat_id, user_id, until_date=until_date)
+            buttons = InlineKeyboardMarkup(
+                [[InlineKeyboardButton("Unban", callback_data=f"unban:{user_id}")]]
+            )
+        except UserAdminInvalid:
+            return 
+    elif action == "tmute":
+        try:
+            until_date = datetime.now() + timedelta(days=3)
+            await client.restrict_chat_member(chat_id, user_id, permissions=ChatPermissions(can_send_messages=False), until_date=until_date)
+            buttons = InlineKeyboardMarkup(
+                [[InlineKeyboardButton("Unmute", callback_data=f"unmute:{user_id}")]]
+            )
+        except UserAdminInvalid:
+            return
 
+    await message.reply(f"**User {user_first_name} was {action}ed for flooding.**", reply_markup=buttons)
+
+@client.on_callback_query()
+async def callback_handler(client, callback_query):
+    data = callback_query.data
+    if data.startswith("unban:"):
+        user_id = int(data.split(":")[1])
+        try:
+            await client.unban_chat_member(callback_query.message.chat.id, user_id)
+            await callback_query.answer("User unbanned!")
+        except UserAdminInvalid:
+            await callback_query.answer("Failed to unban user, maybe they are an admin.", show_alert=True)
+    elif data.startswith("unmute:"):
+        user_id = int(data.split(":")[1])
+        try:
+            await client.restrict_chat_member(callback_query.message.chat.id, user_id, permissions=ChatPermissions(can_send_messages=True))
+            await callback_query.answer("User unmuted!")
+        except UserAdminInvalid:
+            await callback_query.answer("Failed to unmute user, maybe they are an admin.", show_alert=True)
+
+
+"""
 async def take_flood_action(client, message, action):
     user_id = message.from_user.id
     chat_id = message.chat.id
@@ -203,7 +276,7 @@ async def take_flood_action(client, message, action):
             return
             
     await message.reply(f"**User {message.from_user.first_name} was {action}ed for flooding.**")
-
+"""
 __MODULE__ = "ᴀɴᴛɪғʟᴏᴏᴅ"
 __HELP__ = """**Antiflood
 
