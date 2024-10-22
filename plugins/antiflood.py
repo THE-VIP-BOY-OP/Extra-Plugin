@@ -231,11 +231,16 @@ from pyrogram.errors import UserNotParticipant, UserAdminInvalid
 
 @app.on_callback_query()
 async def callback_handler(client: Client, callback_query: CallbackQuery):
+    chat_id = callback_query.message.chat.id
     try:
-        participant = await client.get_chat_member(callback_query.message.chat.id, callback_query.message.from_user.id)
-        if participant.status not in (ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER):
-            await callback_query.answer("Only admins can perform this action.", show_alert=True)
-            return
+        permissions = await member_permissions(chat_id, from_user.id)
+        permission = "can_restrict_members"
+        if permission not in permissions:
+            return await callback_query.answer(
+            "ʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴘᴇʀᴍɪssɪᴏɴs ᴛᴏ ᴘᴇʀғᴏʀᴍ ᴛʜɪs ᴀᴄᴛɪᴏɴ\n"
+            + f"ᴘᴇʀᴍɪssɪᴏɴ ɴᴇᴇᴅᴇᴅ: {permission}",
+            show_alert=True,
+        )
     except UserNotParticipant:
         await callback_query.answer("You are not a participant in this chat.", show_alert=True)
         return
