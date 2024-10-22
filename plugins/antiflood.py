@@ -7,6 +7,11 @@ from pyrogram.types import ChatPermissions, InlineKeyboardMarkup, InlineKeyboard
 from pyrogram.errors import UserAdminInvalid
 from pyrogram.enums import ChatMemberStatus
 from utils.permissions import adminsOnly, member_permissions
+from pyrogram import Client, filters
+from pyrogram.types import CallbackQuery, ChatPermissions
+from pyrogram.enums import ChatMemberStatus
+from pyrogram.errors import UserNotParticipant, UserAdminInvalid
+
 
 antiflood_collection = mongodb.antiflood_settings
 DEFAULT_FLOOD_ACTION = "tmute"
@@ -225,10 +230,6 @@ async def take_flood_action(client, message, action):
     await message.reply(f"**User {user_first_name} was {action}ed for flooding.**", reply_markup=buttons)
 
 
-from pyrogram import Client, filters
-from pyrogram.types import CallbackQuery, ChatPermissions
-from pyrogram.enums import ChatMemberStatus
-from pyrogram.errors import UserNotParticipant, UserAdminInvalid
 
 @app.on_callback_query()
 async def callback_handler(client: Client, callback_query: CallbackQuery):
