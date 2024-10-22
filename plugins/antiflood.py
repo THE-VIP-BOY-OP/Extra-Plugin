@@ -224,12 +224,13 @@ async def take_flood_action(client, message, action):
     await message.reply(f"**User {user_first_name} was {action}ed for flooding.**", reply_markup=buttons)
 
 
+from pyrogram import Client, filters
+from pyrogram.types import CallbackQuery, ChatPermissions
 from pyrogram.enums import ChatMemberStatus
-from pyrogram.types import ChatPermissions
 from pyrogram.errors import UserNotParticipant, UserAdminInvalid
 
 @app.on_callback_query()
-async def callback_handler(client, callback_query):
+async def callback_handler(client: Client, callback_query: CallbackQuery):
     try:
         participant = await client.get_chat_member(callback_query.message.chat.id, callback_query.message.from_user.id)
         if participant.status not in (ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER):
