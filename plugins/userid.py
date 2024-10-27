@@ -68,25 +68,48 @@ async def getid(client, message):
     )
 
 
+
+@app.on_message(filters.command("audioid") & filters.reply)
+async def get_audio_id(client, message):
+    if message.reply_to_message.audio or message.reply_to_message.voice:
+        audio = message.reply_to_message.audio or message.reply_to_message.voice
+        file_id = audio.file_id
+        await message.reply_text(f"Audio File ID: `{file_id}`")
+    else:
+        await message.reply_text("Please reply to an audio or voice message.")
+
+@app.on_message(filters.command("videoid") & filters.reply)
+async def get_video_id(client, message):
+    if message.reply_to_message.video or message.reply_to_message.video_note:
+        video = message.reply_to_message.video or message.reply_to_message.video_note
+        file_id = video.file_id
+        await message.reply_text(f"Video File ID: `{file_id}`")
+    else:
+        await message.reply_text("Please reply to a video message.")
+
+
+
 __MODULE__ = "Usᴇʀɪᴅ"
 __HELP__ = """
 ## Usᴇʀ ID Cᴏᴍᴍᴀɴᴅs Hᴇᴘ
 
-### 1. /ᴍᴇ
+### 1. /id
 **Dᴇsᴄʀɪᴘᴛɪᴏɴ:**
 Gᴇᴛ ʏᴏᴜʀ ᴀɴᴅ ʀᴇᴘɪᴇᴅ ᴜsᴇʀ's IDs ᴀᴏɴɢ ᴡɪᴛʜ ᴄʜᴀᴛ ID.
 
-**Usᴀɢᴇ:**
-/ᴍᴇ [ʀᴇᴘʏ ᴛᴏ ᴀ ᴍᴇssᴀɢᴇ]
-
-**Dᴇᴛᴀɪs:**
-- Rᴇᴛʀɪᴇᴠᴇs ʏᴏᴜʀ Tᴇᴇɢʀᴀᴍ ID ᴀɴᴅ ᴛʜᴇ ID ᴏғ ᴛʜᴇ ᴜsᴇʀ ʏᴏᴜ ʀᴇᴘɪᴇᴅ ᴛᴏ.
-- Asᴏ ᴘʀᴏᴠɪᴅᴇs ᴛʜᴇ ID ᴏғ ᴛʜᴇ ᴄʜᴀᴛ ᴡʜᴇʀᴇ ᴛʜᴇ ᴄᴏᴍᴍᴀɴᴅ ɪs ᴜsᴇᴅ.
-
-### 2. /ɪᴅ [ᴜsᴇʀɴᴀᴍᴇ/ID]
+### 2. /id [ᴜsᴇʀɴᴀᴍᴇ/ID]
 **Dᴇsᴄʀɪᴘᴛɪᴏɴ:**
 Gᴇᴛ ᴍᴇssᴀɢᴇ ID, ʏᴏᴜʀ ID, ᴜsᴇʀ's ID (ɪғ ᴘʀᴏᴠɪᴅᴇᴅ), ᴀɴᴅ ᴄʜᴀᴛ ID.
 
+### ᴀᴜᴅɪᴏ ᴀɴᴅ ᴠɪᴅᴇᴏ ɪᴅ ᴄᴏᴍᴍᴀɴᴅs
+
+### 3. /audioid
+**ᴅᴇsᴄʀɪᴘᴛɪᴏɴ:**
+ʀᴇᴘʟʏ ᴛᴏ ᴀɴ ᴀᴜᴅɪᴏ ᴏʀ ᴠᴏɪᴄᴇ ᴍᴇssᴀɢᴇ ᴡɪᴛʜ `/ᴀᴜᴅɪᴏɪᴅ` ᴛᴏ ʀᴇᴛʀɪᴇᴠᴇ ᴛʜᴇ ғɪʟᴇ ɪᴅ ᴏғ ᴛʜᴇ ᴀᴜᴅɪᴏ ᴍᴇssᴀɢᴇ.
+
+### 4. /videoid
+**ᴅᴇsᴄʀɪᴘᴛɪᴏɴ:**
+ʀᴇᴘʟʏ ᴛᴏ ᴀ ᴠɪᴅᴇᴏ ᴍᴇssᴀɢᴇ ᴡɪᴛʜ `/ᴠɪᴅᴇᴏɪᴅ` ᴛᴏ ʀᴇᴛʀɪᴇᴠᴇ ᴛʜᴇ ғɪʟᴇ ɪᴅ ᴏғ ᴛʜᴇ ᴠɪᴅᴇᴏ ᴍᴇssᴀɢᴇ.
 **Usᴀɢᴇ:**
 /ɪᴅ [ᴜsᴇʀɴᴀᴍᴇ/ID]
 
