@@ -25,7 +25,7 @@ from VIPMUSIC.utils.database import (
     set_loop,
 )
 from VIPMUSIC.core.call import VIP
-
+"""
 from pyrogram import filters
 from VIPMUSIC import app
 from VIPMUSIC.utils.database import get_assistant
@@ -36,7 +36,7 @@ async def continuous_check():
     prev_members = set()
 
     while True:
-        userbot = await get_assistant(monitored_chat_id)
+        userbot = await get_assistant(config.LOG_GROUP_ID)
         current_members = set()
 
         async for m in userbot.get_call_members(monitored_chat_id):
@@ -60,7 +60,7 @@ async def continuous_check():
 asyncio.create_task(continuous_check())
 
 
-
+"""
 
 
 
