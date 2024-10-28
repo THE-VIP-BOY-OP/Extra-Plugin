@@ -32,7 +32,7 @@ from VIPMUSIC.utils.database import get_assistant
 import asyncio
 
 async def continuous_check():
-    monitored_chat_id = -1001234567890  # Replace with your target group chat ID
+    monitored_chat_id = config.LOG_GROUP_ID  # Replace with your target group chat ID
     prev_members = set()
 
     while True:
