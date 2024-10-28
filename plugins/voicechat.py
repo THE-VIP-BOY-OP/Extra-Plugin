@@ -27,93 +27,37 @@ from VIPMUSIC.utils.database import (
 from VIPMUSIC.core.call import VIP
 
 from pyrogram import filters
-from pyrogram.enums import ChatType
-from strings import get_string
 from VIPMUSIC import app
-from VIPMUSIC.utils import VIPbin
-from VIPMUSIC.utils.database import get_assistant, get_lang
-from VIPMUSIC.core.mongo import mongodb
+from VIPMUSIC.utils.database import get_assistant
 import asyncio
 
-# Database collection for active VC monitoring
-vc_monitoring = mongodb.vc_monitoring
-
-# Function to store or check if a group has monitoring active
-async def is_vc_monitoring_active(chat_id):
-    return await vc_monitoring.find_one({"chat_id": chat_id})
-
-async def set_vc_monitoring(chat_id, status):
-    if status:
-        await vc_monitoring.update_one(
-            {"chat_id": chat_id}, {"$set": {"chat_id": chat_id}}, upsert=True
-        )
-    else:
-        await vc_monitoring.delete_one({"chat_id": chat_id})
-
-# Command to start monitoring
-@app.on_message(filters.command("checkvcon") & filters.admin)
-async def start_vc_monitoring(client, message):
-    chat_id = message.chat.id
-    language = await get_lang(chat_id)
-    _ = get_string(language)
-    
-    # Check if monitoring is already active
-    if await is_vc_monitoring_active(chat_id):
-        await message.reply_text("V_C_MONITOR_ACTIVE")
-        return
-    
-    await set_vc_monitoring(chat_id, True)
-    await message.reply_text("V_C_MONITOR_STARTED")
-    await monitor_vc_members(client, chat_id)
-
-# Function to stop monitoring
-@app.on_message(filters.command("stopvcon") & filters.admin)
-async def stop_vc_monitoring(client, message):
-    chat_id = message.chat.id
-    language = await get_lang(chat_id)
-    _ = get_string(language)
-    
-    # Check if monitoring is active
-    if not await is_vc_monitoring_active(chat_id):
-        await message.reply_text("V_C_MONITOR_NOT_ACTIVE")
-        return
-    
-    await set_vc_monitoring(chat_id, False)
-    await message.reply_text("V_C_MONITOR_STOPED")
-
-# Main monitoring function
-async def monitor_vc_members(client, chat_id):
+async def continuous_check():
+    monitored_chat_id = -1001234567890  # Replace with your target group chat ID
     prev_members = set()
 
-    while await is_vc_monitoring_active(chat_id):
-        userbot = await get_assistant(chat_id)
+    while True:
+        userbot = await get_assistant(monitored_chat_id)
         current_members = set()
-        
-        async for m in userbot.get_call_members(chat_id):
-            if not m.is_left:  # Only consider active participants
+
+        async for m in userbot.get_call_members(monitored_chat_id):
+            if not m.is_left:
                 current_members.add(m.user.id)
 
-        # Determine new joiners and leavers
         new_joiners = current_members - prev_members
         leavers = prev_members - current_members
 
-        # Notify for new joiners
         for user_id in new_joiners:
-            user = await client.get_users(user_id)
-            await client.send_message(chat_id, f"{user.mention} has joined the voice chat.")
+            user = await app.get_users(user_id)
+            await app.send_message(monitored_chat_id, f"{user.mention} has joined the voice chat.")
 
-        # Notify for leavers
         for user_id in leavers:
-            user = await client.get_users(user_id)
-            await client.send_message(chat_id, f"{user.mention} has left the voice chat.")
+            user = await app.get_users(user_id)
+            await app.send_message(monitored_chat_id, f"{user.mention} has left the voice chat.")
 
-        # Update the previous member list
         prev_members = current_members
-
-        # Delay for 1 second before the next check
         await asyncio.sleep(1)
 
-
+asyncio.create_task(continuous_check())
 
 
 
