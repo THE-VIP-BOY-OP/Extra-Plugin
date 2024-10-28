@@ -59,11 +59,11 @@ async def start_vc_monitoring(client, message):
     
     # Check if monitoring is already active
     if await is_vc_monitoring_active(chat_id):
-        await message.reply_text(_["V_C_MONITOR_ACTIVE"])
+        await message.reply_text("V_C_MONITOR_ACTIVE")
         return
     
     await set_vc_monitoring(chat_id, True)
-    await message.reply_text(_["V_C_MONITOR_START"])
+    await message.reply_text("V_C_MONITOR_STARTED")
     await monitor_vc_members(client, chat_id)
 
 # Function to stop monitoring
@@ -75,11 +75,11 @@ async def stop_vc_monitoring(client, message):
     
     # Check if monitoring is active
     if not await is_vc_monitoring_active(chat_id):
-        await message.reply_text(_["V_C_MONITOR_NOT_ACTIVE"])
+        await message.reply_text("V_C_MONITOR_NOT_ACTIVE")
         return
     
     await set_vc_monitoring(chat_id, False)
-    await message.reply_text(_["V_C_MONITOR_STOP"])
+    await message.reply_text("V_C_MONITOR_STOPED")
 
 # Main monitoring function
 async def monitor_vc_members(client, chat_id):
