@@ -143,40 +143,39 @@ async def set_flood_clear(client, message: Message):
 
 flood_count = {}
 
-
 @app.on_message(filters.group, group=31)
 async def flood_detector(client, message: Message):
-    chat_id = message.chat.id
-    
-    if message.from_user is None:
-        return
-    
-    user_id = message.from_user.id
-    settings = await get_chat_flood_settings(chat_id)
+    try:
+        chat_id = message.chat.id
 
-    if settings['flood_limit'] == 0:
-        return
-    
-    if chat_id not in flood_count:
-        flood_count[chat_id] = {}
-    
-    user_flood_data = flood_count[chat_id].get(user_id, {"count": 0, "first_message_time": datetime.now()})
-    flood_timer = settings.get('flood_timer', 0)
-    
-    if (datetime.now() - user_flood_data['first_message_time']).seconds > flood_timer:
-        user_flood_data = {"count": 1, "first_message_time": datetime.now()}
-    else:
-        user_flood_data['count'] += 1
-    
-    flood_count[chat_id][user_id] = user_flood_data
+        user_id = message.from_user.id
+        settings = await get_chat_flood_settings(chat_id)
 
-    if user_flood_data['count'] > settings['flood_limit']:
-        action = settings['flood_action']
-        await take_flood_action(client, message, action)
-        
-        if settings['delete_flood']:
-            await message.delete()
+        if settings['flood_limit'] == 0:
+            return
 
+        if chat_id not in flood_count:
+            flood_count[chat_id] = {}
+
+        user_flood_data = flood_count[chat_id].get(user_id, {"count": 0, "first_message_time": datetime.now()})
+        flood_timer = settings.get('flood_timer', 0)
+
+        if (datetime.now() - user_flood_data['first_message_time']).seconds > flood_timer:
+            user_flood_data = {"count": 1, "first_message_time": datetime.now()}
+        else:
+            user_flood_data['count'] += 1
+
+        flood_count[chat_id][user_id] = user_flood_data
+
+        if user_flood_data['count'] > settings['flood_limit']:
+            action = settings['flood_action']
+            await take_flood_action(client, message, action)
+
+            if settings['delete_flood']:
+                await message.delete()
+                
+    except Exception as e:
+        print(f"An error occurred in flood_detector: {e}")
 async def take_flood_action(client, message, action):
     user_id = message.from_user.id
     chat_id = message.chat.id
