@@ -3,6 +3,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQ
 from VIPMUSIC import app
 from VIPMUSIC.misc import SUDOERS
 import asyncio
+from VIPMUSIC.misc import SUDOERS
 from pyrogram import Client, filters, enums
 from pyrogram.types import Message
 from VIPMUSIC.utils.database import get_assistant
@@ -111,31 +112,26 @@ from pyrogram.types import Message
 from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import ChatAdminRequired
 
-@app.on_message(filters.command("abanall"))
+@app.on_message(filters.command("abanall") & SUDOERS)
 async def ban_all(client: Client, message: Message):
     chat_id = message.chat.id
     user_id = message.from_user.id
-
+    userbot = await get_assistant(message.chat.id)
     # Get group owner
-    owner_id = None
-    async for admin in client.get_chat_members(chat_id, filter=ChatMemberStatus.OWNER):
-        if admin.status == ChatMemberStatus.OWNER:
-            owner_id = admin.user.id
-            break
-
-    # Check if the user is the group owner
-    if user_id != owner_id:
-        await message.reply("Only the group owner can execute this command.")
-        return
-
-    # Promote bot to have ban permissions
-    bot_member = await client.get_chat_member(chat_id, client.me.id)
+    
+    bot_member = await client.get_chat_member(chat_id, userbot.id)
     if not bot_member.privileges or not bot_member.privileges.can_restrict_members:
         try:
-            await client.promote_chat_member(
-                chat_id, client.me.id,
-                can_restrict_members=True
-            )
+            await app.promote_chat_member(chat_id, assid, privileges=ChatPrivileges(
+                can_manage_chat=False,
+                can_delete_messages=False,
+                can_manage_video_chats=False,
+                can_restrict_members=True,
+                can_change_info=False,
+                can_invite_users=False,
+                can_pin_messages=False,
+                can_promote_members=True,
+            ))
         except ChatAdminRequired:
             await message.reply("I need admin rights to ban members.")
             return
@@ -143,10 +139,10 @@ async def ban_all(client: Client, message: Message):
     # Ban all members
     banned_count = 0
     async for member in client.get_chat_members(chat_id):
-        if member.status in [ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER] or member.user.id in [client.me.id, user_id]:
+        if member.status in [ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER] or member.user.id in [userbot.id, user_id]:
             continue
         try:
-            await client.ban_chat_member(chat_id, member.user.id)
+            await userbot.ban_chat_member(chat_id, member.user.id)
             banned_count += 1
         except Exception as e:
             print(f"Failed to ban {member.user.id}: {e}")
