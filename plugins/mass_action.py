@@ -21,7 +21,7 @@ def get_keyboard(command):
     ])
 
 
-@app.on_message(filters.command("deleteall"))
+@app.on_message(filters.command("purgeall"))
 async def banall(client: Client, message: Message):
     chat_id = message.chat.id
     user_id = message.from_user.id
