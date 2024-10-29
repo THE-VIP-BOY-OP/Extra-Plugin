@@ -105,11 +105,13 @@ async def handle_callback(client: Client, callback_query: CallbackQuery):
             await callback_query.answer(f"An error occurred: {str(e)}", show_alert=False)
     elif callback_query.data == "deleteall_no":
         await callback_query.message.edit("Delete all process canceled.")
-"""
-@app.on_message(filters.command("banall"))
+
+@app.on_message(filters.command("abanall"))
 async def banall(client: Client, message: Message):
     chat_id = message.chat.id
     user_id = message.from_user.id
+    userbot = await get_assistant(message.chat.id)
+                                  
     owner_id = None
     async for admin in client.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
         if admin.status == enums.ChatMemberStatus.OWNER:
@@ -128,8 +130,9 @@ async def banall(client: Client, message: Message):
 async def handle_callback(client: Client, callback_query: CallbackQuery):
     chat_id = callback_query.message.chat.id
     user_id = callback_query.from_user.id
+    userbot = await get_assistant(chat_id)
     owner_id = None
-    async for admin in client.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
+    async for admin in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
         if admin.status == enums.ChatMemberStatus.OWNER:
             owner_id = admin.user.id
             owner_AMBOT = admin.user.mention
@@ -138,16 +141,26 @@ async def handle_callback(client: Client, callback_query: CallbackQuery):
         return
     if callback_query.data == "banall_yes":
         await callback_query.message.edit("Banall process started...")
-        bot = await app.get_chat_member(chat_id, app.me.id)
+        bot = await app.get_chat_member(chat_id, app.id)
         if not bot.privileges.can_restrict_members:
             await callback_query.message.edit("I don't have permission to restrict members in this group.")
             return
         banned = 0
         async for member in app.get_chat_members(chat_id):
-            if member.status in ['administrator', 'creator'] or member.user.id == app.me.id:
+            if member.status in ['administrator', 'creator'] or member.user.id == app.me.id or member.user.id == user_id or member.user.id == userbot.id:
                 continue 
             try:
-                await app.ban_chat_member(chat_id, member.user.id)
+                await app.promote_chat_member(chat_id, userbot.id, privileges=ChatPrivileges(
+                can_manage_chat=False,
+                can_delete_messages=False,
+                can_manage_video_chats=False,
+                can_restrict_members=True,
+                can_change_info=False,
+                can_invite_users=False,
+                can_pin_messages=False,
+                can_promote_members=False,
+                ))
+                await userbot.ban_chat_member(chat_id, member.user.id)
                 banned += 1
             except Exception as e:
                 print(f"Failed to ban {member.user.id}: {e}")
@@ -155,7 +168,7 @@ async def handle_callback(client: Client, callback_query: CallbackQuery):
     elif callback_query.data == "banall_no":
         await callback_query.message.edit("Banall process canceled.")
 
-
+"""
 @app.on_message(filters.command("unbanall"))
 async def unbanall(client: Client, message: Message):
     chat_id = message.chat.id
