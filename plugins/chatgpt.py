@@ -9,9 +9,8 @@ from config import BANNED_USERS
 @app.on_message(filters.command(["detect", "aidetect", "asklang"]) & ~BANNED_USERS)
 async def chatgpt_chat_lang(bot, message):
     if len(message.command) < 2 and not message.reply_to_message:
-        await message.reply_text(
-            "Example:\n\n`/ai what is the lang of these sentences:- Hello, how are you?`"
-        )
+        await message.reply_text("**Provide any text after command or reply to any message**")
+            
         return
 
     if message.reply_to_message and message.reply_to_message.text:
@@ -20,7 +19,11 @@ async def chatgpt_chat_lang(bot, message):
         user_text = " ".join(message.command[1:])
 
     # Format the input to ask for language detection
-    user_input = f"what is the lang of these sentences: {user_text}"
+    user_input = f"""
+    Ye sentence kon sa language me hai mujhe bas ish format me lang name aur lang code likh ke do :- Lang : - () \n\n Code :- ()
+    Sentences :- {user_text}
+    Bas lang name aur lang code likh ke do uske alava kuch nhi
+    """
 
     # Send typing action and get the response from API
     await bot.send_chat_action(message.chat.id, ChatAction.TYPING)
