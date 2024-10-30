@@ -18,11 +18,15 @@ async def chatgpt_chat_lang(bot, message):
     else:
         user_text = " ".join(message.command[1:])
 
-    # Format the input to ask for language detection
     user_input = f"""
-    Ye sentence kon sa language me hai mujhe bas ish format me lang name aur lang code likh ke do :- Lang : - () \n\n Code :- ()
     Sentences :- {user_text}
-    Bas lang name aur lang code likh ke do uske alava kuch nhi
+    Ye sentence kon sa language me hai mujhe bas ish format me lang name aur lang code aur ush sentence ka ek line ka reply usi lang me likh ke do aise format me :- 
+   
+    Lang : -
+    Code :-
+    Reply :- 
+
+    Bas lang name aur lang code aur reply likh ke do uske alava kuch nhi
     """
 
     # Send typing action and get the response from API
