@@ -41,7 +41,7 @@ async def chatbot_handler(client, message):
     if message.text and any(message.text.startswith(prefix) for prefix in ["!", "/", ".", "?", "@", "#"]):
         return
 
-    if (message.reply_to_message and message.reply_to_message.from_user.id == app.id) or (app.username in message.text):
+    if (message.reply_to_message.from_user.id == app.id) or (app.username in message.text):
         try:
             user_input = f"""
                 text:- ({message.text})
