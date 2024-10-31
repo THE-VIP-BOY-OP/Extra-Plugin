@@ -20,7 +20,7 @@ async def chatgpt_chat_lang(bot, message):
 
     user_input = f"""
     Sentences :- {user_text}
-    Ye sentence kon sa language me hai mujhe bas ush sentencess ka lang name aur lang code aur ush sentences ka ek line me ek mast sa chatbot ki tarah attractive mast sa reply usi lang me likh ke do aur aisa reply do ki ush sentence se related ho aur padh ke maja aa jaye, aur man kre bat krne ka ok aur agar emoji ho sentences me to tum bhi aisa emoji use krna ki padhne bala banda khus ho jaye aur agar koi sentence gusse bhare mile to reply emotional bala dena with emotional emoji, bola jaye to ek best gf ki tarah reply do mtlb tum ek ladki ho ok agar hasne ka sirf emoji rahe text me to tum bhi reply me hasne bala emoji bas bhej sakti ho ok, aur ish format me likh ke do :- 
+    Ye sentence kon sa language me hai mujhe bas ush sentences ka lang name aur lang code, sath me ush sentence ka chatbot jaisa chhota se chhota reply do jyada bada reply mat dena maximum 1 sentence ka hona chahiye reply aur agar chhota se chhota reply me bhi kam ho ja rha hai to chhota hi reply do aur jis lang me sentence hai usi lang me likh ke do, agar sentence me sirf emoji hoga to tum bhi bas emoji dena aur ish format me likh ke do :- 
 
     Lang : -
     Code :-
