@@ -38,7 +38,9 @@ async def gemini_handler(client, message):
 @app.on_message(filters.group, group=50)
 async def chatbot_handler(client, message):
     await app.send_chat_action(message.chat.id, ChatAction.TYPING)
-    if message.text and any(message.text.startswith(prefix) for prefix in ["!", "/", ".", "?", "@", "#"])
+    if message.text and any(message.text.startswith(prefix) for prefix in ["!", "/", ".", "?", "@", "#"]):
+        return
+
     if (message.reply_to_message and message.reply_to_message.from_user.id == app.id) or not message.reply_to_message:
             
     try:
