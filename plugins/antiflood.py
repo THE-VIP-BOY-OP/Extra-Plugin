@@ -150,6 +150,9 @@ async def flood_detector(client, message: Message):
 
         user_id = message.from_user.id
         settings = await get_chat_flood_settings(chat_id)
+        participant = await client.get_chat_member(message.chat.id, message.from_user.id)
+        if participant.status in (ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER):
+            return
 
         if settings['flood_limit'] == 0:
             return
