@@ -41,7 +41,8 @@ async def chatbot_handler(client, message):
     if message.text and any(message.text.startswith(prefix) for prefix in ["!", "/", ".", "?", "@", "#"]):
         return
 
-    if (message.reply_to_message.from_user.id == app.id) or (app.username in message.text):
+    if (message.reply_to_message and message.reply_to_message.from_user.id == app.id):
+        await client.send_chat_action(message.chat.id, ChatAction.TYPING)
         try:
             user_input = f"""
                 text:- ({message.text})
@@ -49,7 +50,6 @@ async def chatbot_handler(client, message):
                 Bas reply hi likh ke do, kuch extra nahi aur jitna fast ho sake utna fast reply do!
                 """
             response = api.gemini(user_input)
-            await app.send_chat_action(message.chat.id, ChatAction.TYPING)
             x = response["results"]
             if x:
                 await message.reply_text(x, quote=True)
