@@ -234,7 +234,7 @@ async def take_flood_action(client, message, action):
     await message.reply(f"**User {user_first_name} was {action}ed for flooding.**", reply_markup=buttons)
 
 
-
+"""
 @app.on_callback_query()
 async def callback_handler(client: Client, callback_query: CallbackQuery):
     chat_id = callback_query.message.chat.id
@@ -271,7 +271,7 @@ async def callback_handler(client: Client, callback_query: CallbackQuery):
             await callback_query.message.delete()
         except UserAdminInvalid:
             await callback_query.answer("Failed to unmute user, maybe they are an admin.", show_alert=True)
-
+"""
 
 __MODULE__ = "ᴀɴᴛɪғʟᴏᴏᴅ"
 __HELP__ = """**Antiflood
