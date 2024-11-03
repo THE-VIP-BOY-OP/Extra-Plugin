@@ -234,44 +234,97 @@ async def take_flood_action(client, message, action):
     await message.reply(f"**User {user_first_name} was {action}ed for flooding.**", reply_markup=buttons)
 
 
-"""
-@app.on_callback_query()
-async def callback_handler(client: Client, callback_query: CallbackQuery):
-    chat_id = callback_query.message.chat.id
+# Handler for unban action
+@app.on_message(filters.regex(r"^unban:(\d+)$"))
+async def handle_unban(client: Client, message: Message):
+    user_id = int(message.matches[0].group(1))
+    chat_id = message.chat.id
+
     try:
-        permissions = await member_permissions(chat_id, callback_query.from_user.id)
-        permission = "can_restrict_members"
-        if permission not in permissions:
-            return await callback_query.answer(
-            "ʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴘᴇʀᴍɪssɪᴏɴs ᴛᴏ ᴘᴇʀғᴏʀᴍ ᴛʜɪs ᴀᴄᴛɪᴏɴ\n"
-            + f"ᴘᴇʀᴍɪssɪᴏɴ ɴᴇᴇᴅᴇᴅ: {permission}",
-            show_alert=True,
-        )
+        permissions = await member_permissions(chat_id, message.from_user.id)
+        if "can_restrict_members" not in permissions:
+            return await message.reply(
+                "ʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴘᴇʀᴍɪssɪᴏɴs ᴛᴏ ᴘᴇʀғᴏʀᴍ ᴛʜɪs ᴀᴄᴛɪᴏɴ\n"
+                + "ᴘᴇʀᴍɪssɪᴏɴ ɴᴇᴇᴅᴇᴅ: can_restrict_members"
+            )
     except UserNotParticipant:
-        await callback_query.answer("You are not a participant in this chat.", show_alert=True)
+        await message.reply("You are not a participant in this chat.")
         return
 
-    data = callback_query.data
-    chat_id = callback_query.message.chat.id
-    
-    if data.startswith("unban:"):
-        user_id = int(data.split(":")[1])
+    try:
+        await client.unban_chat_member(chat_id, user_id)
+        await message.reply("User unbanned!")
+    except UserAdminInvalid:
+        await message.reply("Failed to unban user, maybe they are an admin.")
+
+# Handler for unmute action
+@app.on_message(filters.regex(r"^unmute:(\d+)$"))
+async def handle_unmute(client: Client, message: Message):
+    user_id = int(message.matches[0].group(1))
+    chat_id = message.chat.id
+
+    try:
+        permissions = await member_permissions(chat_id, message.from_user.id)
+        if "can_restrict_members" not in permissions:
+            return await message.reply(
+                "ʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ᴇɴᴏᴜɢʜ ᴘᴇʀᴍɪssɪᴏɴs ᴛᴏ ᴘᴇʀғᴏʀᴍ ᴛʜɪs ᴀᴄᴛɪᴏɴ\n"
+                + "ᴘᴇʀᴍɪssɪᴏɴ ɴᴇᴇᴅᴇᴅ: can_restrict_members"
+            )
+    except UserNotParticipant:
+        await message.reply("You are not a participant in this chat.")
+        return
+
+    try:
+        await client.restrict_chat_member(chat_id, user_id, permissions=ChatPermissions(can_send_messages=True))
+        await message.reply("User unmuted!")
+    except UserAdminInvalid:
+        await message.reply("Failed to unmute user, maybe they are an admin.")
+
+# Updating the flood actions to include regex-based buttons
+async def take_flood_action(client, message, action):
+    user_id = message.from_user.id
+    chat_id = message.chat.id
+    user_first_name = message.from_user.first_name
+
+    buttons = None
+
+    if action == "ban":
         try:
+            await client.ban_chat_member(chat_id, user_id)
+            buttons = InlineKeyboardMarkup([[InlineKeyboardButton("Unban", text=f"unban:{user_id}")]])
+        except UserAdminInvalid:
+            return
+    elif action == "mute":
+        try:
+            await client.restrict_chat_member(chat_id, user_id, permissions=ChatPermissions(can_send_messages=False))
+            buttons = InlineKeyboardMarkup([[InlineKeyboardButton("Unmute", text=f"unmute:{user_id}")]])
+        except UserAdminInvalid:
+            return
+    elif action == "kick":
+        try:
+            await client.kick_chat_member(chat_id, user_id)
             await client.unban_chat_member(chat_id, user_id)
-            await callback_query.answer("User unbanned!", show_alert=True)
-            await callback_query.message.delete()
+            buttons = InlineKeyboardMarkup([[InlineKeyboardButton("View Profile", url=f"tg://user?id={user_id}")]])
         except UserAdminInvalid:
-            await callback_query.answer("Failed to unban user, maybe they are an admin.", show_alert=True)
-            
-    elif data.startswith("unmute:"):
-        user_id = int(data.split(":")[1])
+            return
+    elif action == "tban":
         try:
-            await client.restrict_chat_member(chat_id, user_id, permissions=ChatPermissions(can_send_messages=True))
-            await callback_query.answer("User unmuted!", show_alert=True)
-            await callback_query.message.delete()
+            until_date = datetime.now() + timedelta(minutes=1)
+            await client.ban_chat_member(chat_id, user_id, until_date=until_date)
+            buttons = InlineKeyboardMarkup([[InlineKeyboardButton("Unban", text=f"unban:{user_id}")]])
         except UserAdminInvalid:
-            await callback_query.answer("Failed to unmute user, maybe they are an admin.", show_alert=True)
-"""
+            return
+    elif action == "tmute":
+        try:
+            until_date = datetime.now() + timedelta(minutes=1)
+            await client.restrict_chat_member(chat_id, user_id, permissions=ChatPermissions(can_send_messages=False), until_date=until_date)
+            buttons = InlineKeyboardMarkup([[InlineKeyboardButton("Unmute", text=f"unmute:{user_id}")]])
+        except UserAdminInvalid:
+            return
+
+    await message.reply(f"**User {user_first_name} was {action}ed for flooding.**", reply_markup=buttons)
+
+
 
 __MODULE__ = "ᴀɴᴛɪғʟᴏᴏᴅ"
 __HELP__ = """**Antiflood
