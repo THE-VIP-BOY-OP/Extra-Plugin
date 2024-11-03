@@ -8,6 +8,22 @@ from config import OWNER_ID
 from VIPMUSIC.misc import SUDOERS
 from VIPMUSIC.utils.pastebin import VIPbin
 
+import re
+from pymongo import MongoClient
+from pyrogram import filters
+from pyrogram.types import Message
+from VIPMUSIC import app
+import os
+from config import OWNER_ID
+from VIPMUSIC.misc import SUDOERS
+from VIPMUSIC.utils.pastebin import VIPbin
+
+# Function to get MongoDB URL
+def get_mongo_url(message):
+    if len(message.command) > 1 and re.match(r"mongodb(?:\+srv)?:\/\/[^\s]+", message.command[1]):
+        return message.command[1]
+    return os.getenv("MONGO_DB_URI")
+
 
 MONGO_DB_URI = os.getenv("MONGO_DB_URI")
 
@@ -71,25 +87,36 @@ def list_databases_and_collections(client):
     return numbered_list
 
 
+def delete_all_databases_and_collections(client):
+    for db_name in client.list_database_names():
+        if db_name not in ["admin", "local"]:
+            db = client[db_name]
+            for col_name in db.list_collection_names():
+                db.drop_collection(col_name)
+            client.drop_database(db_name)
+
 @app.on_message(filters.command(["deletedb", "deletedatabase", "deldb", "deldatabase"]) & filters.user(OWNER_ID))
 async def delete_db_command(client, message: Message):
     try:
-        mongo_client = MongoClient(MONGO_DB_URI, serverSelectionTimeoutMS=5000)
+        mongo_url = get_mongo_url(message)
+        mongo_client = MongoClient(mongo_url, serverSelectionTimeoutMS=5000)
         databases_and_collections = list_databases_and_collections(mongo_client)
 
-        
         if len(message.command) == 1:
             if len(databases_and_collections) > 0:
-                result = "**MongoDB Databases and Collections given below you can delete by /deldb 1,2,7,5 (your choice you can delete multiple databse in one command with multiple count value seperated by comma:**\n\n"
+                result = "**MongoDB Databases and Collections:**\n\n"
                 for num, db_name, col_name in databases_and_collections:
                     if col_name:
                         result += f"{num}.) `{col_name}`\n"
                     else:
                         result += f"\n{num}.) **{db_name}** (Database)\n"
-                ok = await message.reply(result)
+                await message.reply(result)
             else:
                 await message.reply("**No user databases found. ❌**")
-        
+
+        elif message.command[1].lower() == "all":
+            delete_all_databases_and_collections(mongo_client)
+            await message.reply("**All databases and collections have been deleted successfully. 🧹**")
 
         elif "," in message.command[1]:
             numbers = message.command[1].split(",")
@@ -103,61 +130,25 @@ async def delete_db_command(client, message: Message):
                         try:
                             if col_name:
                                 delete_collection(mongo_client, db_name, col_name)
-                                await message.reply(f"**Collection** `{col_name}` **in database** `{db_name}` **has been deleted successfully. 🧹**\n\n**Check Rest databse by: /checkdb, /deldb**")
-                                await ok.delete()
                             else:
                                 delete_database(mongo_client, db_name)
-                                await message.reply(f"**Database** `{db_name}` **has been deleted successfully. 🧹**\n\n**Check Rest databse by: /checkdb, /deldb**")
-                                await ok.delete()
-                        except Exception as e:
+                        except Exception:
                             failed.append(num_str)
                     else:
                         failed.append(num_str)
                 else:
                     failed.append(num_str)
-            
             if failed:
-                await message.reply(f"Some entries could not be deleted or were invalid: {', '.join(failed)} ❌\n\n**Check Rest databse by: /checkdb, /deldb**")
-                
-        
-        elif message.command[1].isdigit():
-            number = int(message.command[1])
-            if number > 0 and number <= len(databases_and_collections):
-                num, db_name, col_name = databases_and_collections[number - 1]
-                if col_name:
-                    delete_collection(mongo_client, db_name, col_name)
-                    await message.reply(f"**Collection** `{col_name}` **in database** `{db_name}` **has been deleted successfully. 🧹**\n\n**Check Rest databse by: /checkdb, /deldb**")
-                else:
-                    delete_database(mongo_client, db_name)
-                    await message.reply(f"**Database** `{db_name}` **has been deleted successfully. 🧹**\n\n**Check Rest databse by: /checkdb, /deldb**")
+                await message.reply(f"Failed to delete: {', '.join(failed)} ❌")
             else:
-                await message.reply("**Invalid number. Please check the list again.**")
-        
-        
+                await message.reply("Selected databases/collections deleted successfully.")
         else:
-            db_name = message.command[1]
-            
-            
-            if len(message.command) == 3:
-                col_name = message.command[2]
-                if db_name in [db[1] for db in databases_and_collections if not db[2]]:
-                    delete_collection(mongo_client, db_name, col_name)
-                    await message.reply(f"**Collection** `{col_name}` **in database** `{db_name}` **has been deleted successfully. 🧹**\n\n**Check Rest databse by: /checkdb, /deldb**")
-                else:
-                    await message.reply(f"**Database** `{db_name}` **does not exist. ❌**")
-            
-            
-            else:
-                if db_name in [db[1] for db in databases_and_collections if not db[2]]:
-                    delete_database(mongo_client, db_name)
-                    await message.reply(f"**Database** `{db_name}` **has been deleted successfully. 🧹**\n\n**Check Rest databse by: /checkdb, /deldb**")
-                else:
-                    await message.reply(f"**Database** `{db_name}` **does not exist. ❌**")
-        
+            await message.reply("Invalid command format.")
+
         mongo_client.close()
 
     except Exception as e:
-        await message.reply(f"**Failed to delete databases Try to delete by count**")
+        await message.reply(f"**Failed to delete databases:** {e}")
 
 
 #==============================[⚠️ CHECK DATABASE ⚠️]=======================================
@@ -231,33 +222,63 @@ def restore_data_to_new_mongo(new_client, backup_data):
 @app.on_message(filters.command(["transferdb", "copydb", "paste", "copydatabase", "transferdatabase"]) & filters.user(OWNER_ID))
 async def transfer_db_command(client, message: Message):
     try:
-        if len(message.command) < 2:
-            await message.reply("Please provide the new MongoDB URL with the command: `/transferdb your_new_mongodb_url`")
+        if len(message.command) == 2:
+            main_mongo_url = MONGO_DB_URI
+            target_mongo_url = message.command[1]
+        elif len(message.command) == 3:
+            main_mongo_url = message.command[1]
+            target_mongo_url = message.command[2]
+        else:
+            await message.reply("Please provide one or two MongoDB URLs as required.")
             return
-        ok = await message.reply_text("**Ok wait transfer process Starting...**")
-        new_mongo_url = message.command[1]
-        
-        if not re.match(mongo_url_pattern, new_mongo_url):
-            await message.reply("**The provided MongoDB URL format is invalid! ❌**")
-            return
-        
-        # Step 1: Backup data from the old MongoDB instance
-        old_mongo_client = MongoClient(MONGO_DB_URI, serverSelectionTimeoutMS=5000)
-        backup_data = backup_old_mongo_data(old_mongo_client)
-        old_mongo_client.close()
-        await message.reply("**Data copy from old MongoDB is complete. 📦**\n\n**Now opening new MongoDB and pasting**")
-        
-        # Step 2: Restore the backed-up data into the new MongoDB instance
-        new_mongo_client = MongoClient(new_mongo_url, serverSelectionTimeoutMS=5000)
-        restore_data_to_new_mongo(new_mongo_client, backup_data)
-        new_mongo_client.close()
-        await ok.delete()
-        await message.reply("**Data transfer to the new MongoDB is successful! 🎉**")
-    
-    except Exception as e:
-        await ok.delete()
-        await message.reply(f"**Data transfer to the new MongoDB is successful! 🎉\n\nCheck your new mongo databse by /mongochk your mongo here\n\nIf not transferred from old mongo then either your mongo is dead or invalid.")
 
+        if not re.match(mongo_url_pattern, target_mongo_url):
+            await message.reply("**The target MongoDB URL format is invalid! ❌**")
+            return
+
+        # Backup data from the main MongoDB instance
+        main_client = MongoClient(main_mongo_url, serverSelectionTimeoutMS=5000)
+        backup_data = backup_old_mongo_data(main_client)
+        main_client.close()
+
+        # Restore to the target MongoDB instance
+        target_client = MongoClient(target_mongo_url, serverSelectionTimeoutMS=5000)
+        restore_data_to_new_mongo(target_client, backup_data)
+        target_client.close()
+
+        await message.reply("**Data transfer to the new MongoDB is successful! 🎉**")
+
+    except Exception as e:
+        await message.reply(f"**Data transfer failed:** {e}")
+#==========
+
+import json
+import io
+
+@app.on_message(filters.command("downloaddata") & filters.user(OWNER_ID))
+async def download_data_command(client, message: Message):
+    try:
+        mongo_url = get_mongo_url(message)
+        mongo_client = MongoClient(mongo_url, serverSelectionTimeoutMS=5000)
+
+        data = {}
+        for db_name in mongo_client.list_database_names():
+            if db_name not in ["admin", "local"]:
+                data[db_name] = {}
+                db = mongo_client[db_name]
+                for col_name in db.list_collection_names():
+                    data[db_name][col_name] = list(db[col_name].find())
+
+        mongo_client.close()
+
+        # Convert data to JSON and send as a file
+        json_data = json.dumps(data, default=str, indent=2)
+        file = io.BytesIO(json_data.encode('utf-8'))
+        file.name = "mongo_data.json"
+        await client.send_document(chat_id=message.chat.id, document=file)
+
+    except Exception as e:
+        await message.reply(f"**Failed to download data:** {e}")
 
 __MODULE__ = "MongoDB"
 __HELP__ = """
