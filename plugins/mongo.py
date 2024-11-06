@@ -71,36 +71,25 @@ def list_databases_and_collections(client):
     return numbered_list
 
 
-def delete_all_databases_and_collections(client):
-    for db_name in client.list_database_names():
-        if db_name not in ["admin", "local"]:
-            db = client[db_name]
-            for col_name in db.list_collection_names():
-                db.drop_collection(col_name)
-            client.drop_database(db_name)
-
 @app.on_message(filters.command(["deletedb", "deletedatabase", "deldb", "deldatabase"]) & filters.user(OWNER_ID))
 async def delete_db_command(client, message: Message):
     try:
-        mongo_url = get_mongo_url(message)
-        mongo_client = MongoClient(mongo_url, serverSelectionTimeoutMS=5000)
+        mongo_client = MongoClient(MONGO_DB_URI, serverSelectionTimeoutMS=5000)
         databases_and_collections = list_databases_and_collections(mongo_client)
 
+        
         if len(message.command) == 1:
             if len(databases_and_collections) > 0:
-                result = "**MongoDB Databases and Collections:**\n\n"
+                result = "**MongoDB Databases and Collections given below you can delete by /deldb 1,2,7,5 (your choice you can delete multiple databse in one command with multiple count value seperated by comma:**\n\n"
                 for num, db_name, col_name in databases_and_collections:
                     if col_name:
                         result += f"{num}.) `{col_name}`\n"
                     else:
                         result += f"\n{num}.) **{db_name}** (Database)\n"
-                await message.reply(result)
+                ok = await message.reply(result)
             else:
                 await message.reply("**No user databases found. ❌**")
-
-        elif message.command[1].lower() == "all":
-            delete_all_databases_and_collections(mongo_client)
-            await message.reply("**All databases and collections have been deleted successfully. 🧹**")
+        
 
         elif "," in message.command[1]:
             numbers = message.command[1].split(",")
@@ -114,25 +103,62 @@ async def delete_db_command(client, message: Message):
                         try:
                             if col_name:
                                 delete_collection(mongo_client, db_name, col_name)
+                                await message.reply(f"**Collection** `{col_name}` **in database** `{db_name}` **has been deleted successfully. 🧹**\n\n**Check Rest databse by: /checkdb, /deldb**")
+                                await ok.delete()
                             else:
                                 delete_database(mongo_client, db_name)
-                        except Exception:
+                                await message.reply(f"**Database** `{db_name}` **has been deleted successfully. 🧹**\n\n**Check Rest databse by: /checkdb, /deldb**")
+                                await ok.delete()
+                        except Exception as e:
                             failed.append(num_str)
                     else:
                         failed.append(num_str)
                 else:
                     failed.append(num_str)
+            
             if failed:
-                await message.reply(f"Failed to delete: {', '.join(failed)} ❌")
+                await message.reply(f"Some entries could not be deleted or were invalid: {', '.join(failed)} ❌\n\n**Check Rest databse by: /checkdb, /deldb**")
+                
+        
+        elif message.command[1].isdigit():
+            number = int(message.command[1])
+            if number > 0 and number <= len(databases_and_collections):
+                num, db_name, col_name = databases_and_collections[number - 1]
+                if col_name:
+                    delete_collection(mongo_client, db_name, col_name)
+                    await message.reply(f"**Collection** `{col_name}` **in database** `{db_name}` **has been deleted successfully. 🧹**\n\n**Check Rest databse by: /checkdb, /deldb**")
+                else:
+                    delete_database(mongo_client, db_name)
+                    await message.reply(f"**Database** `{db_name}` **has been deleted successfully. 🧹**\n\n**Check Rest databse by: /checkdb, /deldb**")
             else:
-                await message.reply("Selected databases/collections deleted successfully.")
+                await message.reply("**Invalid number. Please check the list again.**")
+        
+        
         else:
-            await message.reply("Invalid command format.")
-
+            db_name = message.command[1]
+            
+            
+            if len(message.command) == 3:
+                col_name = message.command[2]
+                if db_name in [db[1] for db in databases_and_collections if not db[2]]:
+                    delete_collection(mongo_client, db_name, col_name)
+                    await message.reply(f"**Collection** `{col_name}` **in database** `{db_name}` **has been deleted successfully. 🧹**\n\n**Check Rest databse by: /checkdb, /deldb**")
+                else:
+                    await message.reply(f"**Database** `{db_name}` **does not exist. ❌**")
+            
+            
+            else:
+                if db_name in [db[1] for db in databases_and_collections if not db[2]]:
+                    delete_database(mongo_client, db_name)
+                    await message.reply(f"**Database** `{db_name}` **has been deleted successfully. 🧹**\n\n**Check Rest databse by: /checkdb, /deldb**")
+                else:
+                    await message.reply(f"**Database** `{db_name}` **does not exist. ❌**")
+        
         mongo_client.close()
 
     except Exception as e:
-        await message.reply(f"**Failed to delete databases:** {e}")
+        await message.reply(f"**Failed to delete databases Try to delete by count**")
+
 
 
 
